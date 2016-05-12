@@ -26,7 +26,9 @@ void* query_thread(void *data)
 
     while (running)
     {
-        MYSQL* mysql = Test->open_readconn_master_connection();
+        MYSQL* mysql = iter % 200 == 0 ?
+            Test->open_readconn_master_connection() :
+            Test->open_readconn_slave_connection();
 
         if (!mysql)
         {
@@ -54,6 +56,7 @@ int main(int argc, char *argv[])
     pthread_t threads[THREADS];
 
     Test->stop_timeout();
+    Test->ssh_maxscale(false, "maxadmin -pmariadb disable log-priority info");
 
     for (int i = 0; i < THREADS; i++)
     {
@@ -61,8 +64,14 @@ int main(int argc, char *argv[])
     }
 
     running = 1;
-    sleep(60);
-    running = 0;
+
+    for (int i = 0; i < 10; i++)
+    {
+        Test->repl->block_node(0);
+        sleep(10);
+        Test->repl->unblock_node(0);
+        sleep(10);
+    }
 
     for (int i = 0; i < THREADS; i++)
     {
