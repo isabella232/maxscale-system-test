@@ -37,6 +37,7 @@ void test_all_ok(TestConnections *Test)
 void test_basic(TestConnections *Test)
 {
     /** Check that everything is OK before blocking the master */
+    Test->connect_maxscale();
     test_all_ok(Test);
 
     /** Block master */
@@ -228,6 +229,7 @@ int main(int argc, char *argv[])
     Test->connect_maxscale();
     execute_query_silent(Test->conn_rwsplit, "DROP TABLE IF EXISTS test.readonly\n");
     execute_query_silent(Test->conn_rwsplit, "CREATE TABLE test.readonly(id int)\n");
+    Test->close_maxscale_connections();
 
     /** Basic tests */
     test_basic(Test);
