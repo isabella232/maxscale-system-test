@@ -81,6 +81,13 @@ function(add_test_script name template)
   add_test(${name} ${name})
 endfunction()
 
+# Label a list of tests as heavy, long running tests
+macro(heavy_tests)
+  foreach(name IN ITEMS ${ARGN})
+    set_property(TEST ${name} PROPERTY LABELS "HEAVY")
+  endforeach()
+endmacro()
+
 add_test_executable_notest(t.cpp t replication)
 add_test_executable_notest(non_native_setup.cpp non_native_setup replication)
 
