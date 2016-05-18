@@ -315,6 +315,9 @@ add_test_executable(rwsplit_readonly.cpp rwsplit_readonly rwsplit_readonly)
 add_test_executable(rwsplit_readonly_stress.cpp rwsplit_readonly_stress rwsplit_readonly)
 
 add_test_executable(mxs621_unreadable_cnf.cpp mxs621_unreadable_cnf replication)
+add_test_executable(mxs720_line_with_no_equal.cpp mxs720_line_with_no_equal mxs720_line_with_no_equal)
+add_test_script(mxs720_wierd_line mxs720_wierd_line)
+
 
 # Python based tests
 add_test_script(mxs585.py replication)
