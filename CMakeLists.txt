@@ -314,6 +314,8 @@ add_test_executable(stale_slaves.cpp stale_slaves replication)
 add_test_executable(rwsplit_readonly.cpp rwsplit_readonly rwsplit_readonly)
 add_test_executable(rwsplit_readonly_stress.cpp rwsplit_readonly_stress rwsplit_readonly)
 
+add_test_executable(mxs621_unreadable_cnf.cpp mxs621_unreadable_cnf replication)
+
 # Python based tests
 add_test_script(mxs585.py replication)
 add_test_script(mxs598.py ssl)
