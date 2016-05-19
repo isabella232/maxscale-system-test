@@ -20,12 +20,34 @@ int main(int argc, char *argv[])
     test->stop_timeout();
     test->stop_maxscale();
 
-    int rc1 = test->ssh_maxscale(true, "maxscale -c --user=maxscale ");
-    test->tprintf("First test returned: %d\n", rc1);
-    test->ssh_maxscale(true, "sed -e 's/service/ecivres/' /etc/maxscale.cnf");
-    int rc2 = test->ssh_maxscale(true, "maxscale -c --user=maxscale ");
-    test->tprintf("Second test returned: %d\n", rc2);
-    test->add_result(rc1 == rc2, "Results should not be the same\n");
+    /** Get a baseline result with a good configuration */
+    int baseline = test->ssh_maxscale(true, "maxscale -c --user=maxscale ");
+
+    /** Create a type error in the configuration and see if it is noticed */
+    test->ssh_maxscale(true, "sed -i -e 's/service/ecivres/' /etc/maxscale.cnf");
+    test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
+                     "Configuration error should be detected.\n");
+    test->ssh_maxscale(true, "sed -i -e 's/ecivres/service/' /etc/maxscale.cnf");
+
+    /** Add unknown characters to configuration */
+    test->ssh_maxscale(true, "sed -i -e 's/^/?/' /etc/maxscale.cnf");
+    test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
+                     "Configuration error should be detected.\n");
+    test->ssh_maxscale(true, "sed -i -e 's/^?//' /etc/maxscale.cnf");
+
+    /** Comment everything out */
+    test->ssh_maxscale(true, "sed -i -e 's/#.*//' /etc/maxscale.cnf");
+    test->ssh_maxscale(true, "sed -i -e 's/^/#/' /etc/maxscale.cnf");
+    test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
+                     "Configuration error should be detected.\n");
+    test->ssh_maxscale(true, "sed -i -e 's/^#//' /etc/maxscale.cnf");
+
+    /** Add an empty section */
+    test->ssh_maxscale(true, "sed -i -e 's/\[.*\]/[]/' /etc/maxscale.cnf");
+    test->ssh_maxscale(true, "sed -i -e 's/^/#/' /etc/maxscale.cnf");
+    test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
+                     "Configuration error should be detected.\n");
+
     test->copy_all_logs();
     return test->global_result;
 }
