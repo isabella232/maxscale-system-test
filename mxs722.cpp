@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     test->ssh_maxscale(true, "sed -i -e 's/^#//' /etc/maxscale.cnf");
 
     /** Add an empty section */
-    test->ssh_maxscale(true, "sed -i -e 's/\[.*\]/[]/' /etc/maxscale.cnf");
+    test->ssh_maxscale(true, "sed -i -e 's/\\[.*\\]/[]/' /etc/maxscale.cnf");
     test->ssh_maxscale(true, "sed -i -e 's/^/#/' /etc/maxscale.cnf");
     test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
                      "Configuration error should be detected.\n");
