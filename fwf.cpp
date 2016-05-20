@@ -1,5 +1,5 @@
 /**
- * @file fwf - Firewall filtyer test
+ * @file fwf - Firewall filter test (also regression test for MXS-683 "qc_mysqlembedded reports as-name instead of original-name")
  * - setup Firewall filter to use rules from rule file fw/ruleXX, where XX - number of sub-test
  * - execute queries for fw/passXX file, expect OK
  * - execute queries from fw/denyXX, expect Access Denied error (mysql_error 1141)
