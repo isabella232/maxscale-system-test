@@ -11,9 +11,25 @@ if [ $? -ne 0 ] ; then
         exit 1
 fi
 
+sleep 15
+
 set -x
 echo "drop table if exists t1; create table t1(id integer primary key); " | mysql -u$repl_user -p$repl_password -h$maxscale_IP -P 4006 test
+
+if [ $? -ne 0 ]
+then
+    echo "Failed to create table test.t1"
+    exit 1
+fi
+
 echo "drop table if exists t1; create table t1(id integer primary key); " | mysql -u$repl_user -p$repl_password -h$maxscale_IP -P 4006 mysql
+
+if [ $? -ne 0 ]
+then
+    echo "Failed to create table mysql.t1"
+    exit 1
+fi
+
 set +x
 
 $test_dir/session_hang/run_setmix.sh &
@@ -55,5 +71,13 @@ if [ $? -ne 0 ] ; then
 fi
 
 $test_dir/copy_logs.sh run_session_hang
+
+wait
+if [ $res -eq 1 ]
+then
+    echo "Test FAILED"
+else
+    echo "Test PASSED"
+fi
 
 exit $res
