@@ -72,4 +72,12 @@ fi
 
 $test_dir/copy_logs.sh run_session_hang
 
+wait
+if [ $res -eq 1 ]
+then
+    echo "Test FAILED"
+else
+    echo "Test PASSED"
+fi
+
 exit $res
