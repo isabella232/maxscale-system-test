@@ -1134,18 +1134,18 @@ int TestConnections::find_master_maxadmin(Mariadb_nodes * nodes)
 
 int TestConnections::execute_maxadmin_command(char * cmd)
 {
-    return(ssh_maxscale(false, "maxadmin -uadmin -p%s %s", maxadmin_password, cmd));
+    return(ssh_maxscale(TRUE, "maxadmin %s", cmd));
 }
 int TestConnections::execute_maxadmin_command_print(char * cmd)
 {
-    printf("%s\n", ssh_maxscale_output(false, "maxadmin -uadmin -p%s %s", maxadmin_password, cmd));
+    printf("%s\n", ssh_maxscale_output(TRUE, "maxadmin %s", cmd));
     return 0;
 }
 int TestConnections::get_maxadmin_param(char *command, char *param, char *result)
 {
     char		* buf;
 
-    buf = ssh_maxscale_output(false, "maxadmin -uadmin -p%s %s", maxadmin_password, command);
+    buf = ssh_maxscale_output(TRUE, "maxadmin %s", command);
 
     printf("%s\n", buf);
 
