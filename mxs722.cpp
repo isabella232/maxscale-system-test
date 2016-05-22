@@ -1,9 +1,11 @@
 /**
- * @file mxs118.cpp bug mxs118 regression case ("Two monitors loaded at the same time result into not working installation")
+ * @file mxs722.cpp MaxScale configuration check functionality test
  *
- * - Configure two monitors using same backend serves
- * - try to connect to maxscale
- * - check logs for warning
+ * - Get baseline for test from a valid config
+ * - Test wrong parameter name
+ * - Test wrong router_options value
+ * - Test wrong filter parameter
+ * - Test missing config file
  */
 
 
@@ -16,18 +18,37 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    TestConnections * test = new TestConnections(argc, argv);
+    TestConnections* test = new TestConnections(argc, argv);
     test->stop_timeout();
     test->stop_maxscale();
+
+    /** Copy original config so we can easily reset the testing environment */
+    test->ssh_maxscale(true, "cp /etc/maxscale.cnf /etc/maxscale.cnf.backup");
 
     /** Get a baseline result with a good configuration */
     int baseline = test->ssh_maxscale(true, "maxscale -c --user=maxscale ");
 
-    /** Create a type error in the configuration and see if it is noticed */
+    /** Configure bad parameter for a listener */
     test->ssh_maxscale(true, "sed -i -e 's/service/ecivres/' /etc/maxscale.cnf");
     test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
-                     "Configuration error should be detected.\n");
-    test->ssh_maxscale(true, "sed -i -e 's/ecivres/service/' /etc/maxscale.cnf");
+                     "Bad parameter name should be detected.\n");
+    test->ssh_maxscale(true, "cp /etc/maxscale.cnf.backup /etc/maxscale.cnf");
+
+    /** Set slave_selection_criteria to a bad value */
+    test->ssh_maxscale(true, "sed -i -e 's/slave_selection_criteria/al_vseelecitcn_oitrreia/' /etc/maxscale.cnf");
+    test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
+                     "Bad router_options should be detected.\n");
+    test->ssh_maxscale(true, "cp /etc/maxscale.cnf.backup /etc/maxscale.cnf");
+
+    /** Configure bad filter parameter */
+    test->ssh_maxscale(true, "sed -i -e 's/filebase/basefile/' /etc/maxscale.cnf");
+    test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
+                     "Bad filter parameter should be detected.\n");
+
+    /** Remove configuration file */
+    test->ssh_maxscale(true, "rm /etc/maxscale.cnf");
+    test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
+                     "Missing configuration file should be detected.\n");
 
     test->copy_all_logs();
     return test->global_result;
