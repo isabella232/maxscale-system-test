@@ -319,6 +319,8 @@ add_test_executable(mxs621_unreadable_cnf.cpp mxs621_unreadable_cnf replication)
 add_test_executable(mxs720_line_with_no_equal.cpp mxs720_line_with_no_equal mxs720_line_with_no_equal)
 add_test_executable(mxs720_wierd_line.cpp mxs720_wierd_line mxs720_wierd_line)
 
+add_test_executable(mxs729_maxadmin.cpp mxs729_maxadmin replication)
+
 
 # Python based tests
 add_test_script(mxs585.py replication)
