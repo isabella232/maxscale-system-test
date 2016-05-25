@@ -320,7 +320,7 @@ add_test_executable(mxs720_line_with_no_equal.cpp mxs720_line_with_no_equal mxs7
 add_test_executable(mxs720_wierd_line.cpp mxs720_wierd_line mxs720_wierd_line)
 
 add_test_executable(mxs729_maxadmin.cpp mxs729_maxadmin replication)
-
+add_test_executable(mxs710_bad_socket.cpp mxs710_bad_socket mxs710_bad_socket)
 
 # Python based tests
 add_test_script(mxs585.py replication)
