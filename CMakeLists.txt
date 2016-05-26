@@ -322,6 +322,8 @@ add_test_executable(mxs720_wierd_line.cpp mxs720_wierd_line mxs720_wierd_line)
 add_test_executable(mxs729_maxadmin.cpp mxs729_maxadmin replication)
 add_test_executable(mxs710_bad_socket.cpp mxs710_bad_socket mxs710_bad_socket)
 add_test_script(mxs711_two_ports mxs711_two_ports)
+add_test_executable(mxs682_cyrillic.cpp mxs682_cyrillic replication)
+add_test_script(mxs682_cyrillic_galera galera)
 
 # Python based tests
 add_test_script(mxs585.py replication)

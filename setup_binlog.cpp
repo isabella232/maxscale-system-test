@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
     }
 
     Test->check_log_err("SET NAMES utf8mb4", FALSE);
+    Test->check_log_err("set autocommit=1", FALSE);
+    Test->check_log_err("select USER()", FALSE);
 
     Test->copy_all_logs(); return(Test->global_result);
 }
