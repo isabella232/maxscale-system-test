@@ -284,6 +284,7 @@ add_test_executable(fwf_syntax.cpp fwf_syntax fwf_syntax)
 # enable after fixing MXS-419
 # add_test_executable(mxs419_lots_of_connections.cpp mxs419_lots_of_connections replication)
 add_test_executable(mxs37_table_privilege.cpp mxs37_table_privilege replication)
+add_test_script(mxs37_table_privilege_galera galera)
 
 add_test_executable(different_size_rwsplit.cpp different_size_rwsplit replication)
 set_tests_properties(different_size_rwsplit PROPERTIES TIMEOUT 3600)
