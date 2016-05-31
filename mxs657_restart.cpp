@@ -21,7 +21,7 @@ int exit_flag = 0;
 int start_flag = 0;
 int restart_flag = 0; // 0 - maxadmin restart service, 1 - restart maxscale
 unsigned int old_slave;
-void *restart_thread( void *ptr );
+void *kill_vm_thread( void *ptr );
 
 int main(int argc, char *argv[])
 {
@@ -35,22 +35,25 @@ int main(int argc, char *argv[])
 
     Test->set_timeout(2000);
 
-    check_iret = pthread_create( &restart_t, NULL, restart_thread, NULL);
+    check_iret = pthread_create( &restart_t, NULL, kill_vm_thread, NULL);
 
+    int iter = 1000;
+    if (Test->smoke) {iter = 100;}
 
-    /*for (i = 0; i < 1000; i++)
+    for (i = 0; i < iter; i++)
     {
         Test->tprintf("i= %d\n", i);
         Test->connect_maxscale();
-        for (j = 0; j < 1000; j++)
+        for (j = 0; j < iter; j++)
         {
             execute_query_silent(Test->conn_rwsplit, "SELECT 1");
 
         }
         Test->close_maxscale_connections();
-        if (i > 500) { restart_flag = 1; }
-    }*/
+        if (i > iter) { restart_flag = 1; }
+    }
 
+    restart_flag = 0;
 
     long int selects[256];
     long int inserts[256];
@@ -70,11 +73,11 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating query load with %d threads and use maxadmin service restart...\n", threads_num);
     Test->set_timeout(1200);
-    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, FALSE, TRUE);
+    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, FALSE, FALSE);
     restart_flag = 1;
     Test->set_timeout(1200);
     Test->tprintf("Creating query load with %d threads and restart maxscalen", threads_num);
-    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, FALSE, TRUE);
+    load(&new_inserts[0], &new_selects[0], &selects[0], &inserts[0], threads_num, Test, &i1, &i2, 1, FALSE, FALSE);
 
     Test->tprintf("Exiting ...\n");
     exit_flag = 1;
@@ -89,7 +92,7 @@ int main(int argc, char *argv[])
 }
 
 
-void *restart_thread( void *ptr )
+void *kill_vm_thread( void *ptr )
 {
     while (exit_flag == 0)
     {
