@@ -325,6 +325,7 @@ add_test_executable(mxs710_bad_socket.cpp mxs710_bad_socket mxs710_bad_socket)
 add_test_script(mxs711_two_ports mxs711_two_ports)
 add_test_executable(mxs682_cyrillic.cpp mxs682_cyrillic replication)
 add_test_script(mxs682_cyrillic_galera galera)
+add_test_executable(mxs657_restart.cpp mxs657_restart replication)
 
 # Python based tests
 add_test_script(mxs585.py replication)
