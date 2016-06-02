@@ -10,6 +10,7 @@
 [maxscale]
 threads=###threads###
 log_warning=1
+query_classifier_args=log_unrecognized_statements=3
 
 # Define a monitor that can be used to determine the state and role of
 # the servers.
