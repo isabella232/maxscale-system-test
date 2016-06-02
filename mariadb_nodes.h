@@ -146,10 +146,20 @@ public:
     * @brief v51 true indicates that ione backed is 5.1
     */
     bool v51;
+
+    /**
+    * @brief test_dir path to test application
+    */
+   char test_dir[4096];
+
+    /**
+     * @brief connect Open MariaDB connections to all nodes
+     * @return 0 if success
+     */
     int connect();
     /**
      * @brief  close connections which were previously opened by Connect()
-     * @return
+     * @return 0
      */
     int close_connections();
     /**
@@ -378,6 +388,27 @@ public:
      * @return 0 if success
      */
     int truncate_mariadb_logs();
+
+    /**
+     * @brief configure_ssl Modifies my.cnf in order to enable ssl, redefine access user to require ssl
+     * @return 0 if success
+     */
+    int configure_ssl();
+
+    /**
+     * @brief disable_ssl Modifies my.cnf in order to get rid of ssl, redefine access user to allow connections without ssl
+     * @return 0 if success
+     */
+    int disable_ssl();
+
+    /**
+     * @brief Copy a local file to the Node i machine
+     * @param src Source file on the local filesystem
+     * @param dest Destination file on the MaxScale machine's file system
+     * @param i Node index
+     * @return exit code of the system command or 1 in case of i > N
+     */
+    int copy_to_node(char* src, char* dest, int i);
 };
 
 #endif // MARIADB_NODES_H

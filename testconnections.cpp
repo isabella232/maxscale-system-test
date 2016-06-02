@@ -25,6 +25,8 @@ TestConnections::TestConnections(int argc, char *argv[])
     strcpy(short_path, dirname(argv[0]));
     realpath(short_path, test_dir);
     printf("test_dir is %s\n", test_dir);
+    strcpy(repl->test_dir, test_dir);
+    strcpy(galera->test_dir, test_dir);
     sprintf(get_logs_command, "%s/get_logs.sh", test_dir);
 
     no_maxscale_stop = false;
@@ -99,6 +101,13 @@ TestConnections::TestConnections(int argc, char *argv[])
     repl->truncate_mariadb_logs();
     galera->truncate_mariadb_logs();
 
+    if (backend_ssl)
+    {
+        tprintf("Configuring backends for ssl \n");
+        repl->configure_ssl();
+        //galera->configure_ssl();
+    }
+
     if (!no_nodes_check) {
         //  checking all nodes and restart if needed
         repl->unblock_all_nodes();
@@ -134,6 +143,15 @@ TestConnections::TestConnections(int argc, char *argv[])
     pthread_create( &timeout_thread_p, NULL, timeout_thread, this);
     pthread_create( &log_copy_thread_p, NULL, log_copy_thread, this);
     gettimeofday(&start_time, NULL);
+}
+
+TestConnections::~TestConnections()
+{
+    if (backend_ssl)
+    {
+        repl->disable_ssl();
+        //galera->disable_ssl();
+    }
 }
 
 TestConnections::TestConnections()
@@ -206,6 +224,8 @@ int TestConnections::read_env()
     env = getenv("mysql51_only"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_nodes_check = true;}
 
     env = getenv("maxscale_hostname"); if (env != NULL) {sprintf(maxscale_hostname, "%s", env);} else {sprintf(maxscale_hostname, "%s", maxscale_IP);}
+
+    env = getenv("backend_ssl"); if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {backend_ssl = true;} else {backend_ssl = false;}
 
     if (strcmp(maxscale_access_user, "root") == 0) {
         sprintf(maxscale_access_homedir, "/%s/", maxscale_access_user);

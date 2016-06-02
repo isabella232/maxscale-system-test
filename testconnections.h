@@ -43,6 +43,8 @@ public:
      */
     TestConnections();
 
+    ~TestConnections();
+
     /**
      * @brief global_result Result of test, 0 if PASSED
      */
@@ -225,6 +227,11 @@ public:
      * @brief ssl if true ssl  will be used
      */
     int ssl;
+
+    /**
+     * @brief backend_ssl if true ssl configuratio for all servers will be added
+     */
+    bool backend_ssl;
 
     /**
      * @brief timeout seconds until test termination

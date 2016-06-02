@@ -36,6 +36,10 @@ if [ $? -ne 0 ] ; then
 	exit 1
 fi
 
+if [ "$backend_ssl" == "yes" ] ; then
+	sed -i "s|type=server|type=server\nssl=required\nssl_version=TLSv12\nssl_cert=/###access_homedir###/certs/client-cert.pem\nssl_key=/###access_homedir###/certs/client-key.pem\nssl_ca_cert=/###access_homedir###/certs/ca.pem|g" MaxScale.cnf
+fi
+
 sed -i "s/###threads###/$threads/"  MaxScale.cnf
 
 #if [ "x$mysql51_only" == "xyes" ] ; then

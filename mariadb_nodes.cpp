@@ -657,3 +657,67 @@ int Mariadb_nodes::truncate_mariadb_logs()
     }
     return local_result;
 }
+
+int Mariadb_nodes::configure_ssl()
+{
+    int local_result = 0;
+    char str[1024];
+
+    for (int i = 0; i < N; i++)
+    {
+        printf("Node %d\n", i);
+        stop_node(i);
+        sprintf(str, "%s/ssl-cert", test_dir);
+        local_result += copy_to_node(str, (char *) "~/", i);
+        sprintf(str, "%s/ssl.cnf", test_dir);
+        local_result += copy_to_node(str, (char *) "~/", i);
+        local_result += ssh_node(i, (char *) "cp ~/ssl.cnf /etc/my.cnf.d/", TRUE);
+        local_result += ssh_node(i, (char *) "cp -r ~/ssl-cert /etc/", TRUE);
+        local_result += ssh_node(i,  (char *) "chown mysql:mysql -R /etc/ssl-cert", TRUE);
+        start_node(i,  (char *) "");
+    }
+
+    local_result += connect();
+    sprintf(str, "DROP USER %s;  grant all privileges on *.*  to '%s'@'%%' identified by '%s' require ssl;", user_name, user_name, password);
+    printf("Set user to require ssl: %s\n", str);
+    local_result += execute_query(nodes[0], str);
+    close_connections();
+
+    return local_result;
+}
+
+int Mariadb_nodes::disable_ssl()
+{
+    int local_result = 0;
+    char str[1024];
+
+    local_result += connect();
+    sprintf(str, "DROP USER %s;  grant all privileges on *.*  to '%s'@'%%' identified by '%s';", user_name, user_name, password);
+    local_result += execute_query(nodes[0], (char *) "");
+    close_connections();
+
+    for (int i = 0; i < N; i++)
+    {
+        stop_node(i);
+        local_result += ssh_node(i, (char *) "rm /etc/my.cnf.d/ssl.cnf", TRUE);
+        start_node(i,  (char *) "");
+    }
+
+    return local_result;
+}
+
+int Mariadb_nodes::copy_to_node(char* src, char* dest, int i)
+{
+    if (i >= N)
+    {
+        return 1;
+    }
+    char sys[strlen(src) + strlen(dest) + 1024];
+
+    sprintf(sys, "scp -r -i %s -o UserKnownHostsFile=/dev/null "
+            "-o StrictHostKeyChecking=no -o LogLevel=quiet %s %s@%s:%s",
+            sshkey[i], src, access_user[i], IP[i], dest);
+    printf("%s\n", sys);
+
+    return system(sys);
+}

@@ -60,3 +60,4 @@ System level tests for MaxScale
 |sysbench_dir|directory where Sysbanch is installed|
 |ssl|'yes' if tests should try to use ssl to connect to Maxscale and to backends (obsolete, now should be 'yes' in all cases)|
 |smoke|if 'yes' all tests are executed in 'quick' mode (less iterations, skip heavy operations)|
+|backend_ssl|if 'yes' ssl config will be added to all servers definition in maxscale.cnf|
