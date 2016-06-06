@@ -6,7 +6,7 @@ test1 = maxpython.MaxScaleTest("mxs598")
 
 print("Connecting to MaxScale")
 for i in test1.maxscale.values():
-    i.connect()
+    i.connect("useSSL=true&requireSSL=true&verifyServerCert=false")
 
 print("Trying 100 simple transactions on all services")
 for i in range(0,100):
