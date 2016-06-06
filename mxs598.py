@@ -4,9 +4,11 @@ import maxpython
 
 test1 = maxpython.MaxScaleTest("mxs598")
 
+print("Connecting to MaxScale")
 for i in test1.maxscale.values():
     i.connect()
 
+print("Trying 100 simple transactions on all services")
 for i in range(0,100):
     for x in test1.maxscale.values():
         x.begin()
@@ -14,5 +16,6 @@ for i in range(0,100):
         x.query("select * from test.t1")
         x.commit()
 
+print("Closing connections")
 for i in test1.maxscale.values():
     i.disconnect()
