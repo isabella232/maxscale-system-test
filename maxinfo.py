@@ -7,7 +7,7 @@ import subprocess
 
 # Start MaxScale
 
-subprocess.call(["./non_native_setup", "replication"])
+subprocess.call(["./non_native_setup", "maxinfo"])
 
 # Test all Maxinfo HTTP entry points
 entry_points = ["/services",
