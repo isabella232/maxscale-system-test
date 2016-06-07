@@ -1,8 +1,13 @@
-#!/bin/python3
+#!/usr/bin/python3
 
 import http.client
 import os
 import json
+import subprocess
+
+# Start MaxScale
+
+subprocess.call(["./non_native_setup", "maxinfo"])
 
 # Test all Maxinfo HTTP entry points
 entry_points = ["/services",

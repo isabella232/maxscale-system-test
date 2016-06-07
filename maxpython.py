@@ -13,8 +13,8 @@ class SQLConnection:
         self.password = str(password)
 
     # Connect to a server
-    def connect(self):
-        self.conn = jaydebeapi.connect("org.mariadb.jdbc.Driver", ["jdbc:mariadb://" + self.host + ":" + self.port, self.user, self.password],"./maxscale/java/mariadb-java-client-1.3.3.jar")
+    def connect(self, options = ""):
+        self.conn = jaydebeapi.connect("org.mariadb.jdbc.Driver", ["jdbc:mariadb://" + self.host + ":" + self.port + "/test?" + options, self.user, self.password],"./maxscale/java/mariadb-java-client-1.3.3.jar")
 
     # Start a transaction
     def begin(self):
