@@ -597,6 +597,7 @@ int Mariadb_nodes::ssh_node(int node, char * ssh, bool sudo)
 {
     char sys[strlen(ssh) + 1024];
     generate_ssh_cmd(sys, node, ssh, sudo);
+    //printf("sys: %s\n", sys);
     return(system(sys));
 }
 
@@ -677,11 +678,14 @@ int Mariadb_nodes::configure_ssl()
         start_node(i,  (char *) "");
     }
 
-    local_result += connect();
-    sprintf(str, "DROP USER %s;  grant all privileges on *.*  to '%s'@'%%' identified by '%s' require ssl;", user_name, user_name, password);
+    // Create DB user on firs node
     printf("Set user to require ssl: %s\n", str);
-    local_result += execute_query(nodes[0], str);
-    close_connections();
+    sprintf(str, "%s/create_user_ssl.sh", test_dir);
+    copy_to_node(str, (char *) "~/", 0);
+
+    sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user_ssl.sh", user_name, password);
+    printf("cmd: %s\n", str);
+    ssh_node(0, str, FALSE);
 
     return local_result;
 }

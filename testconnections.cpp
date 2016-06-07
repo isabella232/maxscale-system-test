@@ -7,6 +7,7 @@
 
 TestConnections::TestConnections(int argc, char *argv[])
 {
+    char str[1024];
     galera = new Mariadb_nodes((char *)"galera");
     repl   = new Mariadb_nodes((char *)"repl");
 
@@ -101,12 +102,20 @@ TestConnections::TestConnections(int argc, char *argv[])
     repl->truncate_mariadb_logs();
     galera->truncate_mariadb_logs();
 
-    if (backend_ssl)
-    {
-        tprintf("Configuring backends for ssl \n");
-        repl->configure_ssl();
-        //galera->configure_ssl();
-    }
+    // Create DB user on master and on first Galera node
+    sprintf(str, "%s/create_user.sh", test_dir);
+    repl->copy_to_node(str, (char *) "~/", 0);
+    sprintf(str, "%s/create_user_galera.sh", test_dir);
+    galera->copy_to_node(str, (char *) "~/", 0);
+
+    sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user.sh", repl->user_name, repl->password);
+    tprintf("cmd: %s\n", str);
+    repl->ssh_node(0, str, FALSE);
+
+    sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", galera->user_name, galera->password);
+    galera->ssh_node(0, str, FALSE);
+
+
 
     if (!no_nodes_check) {
         //  checking all nodes and restart if needed
@@ -137,6 +146,15 @@ TestConnections::TestConnections(int argc, char *argv[])
         }
     }
     //repl->start_replication();
+    if (backend_ssl)
+    {
+        tprintf("Configuring backends for ssl \n");
+        repl->configure_ssl();
+        ssl = TRUE;
+        repl->ssl = TRUE;
+        //galera->configure_ssl();
+        galera->ssl = TRUE;
+    }
     if (!no_maxscale_start) {init_maxscale();}
     timeout = 999999999;
     set_log_copy_interval(999999999);
