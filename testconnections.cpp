@@ -115,8 +115,6 @@ TestConnections::TestConnections(int argc, char *argv[])
     sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", galera->user_name, galera->password);
     galera->ssh_node(0, str, FALSE);
 
-
-
     if (!no_nodes_check) {
         //  checking all nodes and restart if needed
         repl->unblock_all_nodes();
@@ -155,6 +153,9 @@ TestConnections::TestConnections(int argc, char *argv[])
         repl->ssl = TRUE;
         //galera->configure_ssl();
         galera->ssl = TRUE;
+        tprintf("Restarting Maxscale\n");
+        restart_maxscale();
+        tprintf("Restarting Maxscale again\n");
         restart_maxscale();
     }
     timeout = 999999999;
