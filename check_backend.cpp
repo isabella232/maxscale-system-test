@@ -11,6 +11,8 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(10);
 
+
+
     Test->tprintf("Connecting to Maxscale routers with Master/Slave backend\n");
     Test->connect_maxscale();
     Test->tprintf("Testing connections\n");

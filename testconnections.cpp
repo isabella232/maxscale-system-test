@@ -146,6 +146,7 @@ TestConnections::TestConnections(int argc, char *argv[])
         }
     }
     //repl->start_replication();
+    if (!no_maxscale_start) {init_maxscale();}
     if (backend_ssl)
     {
         tprintf("Configuring backends for ssl \n");
@@ -154,8 +155,8 @@ TestConnections::TestConnections(int argc, char *argv[])
         repl->ssl = TRUE;
         //galera->configure_ssl();
         galera->ssl = TRUE;
+        restart_maxscale();
     }
-    if (!no_maxscale_start) {init_maxscale();}
     timeout = 999999999;
     set_log_copy_interval(999999999);
     pthread_create( &timeout_thread_p, NULL, timeout_thread, this);
