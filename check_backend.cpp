@@ -9,6 +9,9 @@
 int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
+
+    Test->restart_maxscale();
+    sleep(5);
     Test->set_timeout(10);
 
 
@@ -29,7 +32,7 @@ int main(int argc, char *argv[])
     Test->check_maxscale_alive();
 
     Test->tprintf("Maxscale_full_version_start:");
-    Test->ssh_maxscale(FALSE, "maxscale --version-full");
+    Test->ssh_maxscale(FALSE, "maxscale --version-full"); fflush(stdout);
     Test->tprintf("Maxscale_full_version_end:");
 
     Test->copy_all_logs(); return(Test->global_result);
