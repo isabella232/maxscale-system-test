@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
 
-    Test->restart_maxscale();
-    sleep(5);
+    /*Test->restart_maxscale();
+    sleep(5);*/
     Test->set_timeout(10);
 
 

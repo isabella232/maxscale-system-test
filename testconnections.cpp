@@ -153,10 +153,11 @@ TestConnections::TestConnections(int argc, char *argv[])
         repl->ssl = TRUE;
         galera->configure_ssl(FALSE);
         galera->ssl = TRUE;
-        tprintf("Restarting Maxscale\n");
+        galera->start_galera();
+        /*tprintf("Restarting Maxscale\n");
         restart_maxscale();
         tprintf("Restarting Maxscale again\n");
-        restart_maxscale();
+        restart_maxscale();*/
     }
     timeout = 999999999;
     set_log_copy_interval(999999999);
