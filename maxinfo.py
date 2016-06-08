@@ -4,9 +4,19 @@ import http.client
 import os
 import json
 import subprocess
-import maxpython
 
-maxpython.prepare_test("maxinfo")
+# Needs to be declared here to allow Python 3 modules to be used
+def prepare_test(testname = "replication"):
+    subprocess.call(os.getcwd() + "/non_native_setup " + str(testname), shell=True)
+
+    envfile = open("test.environment")
+
+    for var in envfile.readlines():
+        part = var.partition("=")
+        if part[0] not in os.environ:
+            os.putenv(part[0], part[2])
+
+prepare_test("maxinfo")
 
 # Test all Maxinfo HTTP entry points
 entry_points = ["/services",
