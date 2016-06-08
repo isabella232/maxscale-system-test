@@ -659,7 +659,7 @@ int Mariadb_nodes::truncate_mariadb_logs()
     return local_result;
 }
 
-int Mariadb_nodes::configure_ssl()
+int Mariadb_nodes::configure_ssl(bool require)
 {
     int local_result = 0;
     char str[1024];
@@ -678,14 +678,16 @@ int Mariadb_nodes::configure_ssl()
         start_node(i,  (char *) "");
     }
 
-    // Create DB user on firs node
-    printf("Set user to require ssl: %s\n", str);
-    sprintf(str, "%s/create_user_ssl.sh", test_dir);
-    copy_to_node(str, (char *) "~/", 0);
+    if (require) {
+        // Create DB user on first node
+        printf("Set user to require ssl: %s\n", str);
+        sprintf(str, "%s/create_user_ssl.sh", test_dir);
+        copy_to_node(str, (char *) "~/", 0);
 
-    sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user_ssl.sh", user_name, password);
-    printf("cmd: %s\n", str);
-    ssh_node(0, str, FALSE);
+        sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user_ssl.sh", user_name, password);
+        printf("cmd: %s\n", str);
+        ssh_node(0, str, FALSE);
+    }
 
     return local_result;
 }

@@ -148,10 +148,10 @@ TestConnections::TestConnections(int argc, char *argv[])
     if (backend_ssl)
     {
         tprintf("Configuring backends for ssl \n");
-        repl->configure_ssl();
+        repl->configure_ssl(TRUE);
         ssl = TRUE;
         repl->ssl = TRUE;
-        //galera->configure_ssl();
+        galera->configure_ssl(FALSE);
         galera->ssl = TRUE;
         tprintf("Restarting Maxscale\n");
         restart_maxscale();

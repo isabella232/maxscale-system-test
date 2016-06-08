@@ -393,7 +393,7 @@ public:
      * @brief configure_ssl Modifies my.cnf in order to enable ssl, redefine access user to require ssl
      * @return 0 if success
      */
-    int configure_ssl();
+    int configure_ssl(bool require);
 
     /**
      * @brief disable_ssl Modifies my.cnf in order to get rid of ssl, redefine access user to allow connections without ssl
