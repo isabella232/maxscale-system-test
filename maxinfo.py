@@ -5,9 +5,18 @@ import os
 import json
 import subprocess
 
-# Start MaxScale
+# Needs to be declared here to allow Python 3 modules to be used
+def prepare_test(testname = "replication"):
+    subprocess.call(os.getcwd() + "/non_native_setup " + str(testname), shell=True)
 
-subprocess.call(["./non_native_setup", "maxinfo"])
+    envfile = open("test.environment")
+
+    for var in envfile.readlines():
+        part = var.partition("=")
+        if part[0] not in os.environ:
+            os.putenv(part[0], part[2])
+
+prepare_test("maxinfo")
 
 # Test all Maxinfo HTTP entry points
 entry_points = ["/services",

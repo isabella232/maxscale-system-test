@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
                      "Bad parameter name should be detected.\n");
     test->ssh_maxscale(true, "cp /etc/maxscale.cnf.backup /etc/maxscale.cnf");
 
-    /** Set slave_selection_criteria to a bad value */
-    test->ssh_maxscale(true, "sed -i -e 's/slave_selection_criteria/al_vseelecitcn_oitrreia/' /etc/maxscale.cnf");
+    /** Set router_options to a bad value */
+    test->ssh_maxscale(true, "sed -i -e 's/router_options.*/router_options=bad_option=true/' /etc/maxscale.cnf");
     test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale "),
                      "Bad router_options should be detected.\n");
     test->ssh_maxscale(true, "cp /etc/maxscale.cnf.backup /etc/maxscale.cnf");
