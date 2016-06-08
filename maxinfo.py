@@ -4,10 +4,9 @@ import http.client
 import os
 import json
 import subprocess
+import maxpython
 
-# Start MaxScale
-
-subprocess.call(["./non_native_setup", "maxinfo"])
+maxpython.prepare_test("maxinfo")
 
 # Test all Maxinfo HTTP entry points
 entry_points = ["/services",

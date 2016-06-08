@@ -51,13 +51,8 @@ class SQLConnection:
 # Test environment abstraction
 class MaxScaleTest:
     def __init__(self, testname = "python_test"):
-        subprocess.call(os.getcwd() + "/non_native_setup " + str(testname), shell=True)
-        envfile = open("test.environment")
 
-        for var in envfile.readlines():
-            part = var.partition("=")
-            if part[0] not in os.environ:
-                os.putenv(part[0], part[2])
+        prepare_test(testname)
 
         # MaxScale connections
         self.maxscale = dict()
@@ -78,3 +73,14 @@ class MaxScaleTest:
         self.galera['node1'] = SQLConnection(host = os.getenv("galera_001"), port = os.getenv("galera_port_001"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
         self.galera['node2'] = SQLConnection(host = os.getenv("galera_002"), port = os.getenv("galera_port_002"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
         self.galera['node3'] = SQLConnection(host = os.getenv("galera_003"), port = os.getenv("galera_port_003"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+
+# Read test environment variables
+def prepare_test(testname = "replication"):
+    subprocess.call(os.getcwd() + "/non_native_setup " + str(testname), shell=True)
+
+    envfile = open("test.environment")
+
+    for var in envfile.readlines():
+        part = var.partition("=")
+        if part[0] not in os.environ:
+            os.putenv(part[0], part[2])
