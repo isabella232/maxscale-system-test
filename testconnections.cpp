@@ -16,6 +16,10 @@ TestConnections::TestConnections(int argc, char *argv[])
     rwsplit_port = 4006;
     readconn_master_port = 4008;
     readconn_slave_port = 4009;
+    ports[0] = rwsplit_port;
+    ports[1] = readconn_master_port;
+    ports[2] = readconn_slave_port;
+
     binlog_port = 5306;
 
     global_result = 0;
@@ -185,6 +189,9 @@ TestConnections::TestConnections()
     rwsplit_port = 4006;
     readconn_master_port = 4008;
     readconn_slave_port = 4009;
+    ports[0] = rwsplit_port;
+    ports[1] = readconn_master_port;
+    ports[2] = readconn_slave_port;
 
     read_env();
 

@@ -96,6 +96,11 @@ public:
     MYSQL *routers[3];
 
     /**
+     * @brief ports of 3 int which contains copies of rwsplit_port, readconn_master_port, readconn_slave_port
+     */
+    int ports[3];
+
+    /**
      * @brief galera Mariadb_nodes object containing references to Galera setuo
      */
     Mariadb_nodes * galera;

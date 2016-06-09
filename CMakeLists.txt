@@ -327,6 +327,7 @@ add_test_executable(mxs682_cyrillic.cpp mxs682_cyrillic replication)
 add_test_script(mxs682_cyrillic_galera galera)
 add_test_executable(mxs657_restart.cpp mxs657_restart replication)
 add_test_executable(show_monitor_crash.cpp show_monitor_crash show_monitor_crash)
+add_test_executable(connection_limit.cpp connection_limit connection_limit)
 
 # Python based tests
 add_test_script(mxs585.py replication)
