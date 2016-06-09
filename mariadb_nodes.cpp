@@ -231,9 +231,23 @@ int Mariadb_nodes::start_replication()
     printf("Starting back Master\n"); fflush(stdout);
     local_result += start_node(0, (char *) ""); fflush(stdout);
 
+    sprintf(str, "%s/create_user.sh", test_dir);
+    copy_to_node(str, (char *) "~/", 0);
+
+    sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user.sh", user_name, password);
+    printf("cmd: %s\n", str);
+    ssh_node(0, str, FALSE);
+
     for (i = 1; i < N; i++) {
         printf("Starting node %d\n", i); fflush(stdout);
         local_result += start_node(i, (char *) ""); fflush(stdout);
+
+        sprintf(str, "%s/create_user.sh", test_dir);
+        copy_to_node(str, (char *) "~/", i);
+
+        sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user.sh", user_name, password);
+        printf("cmd: %s\n", str);
+        ssh_node(i, str, FALSE);
     }
     sleep(5);
 
@@ -260,12 +274,19 @@ int Mariadb_nodes::start_replication()
 int Mariadb_nodes::start_galera()
 {
     char sys1[4096];
+    char str[1024];
     int i;
     int local_result = 0;
     local_result += stop_nodes();
 
     printf("Starting new Galera cluster\n");  fflush(stdout);
     local_result += start_node(0, (char *) " --wsrep-cluster-address=gcomm://");
+
+    sprintf(str, "%s/create_user_galera.sh", test_dir);
+    copy_to_node(str, (char *) "~/", 0);
+
+    sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", user_name, password);
+    ssh_node(0, str, FALSE);
 
     for (i = 1; i < N; i++) {
         printf("Starting node %d\n", i); fflush(stdout);

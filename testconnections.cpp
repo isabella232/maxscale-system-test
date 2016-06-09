@@ -107,17 +107,17 @@ TestConnections::TestConnections(int argc, char *argv[])
     galera->truncate_mariadb_logs();
 
     // Create DB user on master and on first Galera node
-    sprintf(str, "%s/create_user.sh", test_dir);
-    repl->copy_to_node(str, (char *) "~/", 0);
-    sprintf(str, "%s/create_user_galera.sh", test_dir);
-    galera->copy_to_node(str, (char *) "~/", 0);
+    //sprintf(str, "%s/create_user.sh", test_dir);
+    //repl->copy_to_node(str, (char *) "~/", 0);
+    //sprintf(str, "%s/create_user_galera.sh", test_dir);
+    //galera->copy_to_node(str, (char *) "~/", 0);
 
-    sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user.sh", repl->user_name, repl->password);
-    tprintf("cmd: %s\n", str);
-    repl->ssh_node(0, str, FALSE);
+    //sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user.sh", repl->user_name, repl->password);
+    //tprintf("cmd: %s\n", str);
+    //repl->ssh_node(0, str, FALSE);
 
-    sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", galera->user_name, galera->password);
-    galera->ssh_node(0, str, FALSE);
+    //sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", galera->user_name, galera->password);
+    //galera->ssh_node(0, str, FALSE);
 
     if (!no_nodes_check) {
         //  checking all nodes and restart if needed
