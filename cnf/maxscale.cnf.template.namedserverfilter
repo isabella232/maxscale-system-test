@@ -13,7 +13,7 @@ type=monitor
 module=mysqlmon
 ###repl51###
 servers=server1,server2,server3,server4
-user=skysql
+user=maxskysql
 passwd=skysql
 monitor_interval=1000
 
@@ -21,7 +21,7 @@ monitor_interval=1000
 type=service
 router=readwritesplit
 servers=server1,server2,server3,server4
-user=skysql
+user=maxskysql
 passwd=skysql
 filters=namedserverfilter
 
@@ -30,7 +30,7 @@ type=service
 router=readconnroute
 router_options=slave
 servers=server1,server2,server3,server4
-user=skysql
+user=maxskysql
 passwd=skysql
 
 [Read Connection Router Master]
@@ -38,7 +38,7 @@ type=service
 router=readconnroute
 router_options=master
 servers=server1,server2,server3,server4
-user=skysql
+user=maxskysql
 passwd=skysql
 
 [RW Split Listener]
