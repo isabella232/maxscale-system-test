@@ -14,7 +14,7 @@ macro(check_deps)
   find_library(MYSQL_CLIENT mariadbclient mysqlclient PATH_SUFFIXES mysql mariadb)
 
   # Check for libraries MaxScale depends on
-  set(MAXSCALE_DEPS z crypt nsl m pthread ssl crypto dl rt)
+  set(MAXSCALE_DEPS z crypt nsl m pthread ssl crypto dl rt jansson)
   foreach(lib ${MAXSCALE_DEPS})
     find_library(lib${lib} ${lib})
     if((DEFINED lib${lib}) AND (${lib${lib}} MATCHES "NOTFOUND"))

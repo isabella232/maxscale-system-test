@@ -1,4 +1,4 @@
-# libssl-dev libmariadbclient-dev php5 perl coreutils realpath
+# libssl-dev libmariadbclient-dev php5 perl coreutils realpath libjansson-dev
 project(maxscale_system_test)
 cmake_minimum_required(VERSION 2.8)
 
@@ -43,7 +43,7 @@ add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp config_check.c
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
   different_size.cpp fw_copy_rules)
-target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt)
+target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 
 # This functions adds a source file as an executable, links that file against
