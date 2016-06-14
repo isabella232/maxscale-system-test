@@ -315,6 +315,7 @@ set_tests_properties(binlog_semisync_txs0_ss0 PROPERTIES TIMEOUT 3600)
 add_test_executable(stale_slaves.cpp stale_slaves replication)
 add_test_executable(rwsplit_readonly.cpp rwsplit_readonly rwsplit_readonly)
 add_test_executable(rwsplit_readonly_stress.cpp rwsplit_readonly_stress rwsplit_readonly)
+set_tests_properties(rwsplit_readonly_stress PROPERTIES TIMEOUT 3600)
 
 add_test_executable(mxs621_unreadable_cnf.cpp mxs621_unreadable_cnf replication)
 add_test_executable(mxs720_line_with_no_equal.cpp mxs720_line_with_no_equal mxs720_line_with_no_equal)

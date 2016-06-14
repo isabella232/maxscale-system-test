@@ -14,6 +14,7 @@
 using namespace std;
 void *query_thread1( void *ptr );
 TestConnections * Test;
+bool exit_flag = false;
 
 int main(int argc, char *argv[])
 {
@@ -25,10 +26,13 @@ int main(int argc, char *argv[])
     pthread_t thread1[threads_num];
 
     int  iret1[threads_num];
+    int i;
 
-    for (int i = 0; i < threads_num; i++) {
+    for (i = 0; i < threads_num; i++) {
         iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, NULL);
     }
+
+    Test->tprintf("Trying to shutdown and restart RW Split router in the loop\n");
 
     if (Test->smoke)
     {
@@ -37,6 +41,16 @@ int main(int argc, char *argv[])
         sleep(1200);
     }
 
+    Test->tprintf("Done, exiting threads\n\n");
+
+    exit_flag = true;
+    for (int i = 0; i < threads_num; i++) {
+        pthread_join(thread1[i], NULL);
+    }
+
+    Test->tprintf("Done!\n");
+
+    sleep(5);
 
     Test->check_maxscale_alive();
     Test->check_log_err((char *) "received fatal signal", FALSE);
@@ -45,7 +59,7 @@ int main(int argc, char *argv[])
 
 void *query_thread1( void *ptr )
 {
-    while (TRUE)
+    while (!exit_flag)
     {
         Test->execute_maxadmin_command((char *) "shutdown service \"RW Split Router\"");
         Test->execute_maxadmin_command((char *) "restart service \"RW Split Router\"");
