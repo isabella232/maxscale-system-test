@@ -15,13 +15,20 @@ using namespace std;
 void *query_thread1( void *ptr );
 TestConnections * Test;
 bool exit_flag = false;
+char * shutdown_cmd;
+char * restart_cmd;
 
-int main(int argc, char *argv[])
+char *router_sht = (char *) "shutdown service \"RW Split Router\"";
+char *router_rst = (char *) "restart service \"RW Split Router\"";
+
+char *listener_sht = (char *) "shutdown service \"RW Split Listener\"";
+char *listener_rst = (char *) "restart service \"RW Split Listener\"";
+
+char *monitor_sht = (char *) "shutdown service \"MySQL Monitor\"";
+char *monitor_rst = (char *) "restart service \"MySQL Monitor\"";
+
+void sht_rst_service()
 {
-    Test = new TestConnections(argc, argv);
-
-    Test->set_timeout(3000);
-
     int threads_num = 1000;
     pthread_t thread1[threads_num];
 
@@ -49,6 +56,34 @@ int main(int argc, char *argv[])
     }
 
     Test->tprintf("Done!\n");
+}
+
+int main(int argc, char *argv[])
+{
+    Test = new TestConnections(argc, argv);
+
+    Test->set_timeout(3000);
+
+    Test->tprintf("Shutdown and restart Router\n");
+
+    shutdown_cmd = router_sht;
+    restart_cmd = router_rst;
+
+    sht_rst_service();
+
+    Test->tprintf("Shutdown and restart Listener\n");
+
+    shutdown_cmd = listener_sht;
+    restart_cmd = listener_rst;
+
+    sht_rst_service();
+
+    Test->tprintf("Shutdown and restart Monitor\n");
+
+    shutdown_cmd = monitor_sht;
+    restart_cmd = monitor_rst;
+
+    sht_rst_service();
 
     sleep(5);
 
@@ -61,7 +96,7 @@ void *query_thread1( void *ptr )
 {
     while (!exit_flag)
     {
-        Test->execute_maxadmin_command((char *) "shutdown service \"RW Split Router\"");
-        Test->execute_maxadmin_command((char *) "restart service \"RW Split Router\"");
+        Test->execute_maxadmin_command(shutdown_cmd);
+        Test->execute_maxadmin_command(restart_cmd);
     }
 }

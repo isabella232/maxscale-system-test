@@ -327,6 +327,8 @@ add_test_script(mxs711_two_ports mxs711_two_ports)
 add_test_executable(mxs682_cyrillic.cpp mxs682_cyrillic replication)
 add_test_script(mxs682_cyrillic_galera galera)
 add_test_executable(mxs657_restart.cpp mxs657_restart replication)
+set_tests_properties(mxs657_restart PROPERTIES TIMEOUT 4600)
+
 add_test_executable(show_monitor_crash.cpp show_monitor_crash show_monitor_crash)
 add_test_executable(connection_limit.cpp connection_limit connection_limit)
 add_test_executable(avro.cpp avro avro)
@@ -357,6 +359,7 @@ set_tests_properties(max_connections PROPERTIES LABELS "HEAVY")
 set_tests_properties(lots_of_rows PROPERTIES LABELS "HEAVY")
 set_tests_properties(binlog_change_master PROPERTIES LABELS "HEAVY")
 set_tests_properties(rwsplit_readonly_stress PROPERTIES LABELS "HEAVY")
+set_tests_properties(mxs657_restart PROPERTIES LABELS "HEAVY")
 
 # See if we are on a RPM-capable or DEB-capable system
 find_program(RPMBUILD rpmbuild)
