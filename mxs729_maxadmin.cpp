@@ -16,8 +16,8 @@ const char * only_root = "No administration users have been defined.\n";
 const char * user_added = "User %s has been successfully added.\n";
 const char * user_removed = "User %s has been successfully removed.\n";
 const char * root_added = "User root has been successfully added.\n";
-const char * user_and_root = "User names: %s, root\n";
-const char * user_only = "User names: vagrant\n";
+const char * user_and_root = "User names: %s\n";
+const char * user_only = "User names: %s\n";
 
 void add_remove_maxadmin_user(TestConnections* Test)
 {
@@ -47,19 +47,9 @@ void add_remove_maxadmin_user(TestConnections* Test)
 
     Test->tprintf("trying maxadmin with 'root':\n");
     int st5 = Test->ssh_maxscale(TRUE, "maxadmin show users");
-    if (st5 == 0)
+    if (st5 != 0)
     {
-        Test->add_result(1, "User added, but access to MaxAdmin as 'root' is still possible\n");
-    } else {
-        Test->tprintf("OK\n");
-    }
-
-    Test->tprintf("add user 'root':\n");
-    char * st6 = Test->ssh_maxscale_output(FALSE, "maxadmin add user root");
-    Test->tprintf("Result: %s\n", st6);
-    if (strstr(st6, root_added) == NULL)
-    {
-        Test->add_result(1, "There is no proper '%s' message\n", str);
+        Test->add_result(1, "User added and access to MaxAdmin as 'root' became impossible\n");
     } else {
         Test->tprintf("OK\n");
     }
@@ -102,6 +92,7 @@ int main(int argc, char *argv[])
     Test->set_timeout(600);
 
     Test->ssh_maxscale(TRUE, "rm -rf /var/lib/maxscale/passwd");
+    Test->ssh_maxscale(TRUE, "rm -rf /var/lib/maxscale/maxadmin-users");
     Test->restart_maxscale();
 
     Test->tprintf("trying maxadmin without 'root'\n");
@@ -132,6 +123,7 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
     Test->ssh_maxscale(TRUE, "rm -rf /var/lib/maxscale/passwd");
+    Test->ssh_maxscale(TRUE, "rm -rf /var/lib/maxscale/maxadmin-users");
 
     Test->copy_all_logs(); return(Test->global_result);
 }
