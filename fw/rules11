@@ -1,3 +1,2 @@
-rule regex_rule deny regex '^(?i)load.*data.*infile*'
-users %@% match any rules regex_rule
-
+rule no_func deny functions sum avg
+users %@% match any rules no_func
