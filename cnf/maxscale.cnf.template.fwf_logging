@@ -1,4 +1,5 @@
 [maxscale]
+use_ssl_if_enabled=yes/
 threads=###threads###
 
 [server1]

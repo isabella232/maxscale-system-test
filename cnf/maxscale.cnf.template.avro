@@ -8,6 +8,7 @@
 # 	threads=<number of threads>
 
 [maxscale]
+use_ssl_if_enabled=yes/
 threads=###threads###
 log_warning=1
 log_notice=1
