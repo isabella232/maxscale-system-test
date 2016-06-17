@@ -62,8 +62,10 @@ int main(int argc, char *argv[])
     Test->add_result(Test->create_connections(70 , true, true, true, true),
                      "Connections creation error \n");
     //execute_maxadmin_command(Test->maxscale_IP, (char *) "admin", Test->maxadmin_password, (char *) "flush logs");
+    Test->set_timeout(60);
     sleep(15);
 
+    Test->set_timeout(60);
     Test->repl->execute_query_all_nodes((char *) "set global max_connections = 100;");
 
     Test->check_log_err((char *) "fatal signal 11", false);

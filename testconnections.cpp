@@ -892,7 +892,7 @@ int TestConnections::create_connections(int conn_N, bool rwsplit_flag, bool mast
         }
     }
     for (i = 0; i < conn_N; i++) {
-        set_timeout(10);
+        set_timeout(20);
         tprintf("Trying query against %d-connection: ", i+1);
         if (rwsplit_flag)
         {
@@ -919,7 +919,7 @@ int TestConnections::create_connections(int conn_N, bool rwsplit_flag, bool mast
     //global_result += check_pers_conn(Test, pers_conn_expected);
     tprintf("Closing all connections\n");
     for (i=0; i<conn_N; i++) {
-        set_timeout(10);
+        set_timeout(20);
         if (rwsplit_flag) {mysql_close(rwsplit_conn[i]);}
         if (master_flag)  {mysql_close(master_conn[i]);}
         if (slave_flag)   {mysql_close(slave_conn[i]);}

@@ -15,6 +15,7 @@ using namespace std;
 void check_val(MYSQL* conn, TestConnections* Test)
 {
     char val[256];
+    Test->set_timeout(20);
     find_field(conn, "SELECT * FROM t2", "x", val);
 
     Test->tprintf("result: %s\n", val);
@@ -29,7 +30,6 @@ int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(10);
-
 
     Mariadb_nodes * nodes;
     if (strstr(Test->test_name, "galera") != NULL) {
@@ -60,9 +60,10 @@ int main(int argc, char *argv[])
     */
 
     Test->connect_maxscale();
+    Test->set_timeout(10);
     nodes->connect();
 
-
+    Test->set_timeout(10);
     MYSQL * conn = Test->conn_rwsplit;
 
     //Test->try_query(conn, (char *) "set names utf8mb4;");
@@ -71,7 +72,7 @@ int main(int argc, char *argv[])
     char sql[256];
     sprintf(sql, "INSERT INTO t2 VALUES (\"Кот\");");
     Test->try_query(conn, sql);
-
+    Test->stop_timeout();
     sleep(5);
 
     check_val(Test->conn_rwsplit, Test);
@@ -83,8 +84,6 @@ int main(int argc, char *argv[])
         Test->tprintf("Node %d\n", i);
         check_val(nodes->nodes[i], Test);
     }
-
-
 
     //execute_query_silent(conn, (char *) "DROP TABLE t2;");
 

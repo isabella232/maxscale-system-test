@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
     char str[256];
     int iterations = Test->smoke ? 100 : 500;
+    Test->repl->execute_query_all_nodes((char *) "set global max_connections = 600;");
     Test->set_timeout(30);
     Test->repl->stop_slaves();
     Test->set_timeout(30);
@@ -59,4 +60,3 @@ int main(int argc, char *argv[])
     Test->copy_all_logs();
     return(Test->global_result);
 }
-
