@@ -59,7 +59,7 @@ filters=QLA
 [Read Connection Router Slave]
 type=service
 router=readconnroute
-router_options= slave, disable_sescmd_history=YES
+router_options= slave
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
@@ -68,7 +68,7 @@ filters=QLA
 [Read Connection Router Master]
 type=service
 router=readconnroute
-router_options=master,disable_sescmd_history=YES
+router_options=master
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
