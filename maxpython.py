@@ -1,3 +1,4 @@
+
 import sys
 import subprocess
 import os
@@ -14,7 +15,10 @@ class SQLConnection:
 
     # Connect to a server
     def connect(self, options = ""):
-        self.conn = jaydebeapi.connect("org.mariadb.jdbc.Driver", ["jdbc:mariadb://" + self.host + ":" + self.port + "/test?" + options, self.user, self.password],"./maxscale/java/mariadb-java-client-1.3.3.jar")
+        try:
+            self.conn = jaydebeapi.connect("org.mariadb.jdbc.Driver", ["jdbc:mariadb://" + self.host + ":" + self.port + "/test?" + options, self.user, self.password],"./maxscale/java/mariadb-java-client-1.3.3.jar")
+        except Exception as ex:
+            print(ex)
 
     # Start a transaction
     def begin(self):
