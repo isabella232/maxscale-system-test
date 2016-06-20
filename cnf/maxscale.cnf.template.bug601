@@ -8,7 +8,7 @@
 # 	threads=<number of threads>
 
 [maxscale]
-use_ssl_if_enabled=yes/
+use_ssl_if_enabled=yes
 threads=1
 log_warning=1
 

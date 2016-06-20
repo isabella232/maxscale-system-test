@@ -1,5 +1,5 @@
 [maxscale]
-use_ssl_if_enabled=yes/
+use_ssl_if_enabled=yes
 threads=4
 
 [maxinfo]
