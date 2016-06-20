@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         for (j = 0; j < Test->repl->N; j++) { //users
             //sprintf(str, "DELETE FROM  mysql.user WHERE User='user%d';", j);
             Test->set_timeout(10);
-            sprintf(str, "DROP USER'user%d';", j);
+            sprintf(str, "DROP USER 'user%d'@'%%';", j);
             Test->tprintf("%s\n", str);
             execute_query(Test->repl->nodes[i], str);
 
