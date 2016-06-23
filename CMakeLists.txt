@@ -42,7 +42,7 @@ aux_source_directory(. SRC_LIST)
 add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp config_check.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
-  different_size.cpp fw_copy_rules)
+  different_size.cpp fw_copy_rules maxinfo_func.cpp)
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 
@@ -336,6 +336,7 @@ add_test_executable(avro.cpp avro avro)
 # Python based tests
 add_test_script(mxs585.py replication)
 add_test_script(mxs598.py ssl)
+add_test_executable(maxinfo.cpp maxinfocpp maxinfo)
 add_test_script(maxinfo.py maxinfo)
 
 # Label some tests as HEAVY to exclude them from quick test on every push
