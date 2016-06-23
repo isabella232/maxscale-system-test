@@ -93,6 +93,9 @@ add_test_executable_notest(non_native_setup.cpp non_native_setup replication)
 
 add_test_executable_notest(binlog_big_transaction.cpp binlog_big_transaction setup_binlog2)
 
+add_test_executable_notest(avro_long.cpp avro_long avro)
+#add_test_executable_notest(cdc_client.cpp cdc_client avro)
+
 if(Java_FOUND)
   add_subdirectory(maxscale/java/)
 endif()
@@ -114,7 +117,6 @@ install(DIRECTORY ssl-cert DESTINATION system-test USE_SOURCE_PERMISSIONS)
 add_test_executable(regexfilter1.cpp regexfilter1 regexfilter1)
 add_test_executable(namedserverfilter.cpp namedserverfilter namedserverfilter)
 add_test_executable(mxs365.cpp mxs365 replication)
-# ReadConn cases are commented out now due to Maxscale failures
 add_test_executable(longblob.cpp longblob longblob)
 set_tests_properties(longblob PROPERTIES TIMEOUT 7200)
 add_test_executable(maxscale_process_user.cpp maxscale_process_user replication)
