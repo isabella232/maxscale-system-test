@@ -58,6 +58,7 @@ class SQLConnection:
 class MaxScaleTest:
     def __init__(self, testname = "python_test"):
 
+        self.testname = testname
         prepare_test(testname)
 
         # MaxScale connections
@@ -79,6 +80,9 @@ class MaxScaleTest:
         self.galera['node1'] = SQLConnection(host = os.getenv("galera_001"), port = os.getenv("galera_port_001"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
         self.galera['node2'] = SQLConnection(host = os.getenv("galera_002"), port = os.getenv("galera_port_002"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
         self.galera['node3'] = SQLConnection(host = os.getenv("galera_003"), port = os.getenv("galera_port_003"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+
+    def __del__(self):
+        subprocess.call(os.getcwd() + "/copy_logs.sh " + str(self.testname), shell=True)
 
 # Read test environment variables
 def prepare_test(testname = "replication"):
