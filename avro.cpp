@@ -130,6 +130,11 @@ int main(int argc, char *argv[])
         str_end = strstr(str, "\n");
     }
 
+    if (fl_exp != 3)
+    {
+        Test->add_result(1, "not enough lines in avrocheck output\n");
+    }
+
     Test->set_timeout(120);
 
     Test->copy_all_logs(); return(Test->global_result);

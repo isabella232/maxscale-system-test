@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < 1000000; i++)
     {
+        Test->set_timeout(60);
         insert_into_t1(Test->repl->nodes[0], 3);
         Test->tprintf("i=%d\n", i);
     }
