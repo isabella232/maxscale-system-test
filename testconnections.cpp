@@ -599,13 +599,15 @@ void TestConnections::check_log_err(const char * err_msg, bool expected)
     system(sys1);
     set_timeout(50);
 
-    tprintf("Reading maxscale1.log\n");
-    if ( read_log((char *) "maxscale1.log", &err_log_content) != 0) {
-        //tprintf("Reading maxscale1.log\n");
-        //read_log((char *) "skygw_err1.log", &err_log_content);
-        add_result(1, "Error reading log\n");
-    } else {
-
+    tprintf("Reading maxscale.log\n");
+    if ( read_log((char *) "maxscale.log", &err_log_content) != 0) {
+        tprintf("Reading maxscale1.log\n");
+        if (read_log((char *) "maxscale1.log", &err_log_content) != 0) {
+            add_result(1, "Error reading log\n");
+        }
+    }
+    if (err_log_content != NULL) 
+    {
         if (expected) {
             if (strstr(err_log_content, err_msg) == NULL) {
                 add_result(1, "There is NO \"%s\" error in the log\n", err_msg);
@@ -620,8 +622,8 @@ void TestConnections::check_log_err(const char * err_msg, bool expected)
             }
         }
 
-    }
-    if (err_log_content != NULL) {free(err_log_content);}
+        free(err_log_content);
+   }
 }
 
 int TestConnections::find_connected_slave(int * global_result)
