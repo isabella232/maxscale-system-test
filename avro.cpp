@@ -14,41 +14,7 @@
 
 #include "test_binlog_fnc.h"
 #include <jansson.h>
-
-int get_x_fl_from_json(char * line, long long int * x1, long long int * fl)
-{
-    json_t *root;
-    json_error_t error;
-
-    root = json_loads( line, 0, &error );
-    if ( !root )
-    {
-        fprintf( stderr, "error: on line %d: %s\n", error.line, error.text );
-        return 1;
-    }
-
-    json_t * x_json = json_object_get(root, "x1");
-    if ( !json_is_integer(x_json) )
-    {
-        printf("x1 is not int\n");
-        return 1;
-    }
-
-    *x1 = json_integer_value(x_json);
-    json_t * fl_json = json_object_get(root, "fl");
-
-    if ( !json_is_integer(fl_json) )
-    {
-        printf("fl is not int\n");
-        return 1;
-    }
-
-    *fl = json_integer_value(fl_json);
-
-    json_decref(root);
-
-}
-
+#include "maxinfo_func.h"
 
 int main(int argc, char *argv[])
 {

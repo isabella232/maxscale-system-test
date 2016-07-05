@@ -107,6 +107,7 @@ TestConnections::TestConnections(int argc, char *argv[])
     galera->truncate_mariadb_logs();
     ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 8080 -j ACCEPT");
     ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
+    ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
 
     // Create DB user on master and on first Galera node
     //sprintf(str, "%s/create_user.sh", test_dir);

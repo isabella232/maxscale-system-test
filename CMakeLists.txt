@@ -94,7 +94,6 @@ add_test_executable_notest(non_native_setup.cpp non_native_setup replication)
 add_test_executable_notest(binlog_big_transaction.cpp binlog_big_transaction setup_binlog2)
 
 add_test_executable_notest(avro_long.cpp avro_long avro)
-#add_test_executable_notest(cdc_client.cpp cdc_client avro)
 
 if(Java_FOUND)
   add_subdirectory(maxscale/java/)
@@ -334,6 +333,7 @@ set_tests_properties(mxs657_restart PROPERTIES TIMEOUT 4600)
 add_test_executable(show_monitor_crash.cpp show_monitor_crash show_monitor_crash)
 add_test_executable(connection_limit.cpp connection_limit connection_limit)
 add_test_executable(avro.cpp avro avro)
+add_test_executable(cdc_client.cpp cdc_client avro)
 
 # Python based tests
 add_test_script(mxs585.py replication)
