@@ -182,7 +182,7 @@ int send_so(int sock, char * data)
     return 0;
 }
 
-static char* bin2hex(const unsigned char *old, const size_t oldlen)
+static char * bin2hex(const unsigned char *old, const size_t oldlen)
 {
     char *result = (char*) malloc(oldlen * 2 + 1);
     size_t i, j;
@@ -199,7 +199,7 @@ char * cdc_auth_srt(char * user, char * password)
 {
     unsigned char sha1pass[20];
     char * str;
-    str = (char*) malloc(21+strlen(user));
+    str = (char*) malloc(42+strlen(user)*2);
 
     unsigned char *password_u;
     unsigned char *user_u;
@@ -209,9 +209,23 @@ char * cdc_auth_srt(char * user, char * password)
     memcpy((void*)user_u, (void*)user, strlen(user));
 
     SHA1(password_u, strlen(password), sha1pass);
-    printf("password %s, len %lu, password sha1: %s\n", password, strlen(password), bin2hex(sha1pass, 20));
 
-    sprintf(str, "%s%s%s", bin2hex(user_u, strlen(user)), bin2hex((unsigned char*)":", 1), bin2hex(sha1pass, 20));
+    //char * sha1pass_hex = (char *) "454ac34c2999aacfebc6bf5fe9fa1db9b596f625";
+
+    char * sha1pass_hex = bin2hex(sha1pass, 20);
+    printf("password %s, len %lu, password sha1: %s\n", password, strlen(password), sha1pass_hex);
+
+
+    char * user_hex = bin2hex(user_u, strlen(user));
+    char * clmn_hex = bin2hex((unsigned char*)":", 1);
+
+    sprintf(str, "%s%s%s", user_hex, clmn_hex, sha1pass_hex);
+
+    free(clmn_hex);
+    free(user_hex);
+    free(sha1pass_hex);
+    free(user_u);
+    free(password_u);
 
     printf("%s\n", str);
     return(str);
@@ -265,6 +279,7 @@ int get_x_fl_from_json(char * line, long long int * x1, long long int * fl)
     }
 
     *fl = json_integer_value(fl_json);
-
+    json_decref(x_json);
+    json_decref(fl_json);
     json_decref(root);
 }
