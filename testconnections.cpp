@@ -601,7 +601,7 @@ void TestConnections::check_log_err(const char * err_msg, bool expected)
     set_timeout(50);
 
     tprintf("Reading maxscale.log\n");
-    if ( read_log((char *) "maxscale.log", &err_log_content) != 0) {
+    if ( ( read_log((char *) "maxscale.log", &err_log_content) != 0) || (strlen(err_log_content) < 2) ) {
         tprintf("Reading maxscale1.log\n");
         if (read_log((char *) "maxscale1.log", &err_log_content) != 0) {
             add_result(1, "Error reading log\n");
