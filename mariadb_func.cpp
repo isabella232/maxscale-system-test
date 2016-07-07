@@ -403,10 +403,11 @@ unsigned int get_seconds_behind_master(MYSQL *conn)
  * @param err_log_content   pointer to the buffer to store log file content
  * @return 0 in case of success, 1 in case of error
  */
-int read_log(char * name, char ** err_log_content)
+int read_log(char * name, char ** err_log_content_p)
 {
     FILE *f;
-
+    *err_log_content_p = NULL;
+    char * err_log_content;
     f = fopen(name,"rb");
     if (f != NULL) {
 
@@ -414,10 +415,21 @@ int read_log(char * name, char ** err_log_content)
         fseek(f, 0L, SEEK_END);
         long int size=ftell(f);
         fseek(f, prev, SEEK_SET);
-        *err_log_content = (char *)malloc(size+2);
-        if (*err_log_content != NULL) {
-            fread(*err_log_content, 1, size, f);
-            //err_log_content[size]=0;
+        err_log_content = (char *)malloc(size+2);
+        if (err_log_content != NULL) {
+            fread(err_log_content, 1, size, f);
+            for (int i = 0; i < size; i++)
+            {
+                if (err_log_content[i] == 0)
+                {
+                    //printf("null detected at position %d\n", i);
+                    err_log_content[i] = '\n';
+                }
+            }
+            printf("s=%ld\n", strlen(err_log_content));
+            err_log_content[size]='\0';
+            printf("s=%ld\n", strlen(err_log_content));
+            * err_log_content_p = err_log_content;
             return(0);
         } else {
             printf("Error allocationg memory for the log\n");
@@ -428,4 +440,5 @@ int read_log(char * name, char ** err_log_content)
         printf ("Error reading log %s \n", name);
         return(1);
     }
+
 }
