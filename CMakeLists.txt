@@ -199,7 +199,7 @@ add_test_executable(bug729.cpp bug729 replication)
 add_test_script(mariadb_tests_hartmut.sh replication)
 add_test_script(mariadb_tests_hartmut_galera.sh replication)
 add_test_script(bug567.sh replication)
-add_test_script(bug516.sh replication)
+#add_test_script(bug516.sh replication) # removing because maxadmin does not use TPC any more
 add_test_script(bug561.sh replication)
 add_test_script(bug562.sh replication)
 add_test_script(bug585 bug585)
