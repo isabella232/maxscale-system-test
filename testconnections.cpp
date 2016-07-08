@@ -4,6 +4,7 @@
 #include <time.h>
 #include <libgen.h>
 #include "maxadmin_operations.h"
+#include "templates.h"
 
 TestConnections::TestConnections(int argc, char *argv[])
 {
