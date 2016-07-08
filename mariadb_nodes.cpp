@@ -26,7 +26,7 @@ int Mariadb_nodes::connect()
     int res = 0;
     for (int i = 0; i < N; i++) {
         nodes[i] = open_conn(port[i], IP[i], user_name, password, ssl);
-        if (mysql_errno(nodes[i]) != 0) {res++;}
+        if ((nodes[i] != NULL) && (mysql_errno(nodes[i]) != 0)) {res++;}
     }
     return(res);
 }
@@ -76,7 +76,7 @@ int Mariadb_nodes::read_env()
             }
             //reading sshkey
             sprintf(env_name, "%s_sshkey_%03d", prefix, i);
-            env = getenv(env_name); if (env != NULL) {sprintf(sshkey[i], "%s", env);}
+            env = getenv(env_name); if (env != NULL) {sprintf(sshkey[i], "%s", env);} else {sprintf(sshkey[i], "vagrant.pem");}
 
             //reading start_db_command
             sprintf(env_name, "%s_start_db_command_%03d", prefix, i);

@@ -7,7 +7,7 @@
 
 TestConnections::TestConnections(int argc, char *argv[])
 {
-    char str[1024];
+    gettimeofday(&start_time, NULL);
     galera = new Mariadb_nodes((char *)"galera");
     repl   = new Mariadb_nodes((char *)"repl");
 
@@ -36,7 +36,7 @@ TestConnections::TestConnections(int argc, char *argv[])
 
     no_maxscale_stop = false;
     no_maxscale_start = false;
-    //no_nodes_check = false;
+    no_nodes_check = false;
 
     int c;
     bool run_flag = true;
@@ -152,7 +152,8 @@ TestConnections::TestConnections(int argc, char *argv[])
     }
     //repl->start_replication();
     if (!no_maxscale_start) {init_maxscale();}
-    if (backend_ssl)
+    tprintf("Maxscale initialized\n");
+    if (backend_ssl) // should it be before init_maxscale() ?
     {
         tprintf("Configuring backends for ssl \n");
         repl->configure_ssl(TRUE);
@@ -167,10 +168,12 @@ TestConnections::TestConnections(int argc, char *argv[])
         restart_maxscale();*/
     }
     timeout = 999999999;
-    set_log_copy_interval(999999999);
-    pthread_create( &timeout_thread_p, NULL, timeout_thread, this);
-    pthread_create( &log_copy_thread_p, NULL, log_copy_thread, this);
+    set_log_copy_interval(300);
     gettimeofday(&start_time, NULL);
+    tprintf("Creating timeout thread\n");
+    pthread_create( &timeout_thread_p, NULL, timeout_thread, this);
+    tprintf("Creating log copy thread\n");
+    pthread_create( &log_copy_thread_p, NULL, log_copy_thread, this);
 }
 
 TestConnections::~TestConnections()
@@ -233,7 +236,7 @@ int TestConnections::read_env()
     galera->read_env();
     repl->read_env();
 
-    env = getenv("maxscale_IP"); if (env != NULL) {sprintf(maxscale_IP, "%s", env);}
+    env = getenv("maxscale_IP"); if (env != NULL) {sprintf(maxscale_IP, "%s", env);} else {sprintf(maxscale_IP, "127.0.0.1");}
     env = getenv("maxscale_user"); if (env != NULL) {sprintf(maxscale_user, "%s", env); } else {sprintf(maxscale_user, "skysql");}
     env = getenv("maxscale_password"); if (env != NULL) {sprintf(maxscale_password, "%s", env); } else {sprintf(maxscale_password, "skysql");}
     env = getenv("maxadmin_password"); if (env != NULL) {sprintf(maxadmin_password, "%s", env); } else {sprintf(maxadmin_password, "mariadb");}
@@ -243,16 +246,16 @@ int TestConnections::read_env()
 
     env = getenv("sysbench_dir"); if (env != NULL) {sprintf(sysbench_dir, "%s", env);}
 
-    env = getenv("maxdir"); if (env != NULL) {sprintf(maxdir, "%s", env);}
+    env = getenv("maxdir"); if (env != NULL) {sprintf(maxdir, "%s", env);} else {sprintf(maxdir, "/usr/bin/");}
     env = getenv("maxscale_cnf"); if (env != NULL) {sprintf(maxscale_cnf, "%s", env);} else {sprintf(maxscale_cnf, "/etc/maxscale.cnf");}
     env = getenv("maxscale_log_dir"); if (env != NULL) {sprintf(maxscale_log_dir, "%s", env);} else {sprintf(maxscale_log_dir, "%s/logs/", maxdir);}
     env = getenv("maxscale_binlog_dir"); if (env != NULL) {sprintf(maxscale_binlog_dir, "%s", env);} else {sprintf(maxscale_binlog_dir, "%s/Binlog_Service/", maxdir);}
     //env = getenv("test_dir"); if (env != NULL) {sprintf(test_dir, "%s", env);}
-    env = getenv("maxscale_access_user"); if (env != NULL) {sprintf(maxscale_access_user, "%s", env);}
-    env = getenv("maxscale_access_sudo"); if (env != NULL) {sprintf(maxscale_access_sudo, "%s", env);}
+    env = getenv("maxscale_access_user"); if (env != NULL) {sprintf(maxscale_access_user, "%s", env);} else {sprintf(maxscale_access_user, "vagrant");}
+    env = getenv("maxscale_access_sudo"); if (env != NULL) {sprintf(maxscale_access_sudo, "%s", env);} {sprintf(maxscale_access_sudo, "sudo ");}
     ssl = false;
     env = getenv("ssl"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {ssl = true;}
-    env = getenv("mysql51_only"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_nodes_check = true;}
+    env = getenv("mysql51_only"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_nodes_check = true;} else {no_nodes_check = false;}
 
     env = getenv("maxscale_hostname"); if (env != NULL) {sprintf(maxscale_hostname, "%s", env);} else {sprintf(maxscale_hostname, "%s", maxscale_IP);}
 
@@ -291,14 +294,16 @@ int TestConnections::init_maxscale()
         sprintf(str, "export test_name=%s; export test_dir=%s; %s/configure_maxscale.sh",
                 test_name, test_dir, test_dir);
     }
-    printf("\nExecuting configure_maxscale.sh\n"); fflush(stdout);
+    tprintf("\nExecuting configure_maxscale.sh\n");
     if (system(str) !=0) {
-        printf("configure_maxscale.sh executing FAILED!\n"); fflush(stdout);
+        tprintf("configure_maxscale.sh executing FAILED!\n");
         return(1);
     }
     fflush(stdout);
-    printf("Waiting 15 seconds\n"); fflush(stdout);
+    tprintf("Waiting 15 seconds\n");
     sleep(15);
+    tprintf("Maxscale is ready\n");
+    return 0;
 }
 
 int TestConnections::connect_maxscale()
@@ -315,6 +320,7 @@ int TestConnections::close_maxscale_connections()
     mysql_close(conn_master);
     mysql_close(conn_slave);
     mysql_close(conn_rwsplit);
+    return 0;
 }
 
 int TestConnections::restart_maxscale()
