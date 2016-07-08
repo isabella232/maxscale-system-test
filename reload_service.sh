@@ -23,9 +23,10 @@ export test_dir=`dirname $rp`
 export test_name=`basename $rp`
 
 # Start with a 2 service config file
-$test_dir/configure_maxscale.sh
-echo "Waiting for 15 seconds"
-sleep 15
+$test_dir/non_native_setup $test_name
+#$test_dir/configure_maxscale.sh
+#echo "Waiting for 15 seconds"
+#sleep 15
 
 check_service_count 2
 if [[ $? -ne 0 ]]
@@ -44,9 +45,10 @@ fi
 # Reload the same config file but with new service
 # and check that the new service is detected.
 export test_name=reload_service
-$test_dir/configure_maxscale.sh
-echo "Waiting for 15 seconds"
-sleep 15
+$test_dir/non_native_setup $test_name
+#$test_dir/configure_maxscale.sh
+#echo "Waiting for 15 seconds"
+#sleep 15
 
 check_service_count 3
 if [[ $?  -ne 0 ]]
@@ -72,9 +74,10 @@ fi
 # Remove the extra server and check that it is also
 # removed from MaxScale
 export test_name=config_reload
-$test_dir/configure_maxscale.sh
-echo "Waiting for 15 seconds"
-sleep 15
+$test_dir/non_native_setup $test_name
+#$test_dir/configure_maxscale.sh
+#echo "Waiting for 15 seconds"
+#sleep 15
 
 check_service_count 2
 if [[ $? -ne 0 ]]

@@ -24,9 +24,10 @@ old_val=$maxscale_restart
 export maxscale_restart=no
 
 # Start with a 4 server config file
-$test_dir/configure_maxscale.sh
-echo "Waiting for 15 seconds"
-sleep 15
+$test_dir/non_native_setup $test_name
+#$test_dir/configure_maxscale.sh
+#echo "Waiting for 15 seconds"
+#sleep 15
 
 check_server_count 4
 if [[ $? -ne 0 ]]
@@ -37,9 +38,10 @@ fi
 # Reload the same config file but with one extra server
 # and check that the new server is detected
 export test_name=reload_server
-$test_dir/configure_maxscale.sh
-echo "Waiting for 15 seconds"
-sleep 15
+$test_dir/non_native_setup $test_name
+#$test_dir/configure_maxscale.sh
+#echo "Waiting for 15 seconds"
+#sleep 15
 
 check_server_count 5
 if [[ $?  -ne 0 ]]
@@ -50,9 +52,10 @@ fi
 # Remove the extra server and check that it is also
 # removed from MaxScale
 export test_name=config_reload
-$test_dir/configure_maxscale.sh
-echo "Waiting for 15 seconds"
-sleep 15
+$test_dir/non_native_setup $test_name
+#$test_dir/configure_maxscale.sh
+#echo "Waiting for 15 seconds"
+#sleep 15
 
 check_server_count 4
 if [[ $? -ne 0 ]]

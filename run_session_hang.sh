@@ -5,13 +5,14 @@ rp=`realpath $0`
 export test_dir=`dirname $rp`
 export test_name=`basename $rp`
 
-$test_dir/configure_maxscale.sh
+$test_dir/non_native_setup $test_name
+#$test_dir/configure_maxscale.sh
 if [ $? -ne 0 ] ; then 
         echo "configure_maxscale.sh failed"
         exit 1
 fi
 
-sleep 15
+#sleep 15
 
 set -x
 echo "drop table if exists t1; create table t1(id integer primary key); " | mysql -u$repl_user -p$repl_password -h$maxscale_IP -P 4006 test

@@ -5,12 +5,13 @@
 rp=`realpath $0`
 export test_dir=`dirname $rp`
 export test_name=`basename $rp`
-$test_dir/configure_maxscale.sh 
+$test_dir/non_native_setup $test_name
+#$test_dir/configure_maxscale.sh 
 if [ $? -ne 0 ] ; then 
 	echo "configure_maxscale.sh failed"
 	exit 1
 fi
-sleep 15
+#sleep 15
 
 export Master_id=`echo "SELECT (@@server_id)" | mysql -u$repl_user -p$repl_password -h $repl_000 | tail -n1`
 cat ./maxscale-mysqltest/fail.txt | grep "FAILED"
