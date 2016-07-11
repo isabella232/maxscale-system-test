@@ -8,4 +8,6 @@ static struct
 } cnf_templates[] = {
 @CNF_TEMPLATES@ {NULL, NULL}};
 
+const char * default_template = "replication";
+
 #endif

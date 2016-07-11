@@ -8,7 +8,8 @@
 
 TestConnections::TestConnections(int argc, char *argv[])
 {
-    char str[1024];
+    //char str[1024];
+    gettimeofday(&start_time, NULL);
     galera = new Mariadb_nodes((char *)"galera");
     repl   = new Mariadb_nodes((char *)"repl");
 
@@ -266,6 +267,8 @@ int TestConnections::read_env()
     }
 
     env = getenv("smoke"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {smoke = true;} else {smoke = false;}
+    env = getenv("maxscale_restart"); if ((env != NULL) && ((strcasecmp(env, "no") == 0) || (strcasecmp(env, "false") == 0) )) {maxscale_restart = false;} else {maxscale_restart = true;}
+    env = getenv("threads"); if ((env != NULL)) {sscanf(env, "%d", &threads);} else {threads = 4;}
 }
 
 int TestConnections::print_env()
@@ -281,24 +284,93 @@ int TestConnections::print_env()
     galera->print_env();
 }
 
+const char * get_template_name(char * test_name)
+{
+    int i = 0;
+    while ((strcmp(cnf_templates[i].test_name, test_name) != 0) && (strcmp(cnf_templates[i].test_name, "NULL") != 0))  i++;
+    if (strcmp(cnf_templates[i].test_name, "NULL") == 0)
+    {
+        return default_template;
+    } else {
+        return cnf_templates[i].test_template;
+    }
+}
+
 int TestConnections::init_maxscale()
 {
     char str[4096];
+    const char * template_name = get_template_name(test_name);
+    char template_file[1024];
+    tprintf("Template is %s\n", template_name);
+
+    sprintf(template_file, "%s/cnf/maxscale.cnf.template.%s", test_dir, template_name);
+    sprintf(str, "cp %s maxscale.cnf", template_file);
+    if (system(str) != 0)
+    {
+        tprintf("Error copying maxscale.cnf template\n");
+        return 1;
+    }
+
+    if (backend_ssl)
+    {
+        system("sed -i \"s|type=server|type=server\nssl=required\nssl_cert=/###access_homedir###/certs/client-cert.pem\nssl_key=/###access_homedir###/certs/client-key.pem\nssl_ca_cert=/###access_homedir###/certs/ca.pem|g\" maxscale.cnf");
+    }
+
+    sprintf(str, "sed -i \"s/###threads###/%d/\"  maxscale.cnf", threads); system(str);
+
+    Mariadb_nodes * mdn[2];
+    mdn[0] = repl;
+    mdn[1] = galera;
+    int i, j;
+
+    for (j = 0; j < 2; j++)
+    {
+        for (i = 0; i < mdn[j]->N; i++)
+        {
+            sprintf(str, "sed -i \"s/###%s_server_IP_%0d###/%s/\" maxscale.cnf", mdn[j]->prefix, i+1, mdn[j]->IP[i]); system(str);
+            sprintf(str, "sed -i \"s/###%s_server_port_%0d###/%d/\" maxscale.cnf", mdn[j]->prefix, i+1, mdn[j]->port[i]); system(str);
+        }
+        mdn[j]->connect();
+        execute_query(mdn[j]->nodes[0], (char *) "CREATE DATABASE IF NOT EXISTS test");
+        mdn[j]->close_connections();
+    }
+
+    sprintf(str, "sed -i \"s/###access_user###/%s/g\" maxscale.cnf", maxscale_access_user); system(str);
+    sprintf(str, "sed -i \"s|###access_homedir###|%s|g\" maxscale.cnf", maxscale_access_homedir);  system(str);
+
     if (repl->v51)
     {
-        sprintf(str, "export test_name=%s; export test_dir=%s; export v51=yes; %s/configure_maxscale.sh",
-                test_name, test_dir, test_dir);
+        system("sed -i \"s/###repl51###/mysql51_replication=true/g\" maxscale.cnf");
+    }
+
+    copy_to_maxscale((char *) "maxscale.cnf", (char *) "./");
+    ssh_maxscale(TRUE, "cp maxscale.cnf %s", maxscale_cnf);
+    ssh_maxscale(TRUE, "rm -rf %s/certs", maxscale_access_homedir);
+    ssh_maxscale(FALSE, "mkdir %s/certs", maxscale_access_homedir);
+    sprintf(str, "%s/ssl-cert/*", test_dir);
+    copy_to_maxscale(str, (char *) "./certs/");
+    sprintf(str, "cp %s/ssl-cert/* .", test_dir); system(str);
+    ssh_maxscale(TRUE,  "chown maxscale:maxscale -R %s/certs", maxscale_access_homedir);
+    ssh_maxscale(TRUE, "chmod 664 %s/certs/*.pem; chmod a+x %s", maxscale_access_homedir, maxscale_access_homedir);
+
+    if (maxscale_restart)
+    {
+        ssh_maxscale(TRUE, "service maxscale stop");
+        ssh_maxscale(TRUE, "killall -9 maxscale");
+    }
+    ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale.log ; %s chown maxscale:maxscale %s/maxscale.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
+    ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale1.log ; %s chown maxscale:maxscale %s/maxscale1.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
+    ssh_maxscale(TRUE, "rm /tmp/core*");
+    ssh_maxscale(TRUE, "rm -rf /dev/shm/*");
+    if ((!maxscale_restart) && (ssh_maxscale(TRUE, "service maxscale status | grep running") == 0))
+    {
+        ssh_maxscale(TRUE, "ulimit -c unlimited; %s killall -HUP maxscale", maxscale_access_sudo);
     } else {
-        sprintf(str, "export test_name=%s; export test_dir=%s; %s/configure_maxscale.sh",
-                test_name, test_dir, test_dir);
+        ssh_maxscale(TRUE, "ulimit -c unlimited; %s service maxscale restart", maxscale_access_sudo);
     }
-    printf("\nExecuting configure_maxscale.sh\n"); fflush(stdout);
-    if (system(str) !=0) {
-        printf("configure_maxscale.sh executing FAILED!\n"); fflush(stdout);
-        return(1);
-    }
+    ssh_maxscale(FALSE, "printenv > test.environment");
     fflush(stdout);
-    printf("Waiting 15 seconds\n"); fflush(stdout);
+    tprintf("Waiting 15 seconds\n");
     sleep(15);
 }
 

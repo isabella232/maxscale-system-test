@@ -191,6 +191,11 @@ public:
     char maxscale_access_sudo[64];
 
     /**
+     * @brief maxscale_restart if TRUE Maxscale will be restarted before every test, else SIGHUP will be sent to Maxscale
+     */
+    bool maxscale_restart;
+
+    /**
      * @brief copy_mariadb_logs copies MariaDB logs from backend
      * @param repl Mariadb_nodes object
      * @param prefix file name prefix
@@ -229,7 +234,7 @@ public:
     int binlog_cmd_option;
 
     /**
-     * @brief ssl if true ssl  will be used
+     * @brief ssl if true ssl will be used
      */
     int ssl;
 
@@ -237,6 +242,11 @@ public:
      * @brief backend_ssl if true ssl configuratio for all servers will be added
      */
     bool backend_ssl;
+
+    /**
+     * @brief threads Number of Maxscale threads
+     */
+    int threads;
 
     /**
      * @brief timeout seconds until test termination
