@@ -35,7 +35,7 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
     } else {
         create_t1(Test->conn_rwsplit);
         create_insert_string(sql, sql_l, 1);
-        Test->tprintf("Waiting for the table to replicate");
+        Test->tprintf("Waiting for the table to replicate\n");
         sleep(30);
         if ((execute_query(Test->conn_rwsplit, sql) != 0) && (report_errors)) {
             Test->add_result(1, "Query %s failed\n", sql);
@@ -61,8 +61,13 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
         Test->tprintf("Threads are running %d seconds \n", run_time);
         sleep(run_time);
         data.exit_flag = 1;
+        Test->tprintf("Waiting for all threads to exit\n");
         for (int i = 0; i < threads_num; i++) {
+            Test->tprintf("exiting thread1 %d\n", i);
+            Test->set_timeout(10);
             pthread_join( thread1[i], NULL);
+            Test->tprintf("exiting thread2 %d\n", i);
+            Test->set_timeout(10);
             pthread_join( thread2[i], NULL);
         }
         sleep(1);
