@@ -426,9 +426,9 @@ int read_log(char * name, char ** err_log_content_p)
                     err_log_content[i] = '\n';
                 }
             }
-            printf("s=%ld\n", strlen(err_log_content));
+            //printf("s=%ld\n", strlen(err_log_content));
             err_log_content[size]='\0';
-            printf("s=%ld\n", strlen(err_log_content));
+            //printf("s=%ld\n", strlen(err_log_content));
             * err_log_content_p = err_log_content;
             return(0);
         } else {

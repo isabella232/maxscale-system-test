@@ -62,12 +62,9 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
         sleep(run_time);
         data.exit_flag = 1;
         Test->tprintf("Waiting for all threads to exit\n");
+        Test->set_timeout(100);
         for (int i = 0; i < threads_num; i++) {
-            Test->tprintf("exiting thread1 %d\n", i);
-            Test->set_timeout(10);
             pthread_join( thread1[i], NULL);
-            Test->tprintf("exiting thread2 %d\n", i);
-            Test->set_timeout(10);
             pthread_join( thread2[i], NULL);
         }
         sleep(1);
