@@ -342,6 +342,7 @@ add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd 
 
 add_test_script(mxs791.sh replication)
 add_test_script(mxs791_galera.sh galera)
+add_test_executable(mxs799_crash_bad_socket.cpp mxs799_crash_bad_socket mxs799)
 
 # Python based tests
 add_test_script(mxs585.py replication)
