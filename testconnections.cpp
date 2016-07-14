@@ -479,6 +479,39 @@ int TestConnections::copy_all_logs_periodic()
     }
 }
 
+int TestConnections::prepare_binlog()
+{
+    char version_str[1024];
+    find_field(repl->nodes[0], "SELECT @@VERSION", "@@version", version_str);
+    tprintf("Master server version %s\n", version_str);
+
+    if ((strstr(version_str, "10.0") != NULL) ||
+            (strstr(version_str, "10.1") != NULL) ||
+            (strstr(version_str, "10.2") != NULL))
+    {
+        tprintf("10.0!\n");
+    }
+    else {
+        add_result(ssh_maxscale(true,
+                                "sed -i \"s/,mariadb10-compatibility=1//\" %s",
+                                maxscale_cnf), "Error editing maxscale.cnf");
+    }
+
+    tprintf("Removing all binlog data from Maxscale node\n");
+    add_result(ssh_maxscale(true, "rm -rf %s", maxscale_binlog_dir),
+               "Removing binlog data failed\n");
+
+    tprintf("Creating binlog dir\n");
+    add_result(ssh_maxscale(true, "mkdir -p %s", maxscale_binlog_dir),
+               "Creating binlog data dir failed\n");
+    tprintf("Set 'maxscale' as a owner of binlog dir\n");
+    add_result(ssh_maxscale(false,
+                            "%s mkdir -p %s; %s chown maxscale:maxscale -R %s",
+                            maxscale_access_sudo, maxscale_binlog_dir,
+                            maxscale_access_sudo, maxscale_binlog_dir),
+               "directory ownership change failed\n");
+    return 0;
+}
 
 int TestConnections::start_binlog()
 {
@@ -487,7 +520,7 @@ int TestConnections::start_binlog()
     char log_file[256];
     char log_pos[256];
     char cmd_opt[256];
-    char version_str[1024];
+
     int i;
     int global_result = 0;
     bool no_pos;
@@ -522,52 +555,21 @@ int TestConnections::start_binlog()
     }
     sleep(5);
 
+    tprintf("Connecting to all backend nodes\n");
     repl->connect();
-    find_field(repl->nodes[0], "SELECT @@VERSION", "@@version", version_str);
 
     for (i = 0; i < repl->N; i++) {
         execute_query(repl->nodes[i], "stop slave");
         execute_query(repl->nodes[i], "reset slave all");
         execute_query(repl->nodes[i], "reset master");
     }
-    repl->close_connections();
 
-    tprintf("Master server version %s\n", version_str);
-
-    if ((strstr(version_str, "10.0") != NULL) ||
-            (strstr(version_str, "10.1") != NULL) ||
-            (strstr(version_str, "10.2") != NULL))
-    {
-        tprintf("10.0!\n");
-    }
-    else {
-        add_result(ssh_maxscale(true,
-                                "sed -i \"s/,mariadb10-compatibility=1//\" %s",
-                                maxscale_cnf), "Error editing maxscale.cnf");
-    }
+    prepare_binlog();
 
     tprintf("Testing binlog when MariaDB is started with '%s' option\n", cmd_opt);
 
-    tprintf("Removing all binlog data from Maxscale node\n");
-    add_result(ssh_maxscale(true, "rm -rf %s", maxscale_binlog_dir),
-               "Removing binlog data failed\n");
-
-    tprintf("Creating binlog dir\n");
-    add_result(ssh_maxscale(true, "mkdir -p %s", maxscale_binlog_dir),
-               "Creating binlog data dir failed\n");
-
     tprintf("ls binlog data dir on Maxscale node\n");
     add_result(ssh_maxscale(true, "ls -la %s/", maxscale_binlog_dir), "ls failed\n");
-
-    tprintf("Set 'maxscale' as a owner of binlog dir\n");
-    add_result(ssh_maxscale(false,
-                            "%s mkdir -p %s; %s chown maxscale:maxscale -R %s",
-                            maxscale_access_sudo, maxscale_binlog_dir,
-                            maxscale_access_sudo, maxscale_binlog_dir),
-               "directory ownership change failed\n");
-
-    tprintf("Connecting to all backend nodes\n");
-    add_result(repl->connect(), "Connecting to backed failed\n");
 
     tprintf("show master status\n");
     find_field(repl->nodes[0], (char *) "show master status", (char *) "File", &log_file[0]);

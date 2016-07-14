@@ -393,6 +393,12 @@ public:
     int start_binlog();
 
     /**
+     * @brief prepare_binlog clean up binlog directory, set proper access rights to it
+     * @return 0
+     */
+    int prepare_binlog();
+
+    /**
      * @brief start_mm configure first node as Master for second, Second as Master for first
      * @return  0 in case of success
      */

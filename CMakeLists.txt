@@ -338,6 +338,8 @@ add_test_executable(connection_limit.cpp connection_limit connection_limit)
 add_test_executable(avro.cpp avro avro)
 add_test_executable(cdc_client.cpp cdc_client avro)
 
+add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd setup_binlog)
+
 # Python based tests
 add_test_script(mxs585.py replication)
 add_test_script(mxs598.py ssl)
