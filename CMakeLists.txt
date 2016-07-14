@@ -340,6 +340,8 @@ add_test_executable(cdc_client.cpp cdc_client avro)
 
 add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd setup_binlog)
 
+add_test_script(mxs791.sh replication)
+
 # Python based tests
 add_test_script(mxs585.py replication)
 add_test_script(mxs598.py ssl)
