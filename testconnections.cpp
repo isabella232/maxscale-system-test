@@ -313,7 +313,12 @@ int TestConnections::init_maxscale()
 
     if (backend_ssl)
     {
-        system("sed -i \"s|type=server|type=server\nssl=required\nssl_cert=/###access_homedir###/certs/client-cert.pem\nssl_key=/###access_homedir###/certs/client-key.pem\nssl_ca_cert=/###access_homedir###/certs/ca.pem|g\" maxscale.cnf");
+        tprintf("Adding ssl settings\n");
+        system("sed -i \"s|type=server|type=server\\nssl=required\\nssl_cert=/###access_homedir###/certs/client-cert.pem\\nssl_key=/###access_homedir###/certs/client-key.pem\\nssl_ca_cert=/###access_homedir###/certs/ca.pem|g\" maxscale.cnf");
+        tprintf("Adding ssl use_ssl_if_enabled=true\n");
+        sprintf(str, "sed -i \"s|^threads=|use_ssl_if_enabled=true\\nthreads=|\" maxscale.cnf");
+        tprintf(str);
+        system(str);
     }
 
     sprintf(str, "sed -i \"s/###threads###/%d/\"  maxscale.cnf", threads); system(str);
@@ -595,6 +600,15 @@ int TestConnections::start_binlog()
     repl->no_set_pos = true;
     tprintf("configuring Maxscale binlog router\n");
     repl->set_slave(binlog, repl->IP[0], repl->port[0], log_file, log_pos);
+
+    // ssl between binlog router and Master
+    if (backend_ssl)
+    {
+        sprintf(sys1, "CHANGE MASTER TO master_ssl_cert='%s/certs/client-cert.pem', master_ssl_ca='%s/certs/ca.pem', master_ssl=1, master_ssl_key='%s/certs/client-key.pem'", maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir);
+        tprintf("Configuring Master ssl: %s\n", sys1);
+        try_query(binlog, sys1);
+    }
+
     try_query(binlog, "start slave");
 
     repl->no_set_pos = false;
