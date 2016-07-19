@@ -10,15 +10,16 @@ if [ $? -ne 0 ] ; then
         echo "configure_maxscale.sh failed"
         exit 1
 fi
+export ssl_options="--ssl-cert=$test_dir/ssl-cert/client-cert.pem --ssl-key=$test_dir/ssl-cert/client-key.pem"
 
 #echo "Waiting for 15 seconds"
 #sleep 15
 
-mariadb_err=`mysql -u$repl_user -p$repl_password -h $repl_000 non_existing_db 2>&1`
-maxscale_err=`mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4006 non_existing_db 2>&1`
+mariadb_err=`mysql -u$repl_user -p$repl_password -h $repl_000 $ssl_options non_existing_db 2>&1`
+maxscale_err=`mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4006 $ssl_options non_existing_db 2>&1`
 
-maxscale_err1=`mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4008 non_existing_db 2>&1`
-maxscale_err2=`mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4009 non_existing_db 2>&1`
+maxscale_err1=`mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4008 $ssl_options non_existing_db 2>&1`
+maxscale_err2=`mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4009 $ssl_options non_existing_db 2>&1`
 
 echo "MariaDB message"
 echo "$mariadb_err"

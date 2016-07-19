@@ -244,6 +244,11 @@ public:
     bool backend_ssl;
 
     /**
+    * @brief ssl_options string with ssl configuration for command line client
+    */
+    char ssl_options[1024];
+
+    /**
      * @brief threads Number of Maxscale threads
      */
     int threads;

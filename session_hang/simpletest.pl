@@ -4,11 +4,12 @@ my $host = $ENV{'repl_000'};
 my $port = $ENV{'repl_port_000'};
 my $user = $ENV{'repl_user'};
 my $password = $ENV{'repl_password'};
+my $test_dir = $ENV{'test_dir'};
 
 use strict;
 use DBI;
 
-my $dsn = "DBI:mysql:database=test;host=$host;port=$port;mysql_use_result=0;mysql_server_prepare=1";
+my $dsn = "DBI:mysql:database=test;host=$host;port=$port;mysql_use_result=0;mysql_server_prepare=1;mysql_ssl_client_key=$test_dir/ssl-cert/client-key.pem;mysql_ssl_client_cert=$test_dir/ssl-cert/client-cert.pem;";
 my $dbh = DBI->connect($dsn, $user, $password) or die "Failed to connect!";
 my $sth = $dbh->prepare("SELECT id, \@\@server_id from test.t1 where id=(?)");
 

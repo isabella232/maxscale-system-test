@@ -6,6 +6,7 @@ rp=`realpath $0`
 export test_dir=`dirname $rp`
 export test_name=`basename $rp`
 $test_dir/non_native_setup $test_name
+export ssl_options="--ssl-cert=$test_dir/ssl-cert/client-cert.pem --ssl-key=$test_dir/ssl-cert/client-key.pem"
 #$test_dir/configure_maxscale.sh 
 if [ $? -ne 0 ] ; then 
 	echo "configure_maxscale.sh failed"
@@ -13,7 +14,7 @@ if [ $? -ne 0 ] ; then
 fi
 #sleep 15
 
-export Master_id=`echo "SELECT (@@server_id)" | mysql -u$repl_user -p$repl_password -h $repl_000 | tail -n1`
+export Master_id=`echo "SELECT (@@server_id)" | mysql -u$repl_user -p$repl_password -h $repl_000 $ssl_options| tail -n1`
 cat ./maxscale-mysqltest/fail.txt | grep "FAILED"
 
 echo "Maister_id $Master_id"

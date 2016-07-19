@@ -10,12 +10,10 @@ if [ $? -ne 0 ] ; then
         echo "configure_maxscale.sh failed"
         exit 1
 fi
+export ssl_options="--ssl-cert=$test_dir/ssl-cert/client-cert.pem --ssl-key=$test_dir/ssl-cert/client-key.pem"
 
-#echo "Waiting for 15 seconds"
-#sleep 15
-
-mariadb_err=`mysql -u no_such_user -psome_pwd -h $repl_001 test 2>&1`
-maxscale_err=`mysql -u no_such_user -psome_pwd -h $maxscale_IP -P 4006 test 2>&1`
+mariadb_err=`mysql -u no_such_user -psome_pwd -h $repl_001 $ssl_option test 2>&1`
+maxscale_err=`mysql -u no_such_user -psome_pwd -h $maxscale_IP -P 4006  $ssl_options test 2>&1`
 
 echo "MariaDB message"
 echo "$mariadb_err"

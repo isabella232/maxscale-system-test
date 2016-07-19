@@ -38,6 +38,10 @@ TestConnections::TestConnections(int argc, char *argv[])
     strcpy(galera->test_dir, test_dir);
     sprintf(get_logs_command, "%s/get_logs.sh", test_dir);
 
+    sprintf(ssl_options, "--ssl-cert=%s/ssl-cert/client-cert.pem --ssl-key=%s/ssl-cert/client-key.pem",
+            test_dir, test_dir);
+    setenv("ssl_options", ssl_options, 1);
+
     no_maxscale_stop = false;
     no_maxscale_start = false;
     //no_nodes_check = false;
