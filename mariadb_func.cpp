@@ -18,9 +18,18 @@ int set_ssl(MYSQL * conn)
     char client_key[1024];
     char client_cert[1024];
     char ca[1024];
-    sprintf(client_key, "./ssl-cert/client-key.pem");
-    sprintf(client_cert, "./ssl-cert/client-cert.pem");
-    sprintf(ca, "./ssl-cert/ca.pem");
+    char * test_dir;
+    test_dir=getenv("test_dir");
+    if (test_dir == NULL)
+    {
+        sprintf(client_key, "./ssl-cert/client-key.pem");
+        sprintf(client_cert, "./ssl-cert/client-cert.pem");
+        sprintf(ca, "./ssl-cert/ca.pem");
+    } else {
+        sprintf(client_key, "%s/ssl-cert/client-key.pem", test_dir);
+        sprintf(client_cert, "%s/ssl-cert/client-cert.pem", test_dir);
+        sprintf(ca, "%s/ssl-cert/ca.pem", test_dir);
+    }
     return(mysql_ssl_set(conn, client_key, client_cert, ca, NULL, NULL));
 }
 

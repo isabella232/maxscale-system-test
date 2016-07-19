@@ -86,12 +86,33 @@ void *query_thread1( void *ptr )
     MYSQL * conn3;
     int conn_err = 0;
     thread_data * data = (thread_data *) ptr;
-    conn1 = data->Test->open_rwsplit_connection();
+    conn1 = open_conn_db_timeout(data->Test->rwsplit_port,
+                         data->Test->maxscale_IP,
+                         (char *) "test",
+                         data->Test->maxscale_access_user,
+                         data->Test->maxscale_password,
+                         20,
+                         data->Test->ssl);
+    //conn1 = data->Test->open_rwsplit_connection();
     if (mysql_errno(conn1) != 0) { conn_err++; }
     if (data->rwsplit_only == 0) {
-        conn2 = data->Test->open_readconn_master_connection();
+        //conn2 = data->Test->open_readconn_master_connection();
+        conn2 = open_conn_db_timeout(data->Test->readconn_master_port,
+                             data->Test->maxscale_IP,
+                             (char *) "test",
+                             data->Test->maxscale_access_user,
+                             data->Test->maxscale_password,
+                             20,
+                             data->Test->ssl);
         if (mysql_errno(conn2) != 0) { conn_err++; }
-        conn3 = data->Test->open_readconn_slave_connection();
+        //conn3 = data->Test->open_readconn_slave_connection();
+        conn3 = open_conn_db_timeout(data->Test->readconn_slave_port,
+                             data->Test->maxscale_IP,
+                             (char *) "test",
+                             data->Test->maxscale_access_user,
+                             data->Test->maxscale_password,
+                             20,
+                             data->Test->ssl);
         if (mysql_errno(conn3) != 0) { conn_err++; }
     }
     if (conn_err == 0) {
@@ -118,10 +139,34 @@ void *query_thread2(void *ptr )
     MYSQL * conn2;
     MYSQL * conn3;
     thread_data * data = (thread_data *) ptr;
-    conn1 = data->Test->open_rwsplit_connection();
+    //conn1 = data->Test->open_rwsplit_connection();
+    conn1 = open_conn_db_timeout(data->Test->rwsplit_port,
+                         data->Test->maxscale_IP,
+                         (char *) "test",
+                         data->Test->maxscale_access_user,
+                         data->Test->maxscale_password,
+                         20,
+                         data->Test->ssl);
     if (data->rwsplit_only == 0) {
-        conn2 = data->Test->open_readconn_master_connection();
-        conn3 = data->Test->open_readconn_slave_connection();
+        //conn2 = data->Test->open_readconn_master_connection();
+        //conn3 = data->Test->open_readconn_slave_connection();
+
+        conn2 = open_conn_db_timeout(data->Test->readconn_master_port,
+                             data->Test->maxscale_IP,
+                             (char *) "test",
+                             data->Test->maxscale_access_user,
+                             data->Test->maxscale_password,
+                             20,
+                             data->Test->ssl);
+        //if (mysql_errno(conn2) != 0) { conn_err++; }
+        conn3 = open_conn_db_timeout(data->Test->readconn_slave_port,
+                             data->Test->maxscale_IP,
+                             (char *) "test",
+                             data->Test->maxscale_access_user,
+                             data->Test->maxscale_password,
+                             20,
+                             data->Test->ssl);
+        //if (mysql_errno(conn3) != 0) { conn_err++; }
     }
     while (data->exit_flag == 0) {
         sleep(1);

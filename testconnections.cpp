@@ -33,6 +33,7 @@ TestConnections::TestConnections(int argc, char *argv[])
     strcpy(short_path, dirname(argv[0]));
     realpath(short_path, test_dir);
     printf("test_dir is %s\n", test_dir);
+    setenv("test_dir", test_dir, 1);
     strcpy(repl->test_dir, test_dir);
     strcpy(galera->test_dir, test_dir);
     sprintf(get_logs_command, "%s/get_logs.sh", test_dir);
