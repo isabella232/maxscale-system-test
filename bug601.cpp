@@ -26,24 +26,23 @@ int main(int argc, char *argv[])
     int iterations = 1000;
     Test = new TestConnections(argc, argv);
     if (Test->smoke) {iterations = 100;}
-    Test->set_timeout(10);
+
 
     pthread_t parall_traffic1[100];
     int check_iret[100];
 
-    Test->read_env();
-    Test->print_env();
-    Test->repl->connect();
-    fflush(stdout);
+    //Test->read_env();
+    //Test->print_env();
+    //sleep(10);
+    Test->set_timeout(10);
+    //Test->repl->connect();
+    //fflush(stdout);
 
 
     Test->add_result(Test->connect_rwsplit(), "Error connecting to RWSplit\n");
 
-    Test->repl->connect();
-    for (int k = 0; k < Test->repl->N; k++) {
-        execute_query(Test->repl->nodes[k], (char *) "set global max_connect_errors=1000;");
-    }
-    Test->repl->close_connections();
+    Test->repl->execute_query_all_nodes((char *) "set global max_connect_errors=1000;");
+    Test->repl->execute_query_all_nodes((char *) "set global max_connections=1000;");
 
     Test->tprintf("Creating one more user\n");
     execute_query_silent(Test->conn_rwsplit, (char *) "DROP USER user@'%'");
@@ -59,28 +58,33 @@ int main(int argc, char *argv[])
             check_iret[j] = pthread_create( &parall_traffic1[j], NULL, parall_traffic, NULL);
         }
 
-        printf("Doing change_user in the loop\n");fflush(stdout);
+        Test->tprintf("Doing change_user in the loop\n");
         for (int i = 0; i < iterations; i++) {
             Test->set_timeout(15);
-            Test->add_result(mysql_change_user(Test->conn_rwsplit, "user", "pass2", (char *) "test"), "change_user failed!\n");
-            Test->add_result(mysql_change_user(Test->conn_rwsplit, Test->maxscale_user, Test->maxscale_password, (char *) "test"), "change_user failed!\n"); fflush(stdout);
+            Test->add_result(mysql_change_user(Test->conn_rwsplit, "user", "pass2", (char *) "test"), "change_user failed! %\n", mysql_error(Test->conn_rwsplit));
+            Test->add_result(mysql_change_user(Test->conn_rwsplit, Test->maxscale_user, Test->maxscale_password, (char *) "test"), "change_user failed! %s\n", mysql_error(Test->conn_rwsplit));
             if ((i / 100) * 100 == i) {Test->tprintf("i=%d\n", i);}
         }
 
         Test->set_timeout(30);
+        Test->tprintf("Waiting for all threads to finish\n");
         exit_flag = 1;
         for (int j = 0; j < 25; j++) {
             pthread_join(check_iret[j], NULL);
         }
+        Test->tprintf("All threads are finished\n");
         sleep(3);
         Test->set_timeout(10);
+        Test->tprintf("Change user to '%s' in order to be able to DROP user\n", Test->maxscale_user);
         mysql_change_user(Test->conn_rwsplit, Test->maxscale_user, Test->maxscale_password, NULL);
 
+        Test->tprintf("DROP user\n", Test->maxscale_user);
         Test->try_query(Test->conn_rwsplit, (char *) "DROP USER user@'%';");
         Test->close_rwsplit();
+        Test->repl->execute_query_all_nodes((char *) "set global max_connections=150;");
         Test->check_maxscale_alive();
     } else {
-        Test->add_result(Test->connect_rwsplit(), "Error connecting to RWSplit\n");
+        Test->add_result(1, "Error connecting to RWSplit\n");
     }
 
     Test->copy_all_logs(); return(Test->global_result);
@@ -92,6 +96,7 @@ void *parall_traffic( void *ptr )
     while (exit_flag == 0) {
         conn = Test->open_rwsplit_connection();
         mysql_close(conn);
+        if (Test->backend_ssl) sleep(1);
     }
     return NULL;
 }

@@ -5,6 +5,7 @@
 #include <libgen.h>
 #include "maxadmin_operations.h"
 #include "templates.h"
+#include "mariadb_func.h"
 
 TestConnections::TestConnections(int argc, char *argv[])
 {
@@ -317,7 +318,7 @@ int TestConnections::init_maxscale()
         system("sed -i \"s|type=server|type=server\\nssl=required\\nssl_cert=/###access_homedir###/certs/client-cert.pem\\nssl_key=/###access_homedir###/certs/client-key.pem\\nssl_ca_cert=/###access_homedir###/certs/ca.pem|g\" maxscale.cnf");
         tprintf("Adding ssl use_ssl_if_enabled=true\n");
         sprintf(str, "sed -i \"s|^threads=|use_ssl_if_enabled=true\\nthreads=|\" maxscale.cnf");
-        tprintf(str);
+        tprintf("%s\n", str);
         system(str);
     }
 

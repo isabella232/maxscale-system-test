@@ -13,6 +13,17 @@
 
 #include "mariadb_func.h"
 
+int set_ssl(MYSQL * conn)
+{
+    char client_key[1024];
+    char client_cert[1024];
+    char ca[1024];
+    sprintf(client_key, "./ssl-cert/client-key.pem");
+    sprintf(client_cert, "./ssl-cert/client-cert.pem");
+    sprintf(ca, "./ssl-cert/ca.pem");
+    return(mysql_ssl_set(conn, client_key, client_cert, ca, NULL, NULL));
+}
+
 /**
  * Opens connection to DB: wropper over mysql_real_connect
  *
@@ -35,7 +46,7 @@ MYSQL * open_conn_db_flags(int port, char * ip, char * db, char * User, char * P
         return(NULL);
     }
 
-    if (ssl) {mysql_ssl_set(conn, "client-key.pem", "client-cert.pem", "ca.pem", NULL, NULL);}
+    if (ssl) {set_ssl(conn);}
 
     if(!mysql_real_connect(conn,
                            ip,
@@ -53,7 +64,6 @@ MYSQL * open_conn_db_flags(int port, char * ip, char * db, char * User, char * P
 
     return(conn);
 }
-
 
 /**
  * Opens connection to DB: wropper over mysql_real_connect
@@ -84,7 +94,7 @@ MYSQL * open_conn_db_timeout(int port, char * ip, char * db, char * User, char *
     mysql_options(conn, MYSQL_OPT_READ_TIMEOUT, &read_timeout);
     mysql_options(conn, MYSQL_OPT_WRITE_TIMEOUT, &write_timeout);
 
-    if (ssl) {mysql_ssl_set(conn, "client-key.pem", "client-cert.pem", "ca.pem", NULL, NULL);}
+    if (ssl) {if (ssl) {set_ssl(conn);}}
 
     if(!mysql_real_connect(conn,
                            ip,
