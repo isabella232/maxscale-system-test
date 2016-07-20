@@ -85,9 +85,16 @@ function(add_test_script name template)
 endfunction()
 
 # Label a list of tests as heavy, long running tests
-macro(heavy_tests)
+macro(heavy_weight_tests)
   foreach(name IN ITEMS ${ARGN})
     set_property(TEST ${name} PROPERTY LABELS "HEAVY")
+  endforeach()
+endmacro()
+
+# Label tests as medium weight tests. These tests take more than 180 seconds to complete.
+macro(medium_weight_tests)
+  foreach(name IN ITEMS ${ARGN})
+    set_property(TEST ${name} PROPERTY LABELS "MEDIUM")
   endforeach()
 endmacro()
 
@@ -372,6 +379,11 @@ set_tests_properties(lots_of_rows PROPERTIES LABELS "HEAVY")
 set_tests_properties(binlog_change_master PROPERTIES LABELS "HEAVY")
 set_tests_properties(rwsplit_readonly_stress PROPERTIES LABELS "HEAVY")
 set_tests_properties(mxs657_restart PROPERTIES LABELS "HEAVY")
+
+medium_weight_tests(mxs564_big_dump rw_select_insert cdc_client ssl sql_queries
+  mariadb_tests_hartmut_galera.sh bug648 longblob mariadb_tests_hartmut.sh
+  fwf_syntax mm bug509 script fwf setup_binlog run_session_hang.sh mxs657_restart_service)
+
 
 # See if we are on a RPM-capable or DEB-capable system
 find_program(RPMBUILD rpmbuild)
