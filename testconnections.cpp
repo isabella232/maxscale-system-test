@@ -293,7 +293,7 @@ int TestConnections::print_env()
 const char * get_template_name(char * test_name)
 {
     int i = 0;
-    while ((strcmp(cnf_templates[i].test_name, test_name) != 0) && (strcmp(cnf_templates[i].test_name, "NULL") != 0))  i++;
+    while (cnf_templates[i].test_name && (strcmp(cnf_templates[i].test_name, test_name) != 0) && (strcmp(cnf_templates[i].test_name, "NULL") != 0))  i++;
     if (strcmp(cnf_templates[i].test_name, "NULL") == 0)
     {
         return default_template;

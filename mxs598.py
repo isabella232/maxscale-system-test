@@ -2,7 +2,7 @@
 
 import maxpython
 
-test1 = maxpython.MaxScaleTest("mxs598")
+test1 = maxpython.MaxScaleTest("mxs598.py")
 
 print("Connecting to MaxScale")
 for i in test1.maxscale.values():

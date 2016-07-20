@@ -87,10 +87,3 @@ class MaxScaleTest:
 # Read test environment variables
 def prepare_test(testname = "replication"):
     subprocess.call(os.getcwd() + "/non_native_setup " + str(testname), shell=True)
-
-    envfile = open("test.environment")
-
-    for var in envfile.readlines():
-        part = var.partition("=")
-        if part[0] not in os.environ:
-            os.putenv(part[0], part[2])

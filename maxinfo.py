@@ -16,7 +16,7 @@ def prepare_test(testname = "replication"):
         if part[0] not in os.environ:
             os.putenv(part[0], part[2])
 
-prepare_test("maxinfo")
+prepare_test("maxinfo.py")
 
 # Test all Maxinfo HTTP entry points
 entry_points = ["/services",
