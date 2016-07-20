@@ -382,7 +382,8 @@ set_tests_properties(mxs657_restart PROPERTIES LABELS "HEAVY")
 
 medium_weight_tests(mxs564_big_dump rw_select_insert cdc_client ssl sql_queries
   mariadb_tests_hartmut_galera.sh bug648 longblob mariadb_tests_hartmut.sh
-  fwf_syntax mm bug509 script fwf setup_binlog run_session_hang.sh mxs657_restart_service)
+  fwf_syntax mm bug509 script fwf setup_binlog run_session_hang.sh mxs657_restart_service
+  max_connections binlog_change_master binlog_semisync_txs0_ss0 ssl_load)
 
 
 # See if we are on a RPM-capable or DEB-capable system
