@@ -75,12 +75,16 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
 
     Test->tprintf("Connecting to all MaxScale services\n");
+    Test->set_timeout(10);
     Test->add_result(Test->connect_maxscale(), "Error connectiong to Maxscale\n");
 
     Test->tprintf("executing fetch * from mysql.user \n");
+    Test->set_timeout(10);
     Test->try_query(Test->conn_rwsplit, (char *) "fetch * from mysql.user;");
+    Test->set_timeout(10);
     Test->try_query(Test->conn_rwsplit, (char *) "fetch count(*) form mysql.user;");
 
+    Test->set_timeout(10);
     Test->close_maxscale_connections();
     Test->check_maxscale_alive();
     Test->copy_all_logs(); return(Test->global_result);
