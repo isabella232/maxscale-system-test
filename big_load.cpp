@@ -89,7 +89,7 @@ void *query_thread1( void *ptr )
     conn1 = open_conn_db_timeout(data->Test->rwsplit_port,
                          data->Test->maxscale_IP,
                          (char *) "test",
-                         data->Test->maxscale_access_user,
+                         data->Test->maxscale_user,
                          data->Test->maxscale_password,
                          20,
                          data->Test->ssl);
@@ -100,7 +100,7 @@ void *query_thread1( void *ptr )
         conn2 = open_conn_db_timeout(data->Test->readconn_master_port,
                              data->Test->maxscale_IP,
                              (char *) "test",
-                             data->Test->maxscale_access_user,
+                             data->Test->maxscale_user,
                              data->Test->maxscale_password,
                              20,
                              data->Test->ssl);
@@ -109,7 +109,7 @@ void *query_thread1( void *ptr )
         conn3 = open_conn_db_timeout(data->Test->readconn_slave_port,
                              data->Test->maxscale_IP,
                              (char *) "test",
-                             data->Test->maxscale_access_user,
+                             data->Test->maxscale_user,
                              data->Test->maxscale_password,
                              20,
                              data->Test->ssl);
@@ -143,10 +143,11 @@ void *query_thread2(void *ptr )
     conn1 = open_conn_db_timeout(data->Test->rwsplit_port,
                          data->Test->maxscale_IP,
                          (char *) "test",
-                         data->Test->maxscale_access_user,
+                         data->Test->maxscale_user,
                          data->Test->maxscale_password,
                          20,
                          data->Test->ssl);
+printf("error: %s\n", mysql_error(conn1));
     if (data->rwsplit_only == 0) {
         //conn2 = data->Test->open_readconn_master_connection();
         //conn3 = data->Test->open_readconn_slave_connection();
@@ -154,7 +155,7 @@ void *query_thread2(void *ptr )
         conn2 = open_conn_db_timeout(data->Test->readconn_master_port,
                              data->Test->maxscale_IP,
                              (char *) "test",
-                             data->Test->maxscale_access_user,
+                             data->Test->maxscale_user,
                              data->Test->maxscale_password,
                              20,
                              data->Test->ssl);
@@ -162,7 +163,7 @@ void *query_thread2(void *ptr )
         conn3 = open_conn_db_timeout(data->Test->readconn_slave_port,
                              data->Test->maxscale_IP,
                              (char *) "test",
-                             data->Test->maxscale_access_user,
+                             data->Test->maxscale_user,
                              data->Test->maxscale_password,
                              20,
                              data->Test->ssl);
