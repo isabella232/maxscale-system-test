@@ -321,10 +321,10 @@ int TestConnections::init_maxscale()
     {
         tprintf("Adding ssl settings\n");
         system("sed -i \"s|type=server|type=server\\nssl=required\\nssl_cert=/###access_homedir###/certs/client-cert.pem\\nssl_key=/###access_homedir###/certs/client-key.pem\\nssl_ca_cert=/###access_homedir###/certs/ca.pem|g\" maxscale.cnf");
-        tprintf("Adding ssl use_ssl_if_enabled=true\n");
-        sprintf(str, "sed -i \"s|^threads=|use_ssl_if_enabled=true\\nthreads=|\" maxscale.cnf");
-        tprintf("%s\n", str);
-        system(str);
+        //tprintf("Adding ssl use_ssl_if_enabled=true\n");
+        //sprintf(str, "sed -i \"s|^threads=|use_ssl_if_enabled=true\\nthreads=|\" maxscale.cnf");
+        //tprintf("%s\n", str);
+        //system(str);
     }
 
     sprintf(str, "sed -i \"s/###threads###/%d/\"  maxscale.cnf", threads); system(str);

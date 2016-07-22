@@ -147,7 +147,6 @@ void *query_thread2(void *ptr )
                          data->Test->maxscale_password,
                          20,
                          data->Test->ssl);
-printf("error: %s\n", mysql_error(conn1));
     if (data->rwsplit_only == 0) {
         //conn2 = data->Test->open_readconn_master_connection();
         //conn3 = data->Test->open_readconn_slave_connection();
