@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
     pthread_t threads[THREADS];
 
     Test->stop_timeout();
-    Test->ssh_maxscale(false, "maxadmin -pmariadb disable log-priority info");
+    Test->log_copy_interval = 300;
+    Test->execute_maxadmin_command((char *) "disable log-priority info");
 
     for (int i = 0; i < THREADS; i++)
     {

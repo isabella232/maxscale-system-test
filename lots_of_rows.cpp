@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     Test->tprintf("INSERTing data\n");
     for (int i = 0; i < 2000; i++)
     {
-        Test->set_timeout(10);
+        Test->set_timeout(20);
         create_insert_string(sql, 100, i);
         Test->try_query(Test->conn_rwsplit, sql);
     }
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
     sleep(20);
     Test->tprintf("Trying SELECT\n");
-    Test->set_timeout(10);
+    Test->set_timeout(30);
     Test->try_query(Test->conn_rwsplit, (char *) "SELECT * FROM t1");
 
     Test->check_maxscale_alive();

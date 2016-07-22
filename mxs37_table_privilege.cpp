@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     {
         Test->add_result(1, "%s\n", mysql_error(conn));
     }
-    //sleep(5);
+    sleep(15);
     Test->tprintf("Trying SELECT\n");
     //Test->try_query(conn, (char *) "USE test");
     Test->try_query(conn, (char *) "SELECT * FROM t1");

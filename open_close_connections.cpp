@@ -111,7 +111,7 @@ void *query_thread1( void *ptr )
                                    data->thread_id, data->i, mysql_error(conn1));
             for (k = 0; k < data->Test->repl->N; k++)
             {
-                data->Test->tprintf("conn to node%d is %u (thread is is %d)\n",
+                data->Test->tprintf("conn to node%d is %u (thread is %d)\n",
                                     k,
                                     get_conn_num(conn_node[k], data->Test->maxscale_IP, data->Test->maxscale_hostname, (char *) "test"),
                                     data->thread_id);
