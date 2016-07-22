@@ -66,13 +66,18 @@ int main(int argc, char *argv[])
 
     running = 1;
 
-    for (int i = 0; i < 10; i++)
+    int iterations = (Test->smoke ? 5 : 25);
+
+    for (int i = 0; i < iterations; i++)
     {
         Test->repl->block_node(0);
         sleep(10);
         Test->repl->unblock_node(0);
         sleep(10);
     }
+
+    Test->tprintf("Waiting for all threads to finish\n");
+    running = 0;
 
     for (int i = 0; i < THREADS; i++)
     {
