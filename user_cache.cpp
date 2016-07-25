@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
     /** Delete the service user */
     Test->tprintf("Deleting the service user\n");
-    execute_query_silent(Test->repl->nodes[0], "CREATE USER 'testuser'@'%' IDENTIFIED BY 'testpasswd'");
+    execute_query_silent(Test->repl->nodes[0], "DROP USER 'testuser'@'%'");
     sleep(10);
 
     /** Restart MaxScale and check that the user cache works */
