@@ -30,15 +30,18 @@ int main(int argc, char *argv[])
     execute_query(Test->conn_rwsplit, (char *) "flush privileges"); // does it work with Maxscale?
     // should this sleep be removed?
     Test->tprintf("Sleep\n");
-    Test->set_timeout(20);
+    Test->stop_timeout();
     sleep(5);
+    Test->set_timeout(20);
     Test->tprintf("Trying to connect using this user\n");
     MYSQL * conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test", (char *) "table_privilege", (char *) "pass", Test->ssl);
     if (mysql_errno(conn) != 0)
     {
         Test->add_result(1, "%s\n", mysql_error(conn));
     }
+    Test->stop_timeout();
     sleep(15);
+    Test->set_timeout(20);
     Test->tprintf("Trying SELECT\n");
     //Test->try_query(conn, (char *) "USE test");
     Test->try_query(conn, (char *) "SELECT * FROM t1");
