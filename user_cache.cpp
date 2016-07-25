@@ -36,20 +36,30 @@ int main(int argc, char *argv[])
     Test->start_maxscale();
     Test->connect_maxscale();
     Test->set_timeout(30);
-    Test->add_result(Test->try_query_all("SHOW DATABASES"), "Initial query without user cache should work");
+    Test->add_result(Test->try_query_all("SHOW DATABASES"), "Initial query without user cache should work\n");
     Test->stop_timeout();
 
-    /** Delete the service user */
-    Test->tprintf("Deleting the service user\n");
-    execute_query_silent(Test->repl->nodes[0], "DROP USER 'testuser'@'%'");
-    sleep(10);
+    /** Block all nodes */
+    Test->tprintf("Blocking all nodes\n");
+    for (int i = 0; i < Test->repl->N; i++)
+    {
+        Test->repl->block_node(i);
+    }
 
     /** Restart MaxScale and check that the user cache works */
-    Test->tprintf("Restart MaxScale and check that the user cache works\n");
+    Test->tprintf("Restarting MaxScale\n");
     Test->restart_maxscale();
     Test->connect_maxscale();
+    sleep(15);
+
+    Test->tprintf("Unblocking all nodes\n");
+    Test->repl->unblock_all_nodes();
+    execute_query_silent(Test->repl->nodes[0], "DROP USER 'testuser'@'%'");
+    sleep(15);
+
+    Test->tprintf("Checking that the user cache works and queries are accepted\n");
     Test->set_timeout(30);
-    Test->add_result(Test->try_query_all("SHOW DATABASES"), "Second query with user cache should work");
+    Test->add_result(Test->try_query_all("SHOW DATABASES"), "Second query with user cache should work\n");
     Test->stop_timeout();
 
     Test->copy_all_logs();
