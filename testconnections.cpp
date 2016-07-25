@@ -1258,6 +1258,13 @@ int TestConnections::try_query(MYSQL *conn, const char *sql)
     return(res);
 }
 
+int TestConnections::try_query_all(const char *sql)
+{
+    return try_query(conn_rwsplit, sql) +
+        try_query(conn_master, sql) +
+        try_query(conn_slave, sql);
+}
+
 int TestConnections::find_master_maxadmin(Mariadb_nodes * nodes)
 {
     char show_server[32];

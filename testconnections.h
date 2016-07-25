@@ -586,6 +586,13 @@ public:
     int try_query(MYSQL *conn, const char *sql);
 
     /**
+     * @brief try_query_all Executes SQL query on all MaxScale connections
+     * @param sql SQL string
+     * @return 0 if ok
+     */
+    int try_query_all(const char *sql);
+
+    /**
      * @brief find_master_maxadmin Tries to find node with 'Master' status using Maxadmin connand 'show server'
      * @param nodes Mariadb_nodes object
      * @return node index if one master found, -1 if no master found or several masters found
