@@ -112,7 +112,7 @@ void check_pers_conn(TestConnections* Test, int pers_conn_expected[], char * ser
         Test->tprintf("%s: %s\n", str, result);
         sscanf(result, "%d", &pers_conn[i]);
         if (pers_conn[i] != pers_conn_expected[i]) {
-            Test->add_result(1, "%s%d has %d, but expected %d\n", server, i+1, pers_conn[i], pers_conn_expected[i]);
+            Test->add_result(1, "Persistent measured pool size: %s%d has %d, but expected %d\n", server, i+1, pers_conn[i], pers_conn_expected[i]);
         }
     }
 }
