@@ -616,6 +616,7 @@ int TestConnections::start_binlog()
     }
 
     try_query(binlog, "start slave");
+    try_query(binlog, "show slave status");
 
     repl->no_set_pos = false;
 
@@ -633,6 +634,7 @@ int TestConnections::start_binlog()
         repl->set_slave(repl->nodes[i],  maxscale_IP, binlog_port, log_file, log_pos);
     }
     repl->close_connections();
+    try_query(binlog, "show slave status");
     mysql_close(binlog);
     repl->no_set_pos = no_pos;
     return(global_result);
