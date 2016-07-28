@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
             {
                 Test->add_result(1, "Transaction %d did not put data into slave\n", j);
             }
-            if ((j == (failed_transaction_num - 1) && rep_d != 0))
+            if ((j == (failed_transaction_num - 1)) && (rep_d != 0) && (rep_d != 50000))
             {
                 Test->add_result(1, "Incomplete transaction detected - %d\n", j);
             }
