@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     Test->stop_maxscale();
 
     /** Create the test user and give required grants */
-    Test->tprintf("Create the test user and give required grants\n");
+    Test->tprintf("Creating 'testuser'@'%'\n");
     Test->repl->connect();
     execute_query_silent(Test->repl->nodes[0], "CREATE USER 'testuser'@'%' IDENTIFIED BY 'testpasswd'");
     execute_query_silent(Test->repl->nodes[0], "GRANT SELECT ON mysql.user TO 'testuser'@'%'");
@@ -49,16 +49,19 @@ int main(int argc, char *argv[])
     /** Restart MaxScale and check that the user cache works */
     Test->tprintf("Restarting MaxScale\n");
     Test->restart_maxscale();
-    Test->connect_maxscale();
-    sleep(15);
+    sleep(5);
 
     Test->tprintf("Unblocking all nodes\n");
     Test->repl->unblock_all_nodes();
+    sleep(5);
+
+    Test->tprintf("Dropping 'testuser'@'%'\n");
     execute_query_silent(Test->repl->nodes[0], "DROP USER 'testuser'@'%'");
-    sleep(15);
+    sleep(5);
 
     Test->tprintf("Checking that the user cache works and queries are accepted\n");
     Test->set_timeout(30);
+    Test->connect_maxscale();
     Test->add_result(Test->try_query_all("SHOW DATABASES"), "Second query with user cache should work\n");
     Test->stop_timeout();
 
