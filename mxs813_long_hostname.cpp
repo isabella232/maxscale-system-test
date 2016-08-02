@@ -35,10 +35,8 @@ int main(int argc, char *argv[])
     Test->tprintf("show slave status\n");
     Test->try_query(binlog, "show slave status");
     Test->tprintf("show slave status error: %s\n", mysql_error(binlog));
-    Test->try_query(binlog, "show slave status;");
-    Test->tprintf("show slave status; error: %s\n", mysql_error(binlog));
-    Test->try_query(binlog, "show slave status\\G");
-    Test->tprintf("show slave status\\g error: %s\n", mysql_error(binlog));
+    execute_query(binlog, "show slave status;");
+    execute_query(binlog, "show slave status\\G");
 
     mysql_close(binlog);
 
