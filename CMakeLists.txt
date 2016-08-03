@@ -98,6 +98,13 @@ macro(medium_weight_tests)
   endforeach()
 endmacro()
 
+# Label tests as light weight tests. These tests take less than 90 seconds to complete.
+macro(light_weight_tests)
+  foreach(name IN ITEMS ${ARGN})
+    set_property(TEST ${name} PROPERTY LABELS "LIGHT")
+  endforeach()
+endmacro()
+
 add_test_executable_notest(t.cpp t replication)
 add_test_executable_notest(non_native_setup.cpp non_native_setup replication)
 
@@ -387,6 +394,46 @@ medium_weight_tests(mxs564_big_dump rw_select_insert cdc_client ssl sql_queries
   fwf_syntax mm bug509 script fwf setup_binlog run_session_hang.sh mxs657_restart_service
   max_connections binlog_change_master binlog_semisync_txs0_ss0 ssl_load)
 
+light_weight_tests(
+  bug359
+  bug448
+  bug469
+  bug495
+  bug507
+  bug526
+  bug699
+  bug729
+  change_user
+  connect_to_nonexisting_db
+  connection_limit
+  encrypted_passwords
+  galera_priority
+  kill_master
+  load_balancing
+  maxinfo.py
+  maxscale_process_user
+  mxs118
+  mxs127
+  mxs244_prepared_stmt_loop
+  mxs314
+  mxs37_table_privilege
+  mxs47
+  mxs682_cyrillic
+  mxs722
+  mxs729_maxadmin
+  mxs791.sh
+  namedserverfilter
+  prepared_statement
+  readconnrouter_master
+  readconnrouter_slave
+  regexfilter1
+  run_ctrl_c.sh
+  rwsplit_conn_num
+  rwsplit_connect
+  server_weight
+  setup_binlog_crc_none
+  test_hints
+  )
 
 # See if we are on a RPM-capable or DEB-capable system
 find_program(RPMBUILD rpmbuild)
