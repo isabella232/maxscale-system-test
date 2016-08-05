@@ -35,7 +35,7 @@ then
 fi
 
 # Test that all services work
-mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4006 -e "select 1"
+mysql -u$node_user -p$node_password -h $maxscale_IP -P 4006 -e "select 1"
 if [[ $? -ne 0 ]]
 then
     echo "Error: Failed to execute query on service listening at $maxscale_IP:4006"
@@ -57,14 +57,14 @@ then
 fi
 
 # Test that all services still work after the reload.
-mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4006 -e "select 1"
+mysql -u$node_user -p$node_password -h $maxscale_IP -P 4006 -e "select 1"
 if [[ $? -ne 0 ]]
 then
     echo "Error: Failed to execute query on service listening at $maxscale_IP:4006"
     exit 1
 fi
 
-mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4008 -e "select 1"
+mysql -u$node_user -p$node_password -h $maxscale_IP -P 4008 -e "select 1"
 if [[ $? -ne 0 ]]
 then
     echo "Error: Failed to execute query on service listening at $maxscale_IP:4008"
@@ -88,14 +88,14 @@ fi
 # Test that the remaining service works and that the previously added service
 # is removed.
 
-mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4006 -e "select 1"
+mysql -u$node_user -p$node_password -h $maxscale_IP -P 4006 -e "select 1"
 if [[ $? -ne 0 ]]
 then
     echo "Error: Failed to execute query on service listening at $maxscale_IP:4006"
     exit 1
 fi
 
-mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4008 -e "select 1"
+mysql -u$node_user -p$node_password -h $maxscale_IP -P 4008 -e "select 1"
 if [[ $? -eq 0 ]]
 then
     echo "Error: Successfully execute query on service listening at $maxscale_IP:4008"

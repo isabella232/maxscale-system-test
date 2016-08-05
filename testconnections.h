@@ -20,12 +20,12 @@
  * - StartVMCommand - Command to restart virtual machine (should handle one parameter: IP address of virtual machine to kill)
  * - GetLogsCommand - Command to copy log files from node virtual machines (should handle one parameter: IP address of virtual machine to kill)
  * - SysbenchDir - path to SysBench directory (sysbanch should be >= 0.5)
- * - repl_N - Number of Master/Slave setup nodes
- * - repl_NNN - IP address of node NNN (NNN - 3 digits node index starting from 000)
- * - repl_port_NNN - MariaDB port for node NNN
- * - repl_sshkey_NNN - ssh key to access node NNN (should be sutable for 'root' and 'ec2-user')
- * - repl_User - User name to access Master/Slav setup
- * - repl_Password - Password to access Master/Slave setup
+ * - node_N - Number of Master/Slave setup nodes
+ * - node_NNN - IP address of node NNN (NNN - 3 digits node index starting from 000)
+ * - node_port_NNN - MariaDB port for node NNN
+ * - node_sshkey_NNN - ssh key to access node NNN (should be sutable for 'root' and 'ec2-user')
+ * - node_User - User name to access Master/Slav setup
+ * - node_Password - Password to access Master/Slave setup
  * - galera_N, galera_NNN, galera_port_NNN, galera_sshkey_NNN, galera_User, galera_Password - same for Galera setup
  *
  */
@@ -138,7 +138,7 @@ public:
     /**
      * @brief Maxscale_sshkey   ssh key for Maxscale machine
      */
-    char maxscale_sshkey[4096];
+    char maxscale_keyfile[4096];
 
     /**
      * @brief GetLogsCommand    Command to copy log files from node virtual machines (should handle one parameter: IP address of virtual machine to kill)

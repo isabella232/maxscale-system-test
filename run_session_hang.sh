@@ -14,7 +14,7 @@ fi
 export ssl_options="--ssl-cert=$test_dir/ssl-cert/client-cert.pem --ssl-key=$test_dir/ssl-cert/client-key.pem"
 
 set -x
-echo "drop table if exists t1; create table t1(id integer primary key); " | mysql -u$repl_user -p$repl_password -h$maxscale_IP -P 4006 $ssl_options test
+echo "drop table if exists t1; create table t1(id integer primary key); " | mysql -u$node_user -p$node_password -h$maxscale_IP -P 4006 $ssl_options test
 
 if [ $? -ne 0 ]
 then
@@ -22,7 +22,7 @@ then
     exit 1
 fi
 
-echo "drop table if exists t1; create table t1(id integer primary key); " | mysql -u$repl_user -p$repl_password -h$maxscale_IP -P 4006 $ssl_options mysql
+echo "drop table if exists t1; create table t1(id integer primary key); " | mysql -u$node_user -p$node_password -h$maxscale_IP -P 4006 $ssl_options mysql
 
 if [ $? -ne 0 ]
 then
@@ -65,7 +65,7 @@ fi
 sleep 15
 
 
-echo "show databases;" |  mysql -u$repl_user -p$repl_password -h$maxscale_IP -P 4006 $ssl_options
+echo "show databases;" |  mysql -u$node_user -p$node_password -h$maxscale_IP -P 4006 $ssl_options
 if [ $? -ne 0 ] ; then 
         res=1
 fi

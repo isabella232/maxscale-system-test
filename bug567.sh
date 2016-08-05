@@ -17,7 +17,7 @@ echo "removing log directory from /dev/shm/"
 ssh -i $maxscale_sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $maxscale_access_user@$maxscale_IP "rm -rf /dev/shm/$pid"
 sleep 1
 echo "checking if Maxscale is alive"
-echo "show databases;" | mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4006 $ssl_options
+echo "show databases;" | mysql -u$node_user -p$node_password -h $maxscale_IP -P 4006 $ssl_options
 res=$?
 
 $test_dir/copy_logs.sh bug567

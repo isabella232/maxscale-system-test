@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
-my $host = $ENV{'repl_000'};
-my $port = $ENV{'repl_port_000'};
-my $user = $ENV{'repl_user'};
-my $password = $ENV{'repl_password'};
+my $host = $ENV{'node_000'};
+my $port = $ENV{'node_port_000'};
+my $user = $ENV{'node_user'};
+my $password = $ENV{'node_password'};
 my $test_dir = $ENV{'test_dir'};
 
 use strict;

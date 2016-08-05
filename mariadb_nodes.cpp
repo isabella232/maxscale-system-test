@@ -60,42 +60,42 @@ int Mariadb_nodes::read_env()
     if ((N > 0) && (N < 255)) {
         for (int i = 0; i < N; i++) {
             //reading IPs
-            sprintf(env_name, "%s_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_network", prefix, i);
             env = getenv(env_name); if (env != NULL) {sprintf(IP[i], "%s", env);}
 
             //reading private IPs
-            sprintf(env_name, "%s_private_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_private_ip", prefix, i);
             env = getenv(env_name); if (env != NULL) {sprintf(IP_private[i], "%s", env);} else {sprintf(IP_private[i], "%s", IP[i]);}
 
             //reading ports
-            sprintf(env_name, "%s_port_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_port", prefix, i);
             env = getenv(env_name); if (env != NULL) {
                 sscanf(env, "%d", &port[i]);
             } else {
                 port[i] = 3306;
             }
             //reading sshkey
-            sprintf(env_name, "%s_sshkey_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_keyfile", prefix, i);
             env = getenv(env_name); if (env != NULL) {sprintf(sshkey[i], "%s", env);} else {sprintf(sshkey[i], "vagrant.pem");}
 
             //reading start_db_command
-            sprintf(env_name, "%s_start_db_command_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_start_db_command", prefix, i);
             env = getenv(env_name); if (env != NULL) {sprintf(start_db_command[i], "%s", env);} else {sprintf(start_db_command[i], "%s", "service mysql start");}
 
             //reading stop_db_command
-            sprintf(env_name, "%s_stop_db_command_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_stop_db_command", prefix, i);
             env = getenv(env_name); if (env != NULL) {sprintf(stop_db_command[i], "%s", env);} else {sprintf(start_db_command[i], "%s", "service mysql stop");}
 
-            sprintf(env_name, "%s_kill_vm_command_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_kill_vm_command", prefix, i);
             env = getenv(env_name); if (env != NULL) {sscanf(env, "%s", kill_vm_command[i]); } else {sprintf(kill_vm_command[i], "exit 1"); }
 
-            sprintf(env_name, "%s_start_vm_command_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_start_vm_command", prefix, i);
             env = getenv(env_name); if (env != NULL) {sscanf(env, "%s", start_vm_command[i]); } else {sprintf(start_vm_command[i], "exit 1"); }
 
-            sprintf(env_name, "%s_access_user_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_whoami", prefix, i);
             env = getenv(env_name); if (env != NULL) {sscanf(env, "%s", access_user[i]); } else {sprintf(access_user[i], "root"); }
 
-            sprintf(env_name, "%s_access_sudo_%03d", prefix, i);
+            sprintf(env_name, "%s_%03d_access_sudo", prefix, i);
             env = getenv(env_name); if (env != NULL) {sscanf(env, "%s", access_sudo[i]); } else {sprintf(access_sudo[i], " "); }
 
             if (strcmp(access_user[i], "root") == 0) {
@@ -234,7 +234,7 @@ int Mariadb_nodes::start_replication()
     sprintf(str, "%s/create_user.sh", test_dir);
     copy_to_node(str, (char *) "~/", 0);
 
-    sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user.sh", user_name, password);
+    sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", user_name, password);
     printf("cmd: %s\n", str);
     ssh_node(0, str, FALSE);
 
@@ -245,7 +245,7 @@ int Mariadb_nodes::start_replication()
         sprintf(str, "%s/create_user.sh", test_dir);
         copy_to_node(str, (char *) "~/", i);
 
-        sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user.sh", user_name, password);
+        sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", user_name, password);
         printf("cmd: %s\n", str);
         ssh_node(i, str, FALSE);
     }
@@ -705,7 +705,7 @@ int Mariadb_nodes::configure_ssl(bool require)
         sprintf(str, "%s/create_user_ssl.sh", test_dir);
         copy_to_node(str, (char *) "~/", 0);
 
-        sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user_ssl.sh", user_name, password);
+        sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user_ssl.sh", user_name, password);
         printf("cmd: %s\n", str);
         ssh_node(0, str, FALSE);
     }

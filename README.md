@@ -24,28 +24,28 @@ System level tests for MaxScale
 ## Environmental variables
 |variable|meaning|
 |--------|-------|
-|repl_N|Number of machines for Master/Slave|
-|repl_XXX|IP address of Master/Slave machine number XXX|
-|repl_private_XXX|private IP address of Master/Slave machine XXX for AWS machines (for everything else - same as repl_XXX|
-|repl_port_XXX|MariaDB port of Master/Slave machine XXX|
-|repl_access_user_XXX|user name to access Master/Slave machine XXX via ssh|
-|repl_access_sudo_XXX|'sudo ' if repl_access_user_XXX does not have root rights, empty string if repl_access_user_XXX has root rights|
-|repl_sshkey_XXX|full name of secret key to access Master/Slave machine XXX via ssh|
-|repl_start_db_command_XXX|bash command to start DB server on Master/Slave machine XXX|
-|repl_stop_db_command_XXX|bash command to stop DB server on Master/Slave machine XXX|
-|repl_user|DB user name to access Master/Slave nodes (have to have all priveligies with GRANT option)|
-|repl_password|password for repl_user|
+|node_N|Number of machines for Master/Slave|
+|node_XXX_network|IP address of Master/Slave machine number XXX|
+|node_XXX_private_ip|private IP address of Master/Slave machine XXX for AWS machines (for everything else - same as node_XXX|
+|node_XXX_port|MariaDB port of Master/Slave machine XXX|
+|node_XXX_whoami|user name to access Master/Slave machine XXX via ssh|
+|node_XXX_access_sudo|'sudo ' if node_access_user_XXX does not have root rights, empty string if node_access_user_XXX has root rights|
+|node_XXX_keyfile|full name of secret key to access Master/Slave machine XXX via ssh|
+|node_XXX_start_db_command|bash command to start DB server on Master/Slave machine XXX|
+|node_XXX_stop_db_command|bash command to stop DB server on Master/Slave machine XXX|
+|node_user|DB user name to access Master/Slave nodes (have to have all priveligies with GRANT option)|
+|node_password|password for node_user|
 |galera_N|Number of machines for Galera|
-|galera_XXX|IP address of Galera machine number XXX|
-|galera_private_XXX|private IP address of Galera machine XXX for AWS machines (for everything else - same as repl_XXX|
-|galera_port_XXX|MariaDB port of Galera machine XXX|
-|galera_access_user_XXX|user name to access Galera machine XXX via ssh|
-|galera_access_sudo_XXX|'sudo ' if repl_access_user_XXX does not have root rights, empty string if repl_access_user_XXX has root rights|
-|galera_sshkey_XXX|full name of secret key to access Galera machine XXX via ssh|
-|galera_start_db_command_XXX|bash command to start DB server on Galera machine XXX|
-|galera_stop_db_command_XXX|bash command to stop DB server on Galera machine XXX|
+|galera_XXX_network|IP address of Galera machine number XXX|
+|galera_XXX_private|private IP address of Galera machine XXX for AWS machines (for everything else - same as node_XXX|
+|galera_XXX_port|MariaDB port of Galera machine XXX|
+|galera_XXX_whoami|user name to access Galera machine XXX via ssh|
+|galera_XXX_access|'sudo ' if node_access_user_XXX does not have root rights, empty string if node_access_user_XXX has root rights|
+|galera_XXX_keyfile|full name of secret key to access Galera machine XXX via ssh|
+|galera_XXX_start_db_command|bash command to start DB server on Galera machine XXX|
+|galera_XXX_stop_db_command|bash command to stop DB server on Galera machine XXX|
 |galera_user|DB user name to access Galera nodes (have to have all priveligies with GRANT option)|
-|galera_password|password for repl_user|
+|galera_password|password for node_user|
 |maxdir|Maxscale home dir|
 |maxdir_bin|path to Maxscale binary files|
 |maxscale_cnf|full name of Maxscale configuration file (maxscale.cnf)|

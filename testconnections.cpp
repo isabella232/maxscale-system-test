@@ -12,7 +12,7 @@ TestConnections::TestConnections(int argc, char *argv[])
     //char str[1024];
     gettimeofday(&start_time, NULL);
     galera = new Mariadb_nodes((char *)"galera");
-    repl   = new Mariadb_nodes((char *)"repl");
+    repl   = new Mariadb_nodes((char *)"node");
 
     test_name = basename(argv[0]);
 
@@ -123,7 +123,7 @@ TestConnections::TestConnections(int argc, char *argv[])
     //sprintf(str, "%s/create_user_galera.sh", test_dir);
     //galera->copy_to_node(str, (char *) "~/", 0);
 
-    //sprintf(str, "export repl_user=\"%s\"; export repl_password=\"%s\"; ./create_user.sh", repl->user_name, repl->password);
+    //sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", repl->user_name, repl->password);
     //tprintf("cmd: %s\n", str);
     //repl->ssh_node(0, str, FALSE);
 
@@ -245,7 +245,7 @@ int TestConnections::read_env()
     env = getenv("maxscale_user"); if (env != NULL) {sprintf(maxscale_user, "%s", env); } else {sprintf(maxscale_user, "skysql");}
     env = getenv("maxscale_password"); if (env != NULL) {sprintf(maxscale_password, "%s", env); } else {sprintf(maxscale_password, "skysql");}
     env = getenv("maxadmin_password"); if (env != NULL) {sprintf(maxadmin_password, "%s", env); } else {sprintf(maxadmin_password, "mariadb");}
-    env = getenv("maxscale_sshkey"); if (env != NULL) {sprintf(maxscale_sshkey, "%s", env); } else {sprintf(maxscale_sshkey, "skysql");}
+    env = getenv("maxscale_keyfile"); if (env != NULL) {sprintf(maxscale_keyfile, "%s", env); } else {sprintf(maxscale_keyfile, "skysql");}
 
     //env = getenv("get_logs_command"); if (env != NULL) {sprintf(get_logs_command, "%s", env);}
 
@@ -256,7 +256,7 @@ int TestConnections::read_env()
     env = getenv("maxscale_log_dir"); if (env != NULL) {sprintf(maxscale_log_dir, "%s", env);} else {sprintf(maxscale_log_dir, "%s/logs/", maxdir);}
     env = getenv("maxscale_binlog_dir"); if (env != NULL) {sprintf(maxscale_binlog_dir, "%s", env);} else {sprintf(maxscale_binlog_dir, "%s/Binlog_Service/", maxdir);}
     //env = getenv("test_dir"); if (env != NULL) {sprintf(test_dir, "%s", env);}
-    env = getenv("maxscale_access_user"); if (env != NULL) {sprintf(maxscale_access_user, "%s", env);}
+    env = getenv("maxscale_whoami"); if (env != NULL) {sprintf(maxscale_access_user, "%s", env);}
     env = getenv("maxscale_access_sudo"); if (env != NULL) {sprintf(maxscale_access_sudo, "%s", env);}
     ssl = false;
     env = getenv("ssl"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {ssl = true;}
@@ -283,7 +283,7 @@ int TestConnections::print_env()
     printf("Maxscale IP\t%s\n", maxscale_IP);
     printf("Maxscale User name\t%s\n", maxscale_user);
     printf("Maxscale Password\t%s\n", maxscale_password);
-    printf("Maxscale SSH key\t%s\n", maxscale_sshkey);
+    printf("Maxscale SSH key\t%s\n", maxscale_keyfile);
     printf("Maxadmin password\t%s\n", maxadmin_password);
     printf("Access user\t%s\n", maxscale_access_user);
     repl->print_env();
@@ -847,11 +847,11 @@ void TestConnections::generate_ssh_cmd(char * cmd, char * ssh, bool sudo)
     if (sudo)
     {
         sprintf(cmd, "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s '%s %s'",
-                maxscale_sshkey, maxscale_access_user, maxscale_IP, maxscale_access_sudo, ssh);
+                maxscale_keyfile, maxscale_access_user, maxscale_IP, maxscale_access_sudo, ssh);
     } else
     {
         sprintf(cmd, "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s '%s\'",
-                maxscale_sshkey, maxscale_access_user, maxscale_IP, ssh);
+                maxscale_keyfile, maxscale_access_user, maxscale_IP, ssh);
     }
 }
 
@@ -930,7 +930,7 @@ int TestConnections::copy_to_maxscale(char* src, char* dest)
 
     sprintf(sys, "scp -i %s -o UserKnownHostsFile=/dev/null "
             "-o StrictHostKeyChecking=no -o LogLevel=quiet %s %s@%s:%s",
-            maxscale_sshkey, src, maxscale_access_user, maxscale_IP, dest);
+            maxscale_keyfile, src, maxscale_access_user, maxscale_IP, dest);
 
     return system(sys);
 }
@@ -942,7 +942,7 @@ int TestConnections::copy_from_maxscale(char* src, char* dest)
 
     sprintf(sys, "scp -i %s -o UserKnownHostsFile=/dev/null "
             "-o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s:%s %s",
-            maxscale_sshkey, maxscale_access_user, maxscale_IP, src, dest);
+            maxscale_keyfile, maxscale_access_user, maxscale_IP, src, dest);
 
     return system(sys);
 }
