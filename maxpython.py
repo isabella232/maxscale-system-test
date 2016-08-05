@@ -69,10 +69,10 @@ class MaxScaleTest:
 
         # Master-Slave nodes
         self.repl = dict()
-        self.repl['node0'] = SQLConnection(host = os.getenv("repl_000"), port = os.getenv("repl_port_000"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
-        self.repl['node1'] = SQLConnection(host = os.getenv("repl_001"), port = os.getenv("repl_port_001"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
-        self.repl['node2'] = SQLConnection(host = os.getenv("repl_002"), port = os.getenv("repl_port_002"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
-        self.repl['node3'] = SQLConnection(host = os.getenv("repl_003"), port = os.getenv("repl_port_003"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.repl['node0'] = SQLConnection(host = os.getenv("node_000"), port = os.getenv("node_port_000"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.repl['node1'] = SQLConnection(host = os.getenv("node_001"), port = os.getenv("node_port_001"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.repl['node2'] = SQLConnection(host = os.getenv("node_002"), port = os.getenv("node_port_002"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.repl['node3'] = SQLConnection(host = os.getenv("node_003"), port = os.getenv("node_port_003"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
 
         # Galera nodes
         self.galera = dict()

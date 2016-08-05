@@ -21,13 +21,13 @@ export ssl="yes"
 
 # Number of nodes
 export galera_N=4
-export repl_N=4
+export node_N=4
 
 # IP of Master/Slave replication setup nodes
-export repl_000="192.168.122.$r1"
-export repl_001="192.168.122.$r2"
-export repl_002="192.168.122.$r3"
-export repl_003="192.168.122.$r4"
+export node_000="192.168.122.$r1"
+export node_001="192.168.122.$r2"
+export node_002="192.168.122.$r3"
+export node_003="192.168.122.$r4"
 
 # IP of Galera cluster nodes
 export galera_000="192.168.122.$g1"
@@ -35,10 +35,10 @@ export galera_001="192.168.122.$g2"
 export galera_002="192.168.122.$g3"
 export galera_003="192.168.122.$g4"
 
-export repl_private_000="192.168.122.$r1"
-export repl_private_001="192.168.122.$r2"
-export repl_private_002="192.168.122.$r3"
-export repl_private_003="192.168.122.$r4"
+export node_private_000="192.168.122.$r1"
+export node_private_001="192.168.122.$r2"
+export node_private_002="192.168.122.$r3"
+export node_private_003="192.168.122.$r4"
 
 # IP of Galera cluster nodes
 export galera_private_000="192.168.122.$g1"
@@ -48,10 +48,10 @@ export galera_private_003="192.168.122.$g4"
 
 
 # MariaDB/Mysql port of of Master/Slave replication setup nodes
-export repl_port_000=3306
-export repl_port_001=3306
-export repl_port_002=3306
-export repl_port_003=3306
+export node_port_000=3306
+export node_port_001=3306
+export node_port_002=3306
+export node_port_003=3306
 
 # MariaDB/Mysql Galera cluster nodes
 export galera_port_000=3306
@@ -89,8 +89,8 @@ fi
 export maxscale_IP="192.168.122.$IP_end"
 
 # User name and Password for Master/Slave replication setup (should have all PRIVILEGES)
-export repl_user="skysql"
-export repl_password="skysql"
+export node_user="skysql"
+export node_password="skysql"
 
 # User name and Password for Galera setup (should have all PRIVILEGES)
 export galera_user="skysql"
@@ -106,8 +106,8 @@ export kill_vm_command="/home/ec2-user/test-scripts/kill_vm.sh"
 # command to restore VM (obsolete)
 export start_vm_command="/home/ec2-user/test-scripts/start_vm.sh"
 
-export repl_kill_vm_command="/home/ec2-user/test-scripts/kill_vm.sh"
-export repl_start_vm_command="/home/ec2-user/test-scripts/start_vm.sh"
+export node_kill_vm_command="/home/ec2-user/test-scripts/kill_vm.sh"
+export node_start_vm_command="/home/ec2-user/test-scripts/start_vm.sh"
 export galera_kill_vm_command="/home/ec2-user/test-scripts/kill_vm.sh"
 export galera_start_vm_command="/home/ec2-user/test-scripts/start_vm.sh"
 
@@ -115,8 +115,8 @@ export start_db_command="/etc/init.d/mysql start"
 export stop_db_command="/etc/init.d/mysql stop"
 
 if [ x$mysql51_only == "xyes" ] ; then 
-#	export start_db_command="/etc/init.d/mysqld start --report-user=$repl_user --report-password=$repl_password --report-host=$repl_000"
-	export start_db_command="echo \"nohup mysqld_safe --report-user=skysql --report-password=skysql --report-host=$repl_000 > /dev/null 2> /dev/null & \" > mysql_start; echo \"sleep 10\" >> mysql_start; chmod a+x mysql_start; ./mysql_start"
+#	export start_db_command="/etc/init.d/mysqld start --report-user=$node_user --report-password=$node_password --report-host=$node_000"
+	export start_db_command="echo \"nohup mysqld_safe --report-user=skysql --report-password=skysql --report-host=$node_000 > /dev/null 2> /dev/null & \" > mysql_start; echo \"sleep 10\" >> mysql_start; chmod a+x mysql_start; ./mysql_start"
 	export stop_db_command="killall mysqld; sleep 20"
 fi
 
@@ -130,10 +130,10 @@ export SSHKeysDir="$HOME/KEYS"
 export TestVMsDir="/home/ec2-user/test-machines"
 
 # links to ssh keys files for all machines
-export repl_sshkey_000=$SSHKeysDir/`cat $TestVMsDir/image_name_$repl_000`
-export repl_sshkey_001=$SSHKeysDir/`cat $TestVMsDir/image_name_$repl_001`
-export repl_sshkey_002=$SSHKeysDir/`cat $TestVMsDir/image_name_$repl_002`
-export repl_sshkey_003=$SSHKeysDir/`cat $TestVMsDir/image_name_$repl_003`
+export node_sshkey_000=$SSHKeysDir/`cat $TestVMsDir/image_name_$node_000`
+export node_sshkey_001=$SSHKeysDir/`cat $TestVMsDir/image_name_$node_001`
+export node_sshkey_002=$SSHKeysDir/`cat $TestVMsDir/image_name_$node_002`
+export node_sshkey_003=$SSHKeysDir/`cat $TestVMsDir/image_name_$node_003`
 
 export galera_sshkey_000=$SSHKeysDir/`cat $TestVMsDir/image_name_$galera_000`
 export galera_sshkey_001=$SSHKeysDir/`cat $TestVMsDir/image_name_$galera_001`

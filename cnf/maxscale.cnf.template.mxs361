@@ -155,32 +155,32 @@ monitor_interval=100
 
 [server1]
 type=server
-address=###repl_server_IP_1###
-port=###repl_server_port_1###
+address=###node_server_IP_1###
+port=###node_server_port_1###
 protocol=MySQLBackend
 #persistpoolmax=1
 #persistmaxtime=3660
 
 [server2]
 type=server
-address=###repl_server_IP_2###
-port=###repl_server_port_2###
+address=###node_server_IP_2###
+port=###node_server_port_2###
 protocol=MySQLBackend
 #persistpoolmax=5
 #persistmaxtime=60
 
 [server3]
 type=server
-address=###repl_server_IP_3###
-port=###repl_server_port_3###
+address=###node_server_IP_3###
+port=###node_server_port_3###
 protocol=MySQLBackend
 #persistpoolmax=10
 #persistmaxtime=60
 
 [server4]
 type=server
-address=###repl_server_IP_4###
-port=###repl_server_port_4###
+address=###node_server_IP_4###
+port=###node_server_port_4###
 protocol=MySQLBackend
 #persistpoolmax=30
 #persistmaxtime=30

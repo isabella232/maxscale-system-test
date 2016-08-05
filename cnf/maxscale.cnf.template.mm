@@ -132,14 +132,14 @@ socket=default
 
 [server1]
 type=server
-address=###repl_server_IP_1###
-port=###repl_server_port_1###
+address=###node_server_IP_1###
+port=###node_server_port_1###
 protocol=MySQLBackend
 
 [server2]
 type=server
-address=###repl_server_IP_2###
-port=###repl_server_port_2###
+address=###node_server_IP_2###
+port=###node_server_port_2###
 protocol=MySQLBackend
 
 [QLA]

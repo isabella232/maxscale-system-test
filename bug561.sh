@@ -15,11 +15,11 @@ export ssl_options="--ssl-cert=$test_dir/ssl-cert/client-cert.pem --ssl-key=$tes
 #echo "Waiting for 15 seconds"
 #sleep 15
 
-mariadb_err=`mysql -u$repl_user -p$repl_password -h $repl_000 $ssl_options non_existing_db 2>&1`
-maxscale_err=`mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4006 $ssl_options non_existing_db 2>&1`
+mariadb_err=`mysql -u$node_user -p$node_password -h $node_000_network $ssl_options non_existing_db 2>&1`
+maxscale_err=`mysql -u$node_user -p$node_password -h $maxscale_IP -P 4006 $ssl_options non_existing_db 2>&1`
 
-maxscale_err1=`mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4008 $ssl_options non_existing_db 2>&1`
-maxscale_err2=`mysql -u$repl_user -p$repl_password -h $maxscale_IP -P 4009 $ssl_options non_existing_db 2>&1`
+maxscale_err1=`mysql -u$node_user -p$node_password -h $maxscale_IP -P 4008 $ssl_options non_existing_db 2>&1`
+maxscale_err2=`mysql -u$node_user -p$node_password -h $maxscale_IP -P 4009 $ssl_options non_existing_db 2>&1`
 
 echo "MariaDB message"
 echo "$mariadb_err"

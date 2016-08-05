@@ -34,8 +34,8 @@ Template can contain following varables:
 |Variable|Maeaning|
 |--------|--------|
 |###threads###| Number of Maxscale treads|
-|###repl_server_IP_N###|IP of Master/Slave node N|
-|###repl_server_port_N###|port of Master/Slave node N|
+|###node_server_IP_N###|IP of Master/Slave node N|
+|###node_server_port_N###|port of Master/Slave node N|
 |###galera_server_IP_N###|IP of Galera node N|
 |###galera_server_port_N###|port of Galera node N|
 
@@ -186,12 +186,12 @@ they are availve from [mariadb_func.h](mariadb_func.h)
 #### Properties 
 |Name|Short description|Corresponding env variable|
 |----|-----|----|
-|N|Number of nodes|repl_N <br> galera_N|
-|user_name|DB user name|repl_user <br> galera_user|
-|password|password for DB user|repl_password <br> galera_password|
-|IP[ ]|IP address of the node|repl_XXX <br> galera_XXX|
-|IP_private[ ]|private IP of the node (for AWS nodes)|repl_private_XXX <br> galera_private_XXX|
-|port[ ]|MariaDB port for the node|repl_port_XXX <br> galera_port_XXX|
+|N|Number of nodes|node_N <br> galera_N|
+|user_name|DB user name|node_user <br> galera_user|
+|password|password for DB user|node_password <br> galera_password|
+|IP[ ]|IP address of the node|node_XXX <br> galera_XXX|
+|IP_private[ ]|private IP of the node (for AWS nodes)|node_private_XXX <br> galera_private_XXX|
+|port[ ]|MariaDB port for the node|node_port_XXX <br> galera_port_XXX|
 |nodes[ ]|MYSQL handler| - |
 
 ### Maxadmin operations functions

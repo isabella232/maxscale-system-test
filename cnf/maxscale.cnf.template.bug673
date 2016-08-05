@@ -132,25 +132,25 @@ socket=default
 [server1]
 type=server
 address=1.1.1.1
-port=###repl_server_port_1###
+port=###node_server_port_1###
 protocol=MySQLBackend
 
 [server2]
 type=server
 address=1.1.1.2
-port=###repl_server_port_2###
+port=###node_server_port_2###
 protocol=MySQLBackend
 
 [server3]
 type=server
 address=1.1.1.3
-port=###repl_server_port_3###
+port=###node_server_port_3###
 protocol=MySQLBackend
 
 [server4]
 type=server
 address=1.1.1.4
-port=###repl_server_port_4###
+port=###node_server_port_4###
 protocol=MySQLBackend
 
 [QLA]

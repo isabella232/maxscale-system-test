@@ -14,7 +14,7 @@ if [ $? -ne 0 ] ; then
 fi
 #sleep 15
 
-export Master_id=`echo "SELECT (@@server_id)" | mysql -u$repl_user -p$repl_password -h $repl_000 $ssl_options| tail -n1`
+export Master_id=`echo "SELECT (@@server_id)" | mysql -u$node_user -p$node_password -h $node_000_network $ssl_options| tail -n1`
 cat ./maxscale-mysqltest/fail.txt | grep "FAILED"
 
 echo "Maister_id $Master_id"
