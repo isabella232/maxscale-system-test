@@ -61,6 +61,7 @@ TestConnections::TestConnections(int argc, char *argv[])
             {"no-maxscale-stop",  no_argument, 0, 'd'},
             {"no-nodes-check",  no_argument, 0, 'r'},
             {"quiet",  no_argument, 0, 'q'},
+            {"restart-galera", no_argument, 0, 'g'},
             {0, 0, 0, 0}
         };
         /* getopt_long stores the option index here. */
@@ -106,6 +107,12 @@ TestConnections::TestConnections(int argc, char *argv[])
             no_nodes_check = true;
             break;
 
+        case 'g':
+            printf ("Restarting Galera srtup");
+            galera->stop_nodes();
+            galera->start_galera();
+            break;
+
         default:
             run_flag = false;
         }
@@ -147,10 +154,8 @@ TestConnections::TestConnections(int argc, char *argv[])
             galera->start_galera();
         }
     }
-
     repl->flush_hosts();
     galera->flush_hosts();
-
     if (!no_nodes_check)
     {
         if ((repl->check_replication(0) != 0) || (galera->check_galera() != 0)) {
@@ -159,6 +164,7 @@ TestConnections::TestConnections(int argc, char *argv[])
         }
     }
     //repl->start_replication();
+tprintf(">>>>> init maxscale!\n");
     if (!no_maxscale_start) {init_maxscale();}
     if (backend_ssl)
     {
