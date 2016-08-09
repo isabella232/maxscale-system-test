@@ -27,7 +27,7 @@ void run_test(TestConnections* Test, const char* database)
     }
     else
     {
-        Test->add_result(1, "Failed to connect using database '%s': %s", database, mysql_error(conn));   
+        Test->add_result(1, "Failed to connect using database '%s': %s", database, mysql_error(conn));
     }
 
     mysql_close(conn);
@@ -72,4 +72,3 @@ int main(int argc, char *argv[])
     Test->copy_all_logs();
     return Test->global_result;
 }
-
