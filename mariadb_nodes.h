@@ -157,11 +157,14 @@ public:
      * @return 0 if success
      */
     int connect();
+
     /**
-     * @brief  close connections which were previously opened by Connect()
-     * @return 0
+     * @brief Close connections opened by connect()
+     *
+     * This sets the values of used @c nodes to NULL.
      */
-    int close_connections();
+    void close_connections();
+
     /**
      * @brief reads IP, Ports, sshkeys for every node from enviromental variables as well as number of nodes (N) and  User/Password
      * @return 0
@@ -375,7 +378,7 @@ public:
      * @param sql query to execute
      * @return 0 in case of success
      */
-    int execute_query_all_nodes(char * sql);
+    int execute_query_all_nodes(const char* sql);
 
     /**
      * @brief execute 'SELECT @@version' against all nodes and store result in 'vesion' fied

@@ -25,19 +25,37 @@ Mariadb_nodes::Mariadb_nodes(char * pref)
 int Mariadb_nodes::connect()
 {
     int res = 0;
-    for (int i = 0; i < N; i++) {
-        nodes[i] = open_conn(port[i], IP[i], user_name, password, ssl);
-        if ((nodes[i] != NULL) && (mysql_errno(nodes[i]) != 0)) {res++;}
+
+    for (int i = 0; i < N; i++)
+    {
+        if (nodes[i] == NULL || mysql_ping(nodes[i]) != 0)
+        {
+            if (nodes[i])
+            {
+                mysql_close(nodes[i]);
+            }
+            nodes[i] = open_conn(port[i], IP[i], user_name, password, ssl);
+        }
+
+        if ((nodes[i] != NULL) && (mysql_errno(nodes[i]) != 0))
+        {
+            res++;
+        }
     }
-    return(res);
+
+    return res;
 }
 
-int Mariadb_nodes::close_connections()
+void Mariadb_nodes::close_connections()
 {
-    for (int i = 0; i < N; i++) {
-        if (nodes[i] != NULL) {mysql_close(nodes[i]);}
+    for (int i = 0; i < N; i++)
+    {
+        if (nodes[i] != NULL)
+        {
+            mysql_close(nodes[i]);
+            nodes[i] = NULL;
+        }
     }
-    return(0);
 }
 
 int Mariadb_nodes::read_env()
@@ -632,12 +650,11 @@ int Mariadb_nodes::flush_hosts()
     }
 }
 
-int Mariadb_nodes::execute_query_all_nodes(char * sql)
+int Mariadb_nodes::execute_query_all_nodes(const char* sql)
 {
     int local_result = 0;
     connect();
     for (int i = 0; i < N; i++) {
-        printf("'%s' for node %d\n", sql, i);
         local_result += execute_query(nodes[i], sql);
     }
     close_connections();

@@ -15,9 +15,9 @@ void run_test(TestConnections* Test, const char* database)
 {
 
     Test->set_timeout(20);
-    Test->tprintf("Trying to connect using 'table_privilege'@'%' to database 'test'");
+    Test->tprintf("Trying to connect using 'table_privilege'@'%%' to database '%s'", database);
 
-    MYSQL* conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, "test", "table_privilege", "pass", Test->ssl);
+    MYSQL* conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, database, "table_privilege", "pass", Test->ssl);
 
     if (conn && mysql_errno(conn) == 0)
     {
@@ -40,7 +40,6 @@ int main(int argc, char *argv[])
     Test->connect_maxscale();
     Test->tprintf("Preparing test");
     Test->set_timeout(120);
-    execute_query(Test->conn_rwsplit, "CREATE USER 'table_privilege'@'%' IDENTIFIED BY 'pass'");
     execute_query(Test->conn_rwsplit, "CREATE DATABASE db1");
     execute_query(Test->conn_rwsplit, "CREATE DATABASE db2");
     execute_query(Test->conn_rwsplit, "CREATE DATABASE db3");
@@ -49,25 +48,27 @@ int main(int argc, char *argv[])
     execute_query(Test->conn_rwsplit, "CREATE TABLE db2.t1 (id INT)");
     execute_query(Test->conn_rwsplit, "CREATE TABLE db3.t1 (id INT)");
     execute_query(Test->conn_rwsplit, "CREATE TABLE db4.t1 (id INT)");
-    execute_query(Test->conn_rwsplit, "GRANT SELECT ON db1.* TO 'table_privilege'@'%'");
-    execute_query(Test->conn_rwsplit, "GRANT SELECT ON db2.* TO 'table_privilege'@'%'");
-    execute_query(Test->conn_rwsplit, "GRANT SELECT ON db3.t1 TO 'table_privilege'@'%'");
-    execute_query(Test->conn_rwsplit, "GRANT SELECT ON db4.t1 TO 'table_privilege'@'%'");
+    Test->repl->sync_slaves();
+    Test->repl->execute_query_all_nodes("CREATE USER 'table_privilege'@'%' IDENTIFIED BY 'pass'");
+    Test->repl->execute_query_all_nodes("GRANT SELECT ON db1.* TO 'table_privilege'@'%'");
+    Test->repl->execute_query_all_nodes("GRANT SELECT ON db2.* TO 'table_privilege'@'%'");
+    Test->repl->execute_query_all_nodes("GRANT SELECT ON db3.t1 TO 'table_privilege'@'%'");
+    Test->repl->execute_query_all_nodes("GRANT SELECT ON db4.t1 TO 'table_privilege'@'%'");
     Test->repl->sync_slaves();
 
     run_test(Test, "db1");
     run_test(Test, "db2");
     run_test(Test, "db3");
     run_test(Test, "db4");
-    Test->check_maxscale_alive();
 
     Test->tprintf("Cleaning up...");
     Test->set_timeout(60);
-    Test->try_query(Test->conn_rwsplit, "DROP USER 'table_privilege'@'%'");
+    Test->connect_maxscale();
     Test->try_query(Test->conn_rwsplit, "DROP DATABASE db1");
     Test->try_query(Test->conn_rwsplit, "DROP DATABASE db2");
     Test->try_query(Test->conn_rwsplit, "DROP DATABASE db3");
     Test->try_query(Test->conn_rwsplit, "DROP DATABASE db4");
+    Test->repl->execute_query_all_nodes("DROP USER 'table_privilege'@'%'");
 
     Test->copy_all_logs();
     return Test->global_result;
