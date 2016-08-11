@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
-my $host = $ENV{'node_000'};
-my $port = $ENV{'node_port_000'};
+my $host = $ENV{'node_000_network'};
+my $port = $ENV{'node_000_port'};
 my $user = $ENV{'node_user'};
 my $password = $ENV{'node_password'};
 my $test_dir = $ENV{'test_dir'};
