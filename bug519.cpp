@@ -1,6 +1,6 @@
 /**
  * @file bug519.cpp
- * - fill t1 wuth data
+ * - fill t1 with data
  * - execute SELECT * INTO OUTFILE '/tmp/t1.csv' FROM t1; against all routers
  * - DROP TABLE t1
  * - LOAD DATA LOCAL INFILE 't1.csv' INTO TABLE t1; using RWSplit
@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
 
     sprintf(str, "%s rm /tmp/t*.csv; %s chmod 777 /tmp", Test->repl->access_sudo[0], Test->repl->access_sudo[0]);
     Test->tprintf("%s\n", str);
-    Test->repl->ssh_node(0, str, false);
-    system(str);
+    for (int k = 0; k < Test->repl->N; k++)  {Test->repl->ssh_node(k, str, false);}
+    //system(str);
 
     Test->tprintf("Copying data from t1 to file...\n");
     Test->tprintf("using RWSplit: SELECT * INTO OUTFILE '/tmp/t1.csv' FROM t1;\n");
