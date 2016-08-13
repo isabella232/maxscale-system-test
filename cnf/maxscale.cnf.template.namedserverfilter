@@ -20,10 +20,22 @@ monitor_interval=1000
 [RW Split Router]
 type=service
 router=readwritesplit
-servers=server1,server2,server3,server4
+
+# Mixing the order of slaves will make server3 the first slave server
+servers=server1,server3,server2,server4
 user=maxskysql
 passwd=skysql
 filters=namedserverfilter
+
+[CLI]
+type=service
+router=cli
+
+[CLI Listener]
+type=listener
+service=CLI
+protocol=maxscaled
+socket=default
 
 [Read Connection Router Slave]
 type=service
