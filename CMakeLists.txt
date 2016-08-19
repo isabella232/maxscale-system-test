@@ -112,6 +112,8 @@ add_test_executable_notest(binlog_big_transaction.cpp binlog_big_transaction set
 
 add_test_executable_notest(avro_long.cpp avro_long avro)
 
+add_test_executable_notest(sysbench_example.cpp sysbench_example replication)
+
 if(Java_FOUND)
   add_subdirectory(maxscale/java/)
 endif()
