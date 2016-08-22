@@ -109,7 +109,7 @@ Thank you!
 Comment 10 Vilho Raatikka 2014-09-22 10:11:06 UTC
 The problem reappeared later and was eventually fixed in release-1.0beta-refresh commit a41a8d6060c7b60e09686bea8124803f047d85ad
 
-/*
+*/
 
 // counting connection to all services
 
