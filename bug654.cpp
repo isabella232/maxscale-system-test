@@ -6,6 +6,51 @@
  * - check MaxScale is alive
  */
 
+/*
+Vilho Raatikka 2014-12-16 13:54:36 UTC
+MaxScale> show services
+Service 0x1af7eb0
+        Service:                                RW Split Router
+        Router:                                 readwritesplit (0x7fffdf501440)
+        Number of router sessions:              0
+        Current no. of router sessions:         0
+        Number of queries forwarded:            0
+        Number of queries forwarded to master:  0
+        Number of queries forwarded to slave:   0
+        Number of queries forwarded to all:     0
+        Started:                                Tue Dec 16 15:51:54 2014
+        Root user access:                       Disabled
+        Filter chain:           duplicate
+        Backend databases
+                127.0.0.1:3003  Protocol: MySQLBackend
+                127.0.0.1:3002  Protocol: MySQLBackend
+                127.0.0.1:3001  Protocol: MySQLBackend
+                127.0.0.1:3000  Protocol: MySQLBackend
+        Users data:                             0x1aea000
+        Total connections:                      1
+        Currently connected:                    1
+
+...
+
+MaxScale> show dbusers RW Split Router
+
+(gdb) bt
+#0  0x00007fffdfb4950a in execute_cmd (cli=0x7fffc0000c70) at /home/raatikka/src/git/MaxScale/server/modules/routing/debugcmd.c:805
+#1  0x00007fffdfb48ef8 in execute (instance=0x1b0f7b0, router_session=0x7fffc0000c70, queue=0x0) at /home/raatikka/src/git/MaxScale/server/modules/routing/cli.c:279
+#2  0x00007ffff46ae934 in maxscaled_read_event (dcb=0x7fffc00009c0) at /home/raatikka/src/git/MaxScale/server/modules/protocol/maxscaled.c:177
+#3  0x000000000058b145 in process_pollq (thread_id=2) at /home/raatikka/src/git/MaxScale/server/core/poll.c:858
+#4  0x000000000058a7df in poll_waitevents (arg=0x2) at /home/raatikka/src/git/MaxScale/server/core/poll.c:608
+#5  0x00007ffff7527e0f in start_thread () from /lib64/libpthread.so.0
+#6  0x00007ffff5e0e0dd in clone () from /lib64/libc.so.6
+(gdb)
+Comment 1 Vilho Raatikka 2014-12-16 13:58:37 UTC
+805         for (i = 0; args[i] && *args[i]; i++)
+
+Off-by-one if there are more arguments than expected.
+Comment 2 Vilho Raatikka 2014-12-23 16:11:12 UTC
+NULL-terminated argument list in case where there are given more arguments than expected.
+*/
+
 #include <my_config.h>
 #include "testconnections.h"
 #include "maxadmin_operations.h"

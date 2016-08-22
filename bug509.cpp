@@ -11,6 +11,29 @@
  * Test fails if results are different (after 5 seconds of waiting after last INSERT)
  */
 
+/*
+Kolbe Kegel 2014-09-01 14:48:12 UTC
+For some reason, the order of terms in the field list of a SELECT statement influences how the rw-split router decides where to send a statement.
+
+mariadb> select @@wsrep_node_address, last_insert_id();
++----------------------+------------------+
+| @@wsrep_node_address | last_insert_id() |
++----------------------+------------------+
+| 192.168.30.31        |                7 |
++----------------------+------------------+
+1 row in set (0.00 sec)
+
+mariadb> select last_insert_id(), @@wsrep_node_address;
++------------------+----------------------+
+| last_insert_id() | @@wsrep_node_address |
++------------------+----------------------+
+|                0 | 192.168.30.33        |
++------------------+----------------------+
+1 row in set (0.00 sec)
+Comment 1 Vilho Raatikka 2014-09-03 20:44:17 UTC
+Added code to detect last_insert_id() function and now both types of elements are routed to master and their order of appearance doesn't matter.
+*/
+
 #include <my_config.h>
 #include <iostream>
 #include "testconnections.h"

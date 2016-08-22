@@ -5,6 +5,34 @@
  * - check if Maxscale is still alive
  */
 
+/*
+Massimiliano 2015-01-29 15:35:52 UTC
+Some MySQL Workbench Management actions hang with R/W split router
+
+MySQL Workbench 6.2 on OSX
+
+
+When selecting "Users and Privileges" the client gets hanged.
+
+
+
+The quick solution is setting "use_sql_variables_in" in MaxScale config file for R/W split router section
+
+[RW_Split]
+type=service
+router=readwritesplit
+servers=server3,server2
+user=massi
+passwd=xxxx
+
+use_sql_variables_in=master
+
+
+
+This way everything seems ok
+
+*/
+
 #include <my_config.h>
 #include <iostream>
 #include <unistd.h>

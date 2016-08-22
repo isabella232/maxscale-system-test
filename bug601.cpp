@@ -7,6 +7,31 @@
  * - check Mascale is alive
  */
 
+/*
+Vilho Raatikka 2014-10-30 14:30:57 UTC
+If COM_CHANGE_USER is executed while backend protocol's state is not yet MYSQL_AUTH_RECV it will fail in the backend.
+
+If MaxScale uses multiple worked threads this occurs rarely and it would be possible to easily suspend execution of COM_CHANGE_USER.
+
+If MaxScale uses one worker thread then there's currently no way to suspend execution. It would require thread to put current task on hold, complete authentication task and return to COM_CHANGE_USER execution.
+
+In theory it is possible to add an event to client's DCB and let it become notified in the same way than events that occur in sockets. It would have to be added first (not last) and ensure that no other command is executed before it.
+
+Since this is the only case known where this would be necessary, it could be enough to add a "pending auth change" pointer in client's protocol object which would be checked before thread returns to epoll_wait after completing the authentication.
+Comment 1 Massimiliano 2014-11-07 17:01:29 UTC
+Current code in develop branch let COM_CHANGE_USER work fine.
+
+I noticed sometime a failed authentication issue using only.
+This because backend protocol's state is not yet MYSQL_AUTH_RECV and necessary data for succesfull backend change user (such as scramble data from handshake) may be not available.
+
+
+I put a query before change_user and the issue doesn't appear: that's another proof.
+Comment 2 Vilho Raatikka 2014-11-13 15:54:15 UTC
+In gw_change_user->gw_send_change_user_to_backend authentication message was sent to backend server before backend had its scramble data. That caused authentication to fail.
+Comment 3 Vilho Raatikka 2014-11-13 15:58:34 UTC
+if (func.auth ==)gw_change_user->gw_send_change_user_to_backend is called before backend has its scramble, auth packet is set to backend's delauqueue instead of writing it to backend. When backend_write_delayqueue is called COM_CHANGE_USER packets are rewritten with backend's current data.
+*/
+
 #include <my_config.h>
 #include <iostream>
 #include "testconnections.h"

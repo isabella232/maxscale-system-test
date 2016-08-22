@@ -7,6 +7,55 @@
  *
  */
 
+/*
+Kolbe Kegel 2014-09-01 14:45:56 UTC
+After inserting a row via the rw-split router, a call to last_insert_id() can go to a slave, producing bad results.
+
+mariadb> select * from t1;
++----+
+| id |
++----+
+|  1 |
+|  4 |
++----+
+2 rows in set (0.00 sec)
+
+mariadb> insert into t1 values ();
+Query OK, 1 row affected (0.00 sec)
+
+mariadb> select * from t1;
++----+
+| id |
++----+
+|  1 |
+|  4 |
+|  7 |
++----+
+3 rows in set (0.00 sec)
+
+mariadb> select last_insert_id();
++------------------+
+| last_insert_id() |
++------------------+
+|                0 |
++------------------+
+1 row in set (0.00 sec)
+
+mariadb> select @@wsrep_node_address, last_insert_id();
++----------------------+------------------+
+| @@wsrep_node_address | last_insert_id() |
++----------------------+------------------+
+| 192.168.30.31        |                7 |
++----------------------+------------------+
+1 row in set (0.00 sec)
+Comment 1 Vilho Raatikka 2014-09-01 17:51:45 UTC
+last_inserted_id() belongs to UNKNOWN_FUNC class to which many read-only system functions belong too. Thus last_inserted_id() was routed to any slave.
+
+Unfortunately I can't confirm wrong behavior since running the same sequence generates same output when connected directly to MariaDB backend. Perhaps there is something required for the table t1 which is not included here?
+Comment 2 Vilho Raatikka 2014-09-01 20:01:35 UTC
+An autoincrement attribute was missing.
+*/
+
 #include <my_config.h>
 #include <iostream>
 #include "testconnections.h"

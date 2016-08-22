@@ -9,6 +9,22 @@
  * - check if Maxscale is alive
  */
 
+/*
+Vilho Raatikka 2014-12-29 08:38:28 UTC
+During startup, load_mysql_users tries to read the contents of the mysql.user table. If the chosen backend is not responsive, connection hangs for a long time.
+Comment 1 Vilho Raatikka 2014-12-29 11:41:32 UTC
+The issue causes long stalls for the executing thread whenever getUsers function is called and one or more backends are not responsive.
+Comment 2 Vilho Raatikka 2014-12-29 11:50:10 UTC
+dbusers.c: Added function for setting read, write and connection timeout values. Set default timeouts for getUsers. Defaults are listed in service.c
+    gateway.c:shutdown_server is called whenever MaxScale is to be shut down. Added call for service_shutdown to shutdown_server.
+    service.c:service_alloc: replaced malloc with calloc and removed unnecessary zero/NULL initialization statements as a consequence.
+        serviceStart: Exit serviceStartPort loop if shutdown flag is set for the service.
+        serviceStartAll: Exit serviceStart loop if shutdown flag is set for the service.
+    service.c: Added service_shutdown which sets shutdown flag for each service found in allServices list.
+    service.h: Added prototype for service_shutdown
+*/
+
+
 #include <my_config.h>
 #include <iostream>
 #include "testconnections.h"

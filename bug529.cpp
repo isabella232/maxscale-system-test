@@ -13,6 +13,104 @@
  * - do final 'connections to master' check
  */
 
+/*
+lisu87 2014-09-08 16:50:29 UTC
+After starting maxscale and putting some traffic to it, the number of current connections to master server are still going up:
+
+Server 0x29e6330 (carlsberg)
+        Server:                         xxx.xxx.xxx.xxx
+        Status:                         Master, Running
+        Protocol:                       MySQLBackend
+        Port:                           3306
+        Node Id:                        -1
+        Master Id:                      -1
+        Repl Depth:                     -1
+        Number of connections:          58
+        Current no. of conns:           29
+        Current no. of operations:      0
+Server 0x2948f60 (psy-carslave-1)
+        Server:                         xxx.xxx.xxx.xxx
+        Status:                         Slave, Running
+        Protocol:                       MySQLBackend
+        Port:                           3306
+        Node Id:                        -1
+        Master Id:                      -1
+        Repl Depth:                     -1
+        Number of connections:          0
+        Current no. of conns:           0
+        Current no. of operations:      0
+Server 0x2948e60 (psy-carslave-2)
+        Server:                         xxx.xxx.xxx.xxx
+        Status:                         Slave, Running
+        Protocol:                       MySQLBackend
+        Port:                           3306
+        Node Id:                        -1
+        Master Id:                      -1
+        Repl Depth:                     -1
+        Number of connections:          29
+        Current no. of conns:           0
+        Current no. of operations:      0
+Comment 1 Vilho Raatikka 2014-09-09 06:53:56 UTC
+Is the version release-1.0beta?
+Does any load cause this or does it require multiple parallel clients, for example?
+Comment 2 lisu87 2014-09-09 07:53:18 UTC
+The version is release-1.0beta.
+
+Even when just one short connection is made the counter of "Current no. of conns" goes up.
+
+Interesting thing is that the amount of current connections for my slave is always exactly two times smaller than "Number of connections":
+
+Server 0x1f51330 (carlsberg)
+        Server:                         172.16.76.8
+        Status:                         Master, Running
+        Protocol:                       MySQLBackend
+        Port:                           3306
+        Node Id:                        -1
+        Master Id:                      -1
+        Repl Depth:                     -1
+        Number of connections:          3278
+        Current no. of conns:           1639
+        Current no. of operations:      0
+Comment 3 lisu87 2014-09-11 09:54:34 UTC
+Any update on this one?
+Comment 4 Vilho Raatikka 2014-09-11 10:34:20 UTC
+The problem can't be reproduced with the code I'm working currently, and which will be the one where beta release will be refresed from. Thus, I'd wait till beta refresh is done and see if the problem still exists.
+Comment 5 lisu87 2014-09-11 10:47:32 UTC
+Thank you.
+
+And one more question: is it normal that even if SELECT query has been performed on skave the "Number of connections" counter for master increases too?
+Comment 6 Vilho Raatikka 2014-09-11 11:02:08 UTC
+(In reply to comment #5)
+> Thank you.
+>
+> And one more question: is it normal that even if SELECT query has been
+> performed on skave the "Number of connections" counter for master increases
+> too?
+
+When rwsplit listens port 3333 and when a command like :
+
+mysql -h 127.0.0.1 -P 3333 -u maxscaleuser -ppwd -e "select count(user) from mysql.user"
+
+is executed client connects to MaxScale:3333, and MaxScale connects to master and slave(s). So connection count increases in each of those backends despite of query type.
+
+If you already have a rwsplit session, no new connections should be created when new queries are executed.
+Comment 7 Vilho Raatikka 2014-09-11 12:34:26 UTC
+I built MaxScale from releaes-1.0beta-refresh branch and tested by running 5000 prepared statements in one session to MaxScale/RWSplit and executing 'show servers' in another window. During the run the number of current connections was 1 in each server and after the run all 'current' counters show 0.
+
+If you want me to try with some other use case, describe it and I'll give it a try.
+Comment 8 lisu87 2014-09-11 12:45:37 UTC
+Thanks, Vilho.
+
+I'm building maxscale from that branch now and will retest shortly.
+Comment 9 lisu87 2014-09-11 14:45:26 UTC
+Confirmed. It works fine with 1.0beta-refresh.
+
+Thank you!
+Comment 10 Vilho Raatikka 2014-09-22 10:11:06 UTC
+The problem reappeared later and was eventually fixed in release-1.0beta-refresh commit a41a8d6060c7b60e09686bea8124803f047d85ad
+
+/*
+
 // counting connection to all services
 
 #include <my_config.h>

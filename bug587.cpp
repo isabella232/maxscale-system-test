@@ -31,6 +31,35 @@ filters=hints|regex
  * - do the same test with "filters=regex|hints" "filters=hints|regex"
  */
 
+/*
+Vilho Raatikka 2014-10-21 19:12:33 UTC
+If filters and rwsplit are configured as follows, hints don't work.
+
+[hints]
+type=filter
+module=hintfilter
+
+[regex]
+type=filter
+module=regexfilter
+match=fetch
+replace=select
+
+[RW Split Router]
+type=service
+router=readwritesplit
+servers=server1,server2,server3,server4
+max_slave_connections=100%
+use_sql_variables_in=all
+user=maxuser
+passwd=maxpwd
+filters=hints|regex
+
+Changing filters=regex|hints makes it work. This is due to processing order. Regex filter drops hint off.
+Comment 1 Vilho Raatikka 2014-10-23 18:08:07 UTC
+buffer.c:gwbuf_make_contiguous: hint wasn't duplicated to new GWBUF struct. As a result hints were lost if query rewriting resulted in longer query than the original.
+*/
+
 #include <my_config.h>
 #include <iostream>
 #include <unistd.h>

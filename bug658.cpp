@@ -9,6 +9,18 @@
  * - check if Maxscale is alive
  */
 
+/*
+ilho Raatikka 2014-12-22 22:38:42 UTC
+Reproduce:
+1. connect readconnroute with mysql client
+2. fail the backend server
+3. execute query by using mysql client
+
+>> client hangs if write to backend socket doesn't return error (which doesn't happen in many cases)
+Comment 1 Markus Mäkelä 2014-12-23 09:19:17 UTC
+Added a check for server status before routing the query. Now if the server is down it returns an error.
+*/
+
 #include <my_config.h>
 #include <iostream>
 #include "testconnections.h"

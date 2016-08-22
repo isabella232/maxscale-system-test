@@ -4,6 +4,16 @@
  * - execute SHOW SLAVE STATUS and check resut
  */
 
+/*
+
+Description Stephane VAROQUI 2014-12-03 10:41:30 UTC
+SHOW SLAVE STATUS in RW SPLITTER is send to master ?  That could break some monitoring scripts for generic proxy abstraction .
+Comment 1 Vilho Raatikka 2014-12-03 11:10:12 UTC
+COM_SHOW_SLAVE_STAT was unknown to query classifier. Being fixed.
+Comment 2 Vilho Raatikka 2014-12-03 11:26:17 UTC
+COM_SHOW_SLAVE_STAT wasn't classified but it was treated as 'unknown' and thus routed to master.
+*/
+
 #include <my_config.h>
 #include <iostream>
 #include "testconnections.h"

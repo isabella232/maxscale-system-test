@@ -26,6 +26,28 @@ var_dump( $res );
  * - check log for "Can't route MYSQL_COM_STMT_PREPARE"
  */
 
+/*
+
+Description Andreas K-Hansen 2015-02-12 19:32:13 UTC
+
+The error occurred when upgrading from Maxscale 1.0.4 to 1.0.5.
+The following exception occurs when trying to execute a query with prepared statements enabled:
+
+PHP Fatal error:  Uncaught exception 'PDOException' with message 'SQLSTATE[42000]: Syntax error or access violation: 1064 Routing query to backend failed. See the error log for further details.' in /root/test.php:10
+Stack trace:
+#0 /root/test.php(10): PDO->query('SELECT COLLATIO...')
+#1 {main}
+  thrown in /root/test.php on line 10
+
+- Error log
+Feb 12 19:14:01 363d6aec0f8c MaxScale[263]: Error: Failed to obtain address for host ::1, Address family for hostname not supported
+Feb 12 19:14:01 363d6aec0f8c MaxScale[263]: Warning: Failed to add user root@::1 for service [RW Split Router]. This user will be unavailable via MaxScale.
+Feb 12 19:14:01 363d6aec0f8c MaxScale[263]: Warning: Failed to add user root@127.0.0.1 for service [RW Split Router]. This user will be unavailable via MaxScale.
+Feb 12 19:14:10 363d6aec0f8c MaxScale[263]: Warning : The query can't be routed to all backend servers because it includes SELECT and SQL variable modifications which is not supported. Set use_sql_variables_in=master or split the query to two, where SQL variable modifications are done in the first and the SELECT in the second one.
+Feb 12 19:14:10 363d6aec0f8c MaxScale[263]: Error : Can't route MYSQL_COM_STMT_PREPARE:QUERY_TYPE_READ|QUERY_TYPE_PREPARE_STMT:"MYSQL_COM_STMT_PREPARE". SELECT with session data modification is not supported if configuration parameter use_sql_variables_in=all .
+
+*/
+
 #include <my_config.h>
 #include <iostream>
 #include "testconnections.h"

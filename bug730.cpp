@@ -15,6 +15,27 @@ replace=SET SQL_QUOTE_SHOW_CREATE
  * - check if Maxscale alive
  */
 
+/*
+Markus Mäkelä 2015-02-16 10:25:50 UTC
+Using the following regex filter:
+
+[MySetOptionFilter]
+type=filter
+module=regexfilter
+options=ignorecase
+match=SET OPTION SQL_QUOTE_SHOW_CREATE
+replace=SET SQL_QUOTE_SHOW_CREATE
+
+Sending the following query hangs MaxScale:
+
+SET OPTION SQL_QUOTE_SHOW_CREATE = 1;
+
+This happens because modutil_replace_SQL doesn't modify the SQL packet length if the resulting replacement is shorter.
+Comment 1 Markus Mäkelä 2015-02-16 10:27:20 UTC
+Added SQL packet length modifications to modutil_replace_SQL when the original length is different from the replacement length.
+*/
+
+
 #include <my_config.h>
 #include <iostream>
 #include "testconnections.h"
