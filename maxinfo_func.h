@@ -3,7 +3,7 @@
 
 int create_tcp_socket();
 char *get_ip(char *host);
-char *build_get_query(char *host, char *page);
+char *build_get_query(char *host, const char *page);
 
 /**
 * @brief get_maxinfo does request to Maxinfo service and return response JSON
@@ -11,7 +11,7 @@ char *build_get_query(char *host, char *page);
 * @param Test TestConnection object
 * @return response from Maxinfo
 */
-char * get_maxinfo(char * page, TestConnections* Test);
+char * get_maxinfo(const char *page, TestConnections* Test);
 
 char * read_sc(int sock);
 int send_so(int sock, char * data);

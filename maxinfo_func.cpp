@@ -49,10 +49,10 @@ char *get_ip(char *host)
     return ip;
 }
 
-char *build_get_query(char *host, char *page)
+char *build_get_query(char *host, const char *page)
 {
     char *query;
-    char *getpage = page;
+    const char *getpage = page;
     char *tpl = (char *) "GET /%s HTTP/1.1\r\nHost: %s\r\nUser-Agent: %s\r\n\r\n";
     if(getpage[0] == '/'){
         getpage = getpage + 1;
@@ -64,7 +64,7 @@ char *build_get_query(char *host, char *page)
     return query;
 }
 
-char * get_maxinfo(char * page, TestConnections* Test)
+char * get_maxinfo(const char * page, TestConnections* Test)
 {
     struct sockaddr_in *remote;
     int sock;
