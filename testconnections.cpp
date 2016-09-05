@@ -1380,17 +1380,28 @@ int TestConnections::get_maxadmin_param(char *command, char *param, char *result
 
     //printf("%s\n", buf);
 
-    char * x =strstr(buf, param);
-    if (x == NULL )
+    char *x = strstr(buf, param);
+
+    if (x == NULL)
         return(1);
 
-    int param_len = strlen(param);
-    int cnt = 0;
-    while (x[cnt+param_len]  != '\n') {
-        result[cnt] = x[cnt+param_len];
-        cnt++;
-    }
-    result[cnt] = '\0';
+    x += strlen(param);
+
+    // Skip any trailing parts of the parameter name
+    while (!isspace(*x))
+        x++;
+
+    // Trim leading whitespace
+    while (!isspace(*x))
+        x++;
+
+    char *end = strchr(x, '\n');
+
+    // Trim trailing whitespace
+    while (isspace(*end))
+        *end-- = '\0';
+
+    strcpy(result, x);
 
     return(0);
 }
