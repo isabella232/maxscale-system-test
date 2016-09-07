@@ -8,13 +8,13 @@ import java.io.File;
  * Configures MaxScale for testing
  */
 public class MaxScaleConfiguration {
-    
+
     private static final String TEST_DIR = "@CMAKE_SOURCE_DIR@";
     private static final String CONFIG_COMMAND = TEST_DIR + "/non_native_setup";
 
     public MaxScaleConfiguration(String test) throws Exception
     {
-        ProcessBuilder pb = new ProcessBuilder(CONFIG_COMMAND,  test);
+        ProcessBuilder pb = new ProcessBuilder(CONFIG_COMMAND, test);
         pb.inheritIO();
         pb.directory(new File(TEST_DIR));
         pb.environment().put("test_dir", TEST_DIR);

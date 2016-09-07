@@ -5,3 +5,4 @@ add_test(NAME simplejavatest COMMAND java
   maxscale.java.test1.SimpleConnectorJTest
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 file(APPEND ${CMAKE_BINARY_DIR}/templates "simplejavatest simplejavatest\n")
+add_template(simplejavatest simplejavatest)

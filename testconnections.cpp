@@ -315,6 +315,7 @@ const char * get_template_name(char * test_name)
         return cnf_templates[i].test_template;
     }
 
+    printf("Failed to find configuration template for test '%s', using default template '%s'.\n", test_name, default_template);
     return default_template;
 }
 
