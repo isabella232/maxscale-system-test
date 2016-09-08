@@ -157,3 +157,4 @@ protocol=MySQLBackend
 type=filter
 module=qlafilter
 filebase=/tmp/QueryLog
+

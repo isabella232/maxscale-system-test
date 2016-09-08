@@ -14,19 +14,21 @@
 
 using namespace std;
 
-const int N = 9;
-const char * resources[N] = {"variables",  "status", "services",  "listeners", "modules", "sessions", "clients", "servers", "eventTimes"};
+//const int N = 9;
+//const char * resources[N] = {"variables",  "status", "services",  "listeners", "modules", "sessions", "clients", "servers", "eventTimes"};
+const int N = 8;
+const char * resources[N] = {"variables",  "status", "services",  "listeners", "modules", "sessions", "clients", "servers"};
 
 bool exit_flag = false;
 
 void *maxinfo_thread( void *ptr );
-int threads_num = 20;
+int threads_num = 25;
 TestConnections * Test;
 
 int main(int argc, char *argv[])
 {
     Test = new TestConnections(argc, argv);
-    int sleep_time = Test->smoke ? 10 : 1000;
+    int sleep_time = Test->smoke ? 30 : 1000;
 
     Test->set_timeout(sleep_time + 100);
 
@@ -61,14 +63,13 @@ void *maxinfo_thread( void *ptr )
     while (! exit_flag)
     {
         ind = rand() % N;
-        Test->tprintf("Trying %s\n", resources[ind]);
         result = get_maxinfo(resources[ind], Test);
         if (result != NULL)
         {
-            Test->tprintf("%s\n", result);
+            Test->tprintf("Query %s, result: \n%s\n", resources[ind], result);
             free(result);
         } else {
-            Test->add_result(1, "Can't get result from maxinfo\n");
+            Test->add_result(1, "Can't get result from maxinfo, query %s\n", resources[ind]);
         }
     }
 

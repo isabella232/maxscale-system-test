@@ -121,6 +121,9 @@ int main(int argc, char *argv[])
     char rep[256];
     int rep_d;
 
+    Test->tprintf("Sleeping to let replicatio happens\n");
+    sleep(60);
+
     Test->repl->connect();
 
     for (int i_n = 3; i_n < Test->repl->N; i_n++)
@@ -172,6 +175,7 @@ int select_new_master(TestConnections * test)
     char maxscale_log_pos[256];
 
     // Stopping slave
+    test->tprintf("Connection to backend\n");
     test->repl->connect();
     test->tprintf("'stop slave' to node2\n");
     test->try_query(Test->repl->nodes[2], (char *) "stop slave;");
@@ -263,7 +267,9 @@ void *transaction_thread( void *ptr )
         {
             Test->tprintf("Transaction %d failed, doing master failover\n", i_trans);
             failed_transaction_num = i_trans;
+            Test->tprintf("Closing connection\n");
             mysql_close(conn);
+            Test->tprintf("Callinjg select_new_master()\n");
             select_new_master(Test);
             master=2;
 
