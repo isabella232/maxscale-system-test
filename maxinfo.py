@@ -4,6 +4,7 @@ import http.client
 import os
 import json
 import subprocess
+import threading
 
 # Needs to be declared here to allow Python 3 modules to be used
 def prepare_test(testname = "replication"):
@@ -25,15 +26,31 @@ entry_points = ["/services",
 
 decoder = json.JSONDecoder()
 
-for i in entry_points:
-    print("Testing", i)
-    data = ""
-    try:
-        conn = http.client.HTTPConnection(os.getenv("maxscale_IP"), 8080)
-        conn.request("GET", i)
-        req = conn.getresponse()
-        data = req.read().decode('ascii')
-        print(json.loads(data))
-    except Exception as ex:
-        print("Exception (", ex, "):", data)
-        exit(1)
+def test_thr(thrnum):
+    for r in range(0,10):
+        for i in entry_points:
+            data = ""
+            try:
+                conn = http.client.HTTPConnection(os.getenv("maxscale_network"), 8080)
+                conn.request("GET", i)
+                req = conn.getresponse()
+                data = req.read().decode('ascii')
+                json.loads(data)
+            except Exception as ex:
+                print("Thread", thrnum, "Exception (", ex, "):", data)
+                exit(1)
+
+thr = []
+
+for i in range(0, 10):
+    thr.append(threading.Thread(target=test_thr, args=(i,)))
+
+print("Created", len(thr), "threads")
+
+for i in thr:
+    i.start()
+
+print("Started threads")
+
+for i in thr:
+    i.join()

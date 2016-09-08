@@ -145,13 +145,14 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(20);
 
-    Test->connect_maxscale();
-
     printf("Creating user with old style password\n");
-    Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER 'old'@'%' IDENTIFIED BY 'old';");
-    Test->try_query(Test->conn_rwsplit, (char *) "SET PASSWORD FOR 'old'@'%' = OLD_PASSWORD('old');");
-    sleep(10);
+    Test->repl->connect();
+    execute_query(Test->repl->nodes[0], "CREATE USER 'old'@'%' IDENTIFIED BY 'old';");
+    execute_query(Test->repl->nodes[0], "SET PASSWORD FOR 'old'@'%' = OLD_PASSWORD('old');");
+    Test->stop_timeout();
+    Test->repl->sync_slaves();
 
+    Test->set_timeout(20);
     printf("Trying to connect using user with old style password\n");
     MYSQL * conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, (char *) "old", (char *)  "old", Test->ssl);
 
@@ -162,8 +163,7 @@ int main(int argc, char *argv[])
     }
     if (conn != NULL) {mysql_close(conn);}
 
-    Test->try_query(Test->conn_rwsplit, (char *) "DROP USER 'old'@'%'");
-    Test->close_maxscale_connections();
+    execute_query(Test->repl->nodes[0], "DROP USER 'old'@'%'");
 
     Test->check_log_err((char *) "MaxScale does not support these old passwords", TRUE);
     Test->check_maxscale_alive();

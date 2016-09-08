@@ -304,13 +304,19 @@ int TestConnections::print_env()
 const char * get_template_name(char * test_name)
 {
     int i = 0;
-    while (cnf_templates[i].test_name && (strcmp(cnf_templates[i].test_name, test_name) != 0) && (strcmp(cnf_templates[i].test_name, "NULL") != 0))  i++;
-    if (strcmp(cnf_templates[i].test_name, "NULL") == 0)
+
+    while (cnf_templates[i].test_name && strcmp(cnf_templates[i].test_name, test_name) != 0)
     {
-        return default_template;
-    } else {
+        i++;
+    }
+
+    if (cnf_templates[i].test_name)
+    {
         return cnf_templates[i].test_template;
     }
+
+    printf("Failed to find configuration template for test '%s', using default template '%s'.\n", test_name, default_template);
+    return default_template;
 }
 
 int TestConnections::init_maxscale()
@@ -392,8 +398,22 @@ int TestConnections::init_maxscale()
     }
     ssh_maxscale(FALSE, "printenv > test.environment");
     fflush(stdout);
-    tprintf("Waiting 15 seconds\n");
-    sleep(15);
+
+    int waits;
+
+    for (waits = 0; waits < 15; waits++)
+    {
+        if (ssh_maxscale(true, "/bin/sh -c \"maxadmin help > /dev/null || exit 1\"") == 0)
+        {
+            break;
+        }
+        sleep(1);
+    }
+
+    if (waits > 0)
+    {
+        tprintf("Waited %d seconds for MaxScale to start", waits);
+    }
 }
 
 int TestConnections::connect_maxscale()

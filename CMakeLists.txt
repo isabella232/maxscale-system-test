@@ -46,6 +46,11 @@ add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp config_check.c
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 
+# Helper function to add a configuration template
+function(add_template name template)
+  set(CNF_TEMPLATES "${CNF_TEMPLATES}{\"${name}\",\"${template}\"}," CACHE INTERNAL "")
+endfunction()
+
 # This functions adds a source file as an executable, links that file against
 # the common test core and creates a test from it. The first parameter is the
 # source file, the second is the name of the executable and the test and the
@@ -58,7 +63,7 @@ install(TARGETS testcore DESTINATION system-test)
 #     add_test_executable(simple_test.cpp simple_test simple_config)
 function(add_test_executable source name template)
   file(APPEND templates "${name} ${template}\n")
-  set(CNF_TEMPLATES "${CNF_TEMPLATES}{\"${name}\",\"${template}\"}," PARENT_SCOPE)
+  add_template(${name} ${template})
   add_executable(${name} ${source})
   target_link_libraries(${name} testcore)
   install(TARGETS ${name} DESTINATION system-test)
@@ -68,7 +73,7 @@ endfunction()
 # Same as add_test_executable, but do not add executable into tests list
 function(add_test_executable_notest source name template)
   file(APPEND templates "${name} ${template}\n")
-  set(CNF_TEMPLATES "${CNF_TEMPLATES}{\"${name}\",\"${template}\"}," PARENT_SCOPE)
+  add_template(${name} ${template})
   add_executable(${name} ${source})
   target_link_libraries(${name} testcore)
   install(TARGETS ${name} DESTINATION system-test)
@@ -79,7 +84,7 @@ endfunction()
 # also suitable for symlinks
 function(add_test_script name template)
   file(APPEND templates "${name} ${template}\n")
-  set(CNF_TEMPLATES "${CNF_TEMPLATES}{\"${name}\",\"${template}\"}," PARENT_SCOPE)
+  add_template(${name} ${template})
   install(PROGRAMS ${name} DESTINATION system-test)
   add_test(${name} ${name})
 endfunction()
