@@ -368,7 +368,8 @@ add_test_executable(user_cache.cpp user_cache user_cache)
 add_test_executable(mxs813_long_hostname.cpp mxs813_long_hostname setup_binlog)
 add_test_executable(mxs716.cpp mxs716 replication)
 add_test_executable(mxs827_write_timeout.cpp mxs827_write_timeout replication)
-add_test_executable(binary_ps.cpp binary_ps longblob)
+add_test_executable(mxs812_1.cpp mxs812_1 longblob)
+add_test_executable(mxs812_2.cpp mxs812_2 longblob)
 
 # Python based tests
 add_test_script(mxs585.py replication)
