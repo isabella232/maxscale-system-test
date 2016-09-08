@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 {
     TestConnections *Test = new TestConnections(argc, argv);
     pthread_t thr[THREADS];
-    int iter = 10;
+    int iter = 5;
 
     for (int i = 0; i < THREADS; i++)
     {
