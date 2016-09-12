@@ -1337,13 +1337,48 @@ int TestConnections::execute_maxadmin_command_print(char * cmd)
     printf("%s\n", ssh_maxscale_output(TRUE, "maxadmin %s", cmd));
     return 0;
 }
+
+int TestConnections::check_maxadmin_param(const char *command, const char *param, const char *value)
+{
+    char result[1024];
+    int rval = 1;
+
+    if (get_maxadmin_param((char*)command, (char*)param, (char*)result) == 0)
+    {
+        char *end = strchr(result, '\0') - 1;
+
+        while (isspace(*end))
+        {
+            *end-- = '\0';
+        }
+
+        char *start = result;
+
+        while (isspace(*start))
+        {
+            start++;
+        }
+
+        if (strcmp(start, value) == 0)
+        {
+            rval = 0;
+        }
+        else
+        {
+            printf("Expected %s, got %s\n", value, start);
+        }
+    }
+
+    return rval;
+}
+
 int TestConnections::get_maxadmin_param(char *command, char *param, char *result)
 {
     char		* buf;
 
     buf = ssh_maxscale_output(TRUE, "maxadmin %s", command);
 
-    printf("%s\n", buf);
+    //printf("%s\n", buf);
 
     char * x =strstr(buf, param);
     if (x == NULL )
@@ -1379,4 +1414,32 @@ long unsigned TestConnections::get_maxscale_memsize()
     pid_t pid;
     sscanf(ps_out, "%d %lu", &pid, &mem);
     return mem;
+}
+
+void TestConnections::check_current_operations(int value)
+{
+    char value_str[512];
+    sprintf(value_str, "%d", value);
+
+    for (int i = 0; i < repl->N; i++)
+    {
+        char command[512];
+        sprintf(command, "show server server%d", i + 1);
+        add_result(check_maxadmin_param(command, "Current no. of operations:", value_str),
+                         "Current no. of operations is not %s", value_str);
+    }
+}
+
+void TestConnections::check_current_connections(int value)
+{
+    char value_str[512];
+    sprintf(value_str, "%d", value);
+
+    for (int i = 0; i < repl->N; i++)
+    {
+        char command[512];
+        sprintf(command, "show server server%d", i + 1);
+        add_result(check_maxadmin_param(command, "Current no. of conns:", value_str),
+                         "Current no. of conns is not %s", value_str);
+    }
 }

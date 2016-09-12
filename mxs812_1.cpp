@@ -11,6 +11,7 @@ void run_test(TestConnections *Test, size_t size, int chunks)
     MYSQL *conn = Test->conn_rwsplit;
     MYSQL_STMT * stmt = mysql_stmt_init(conn);
 
+    Test->tprintf("Preparing statement");
     Test->add_result(mysql_stmt_prepare(stmt, insert_stmt, strlen(insert_stmt)), "Error preparing stmt: %s\n", mysql_stmt_error(stmt));
 
     MYSQL_BIND param[1];
@@ -21,17 +22,26 @@ void run_test(TestConnections *Test, size_t size, int chunks)
 
     unsigned long *data = (unsigned long *) malloc(size * sizeof(long int));
 
-    for (int i = 0; i < chunks; i++) {
-        Test->set_timeout(300);
+    memset(data, '.', size * sizeof(long int));
 
+    Test->tprintf("Sending %d x %d bytes of data", size, chunks);
+    for (int i = 0; i < chunks; i++) {
+        Test->set_timeout(600);
+        Test->tprintf("Chunk #%d\n", i);
         if (mysql_stmt_send_long_data(stmt, 0, (char *) data, size * sizeof(long int)) != 0) {
             Test->add_result(1, "Error inserting data, iteration %d, error %s\n", i, mysql_stmt_error(stmt));
             return;
         }
     }
 
-    Test->set_timeout(300);
+    Test->set_timeout(600);
+    Test->tprintf("Executing statement");
     Test->add_result(mysql_stmt_execute(stmt), "INSERT Statement with BLOB failed, error is %s\n", mysql_stmt_error(stmt));
+
+    Test->stop_timeout();
+    sleep(5);
+    Test->check_current_operations(0);
+    Test->tprintf("Closing statement");
     Test->add_result(mysql_stmt_close(stmt), "Error closing stmt\n");
 }
 
@@ -49,7 +59,7 @@ int main(int argc, char *argv[])
     Test->try_query(Test->repl->nodes[0], (char*)"CREATE TABLE long_blob_table(x INT, b BLOB)");
 
     Test->connect_maxscale();
-
+    Test->tprintf("Starting test");
     for (int i = 0; i < iter; i++)
     {
         run_test(Test, 500000, 10);

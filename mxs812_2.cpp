@@ -82,14 +82,10 @@ int main(int argc, char *argv[])
         pthread_join(thr[i], NULL);
     }
 
+    Test->stop_timeout();
     Test->check_maxscale_alive();
-
-    char *output = Test->ssh_maxscale_output(true, "maxadmin show servers|grep -i 'current.*operations'|sed 's/.*://'|sed 's/[^0-9]//g'|sort -r|uniq");
-    char *nl = strchr(output, '\n');
-    *nl = '\0';
-    Test->tprintf("Number of operations: %s", output);
-
-    Test->add_result(strcmp(output, "0"), "Expected 0 active operations on all servers, got %s.", output);
+    Test->check_current_connections(0);
+    Test->check_current_operations(0);
 
     Test->copy_all_logs();
 
