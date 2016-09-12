@@ -14,7 +14,7 @@ log_warning=1
 [Binlog_Service]
 type=service
 router=binlogrouter
-servers=master
+#servers=master
 user=repl
 passwd=repl
 version_string=5.6.15-log
