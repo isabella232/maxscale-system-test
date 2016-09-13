@@ -43,12 +43,14 @@ int main(int argc, char *argv[])
             Test->repl->connect();
             Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 1;\n");
             execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 1;");
+            sleep(10);
             Test->repl->close_connections();
             test_binlog(Test);
 
             Test->repl->connect();
             Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 0;\n");
             execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 0;");
+            sleep(10);
             Test->repl->close_connections();
             test_binlog(Test);
 
@@ -60,12 +62,14 @@ int main(int argc, char *argv[])
             Test->repl->connect();
             Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 1;\n");
             execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 1;");
+            sleep(10);
             Test->repl->close_connections();
             test_binlog(Test);
 
             Test->repl->connect();
             Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 0;\n");
             execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 0;");
+            sleep(10);
             Test->repl->close_connections();
             test_binlog(Test);
         }
