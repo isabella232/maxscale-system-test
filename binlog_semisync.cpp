@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
         Test->tprintf("DROP TABLE t1\n");
         execute_query(Test->repl->nodes[0], (char *) "DROP TABLE IF EXISTS t1;");
 
-        Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 1;\n");
-        execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 1;");
+        //Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 1;\n");
+        //execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 1;");
         Test->repl->close_connections();
         sleep(5);
 
@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
             Test->repl->connect();
             Test->tprintf("install semisync plugin\n");
             execute_query(Test->repl->nodes[0], (char *) "INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';");
+            sleep(10);
             Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 1;\n");
             execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 1;");
             Test->repl->close_connections();
@@ -50,7 +51,7 @@ int main(int argc, char *argv[])
 
             Test->repl->connect();
             Test->tprintf("uninstall semisync plugin\n");
-            execute_query(Test->repl->nodes[0], (char *) "UNINSTALL PLUGIN 'rpl_semi_sync_master';");
+            execute_query(Test->repl->nodes[0], (char *) "UNINSTALL PLUGIN rpl_semi_sync_master;");
             Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 1;\n");
             execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 1;");
             Test->repl->close_connections();
