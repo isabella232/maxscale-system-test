@@ -371,11 +371,12 @@ add_test_executable(mxs716.cpp mxs716 replication)
 add_test_executable(mxs827_write_timeout.cpp mxs827_write_timeout replication)
 add_test_executable(mxs812_1.cpp mxs812_1 longblob)
 add_test_executable(mxs812_2.cpp mxs812_2 longblob)
+add_test_executable(maxinfo.cpp maxinfocpp maxinfo)
+add_test_executable(gatekeeper.cpp gatekeeper gatekeeper)
 
 # Python based tests
 add_test_script(mxs585.py replication)
 add_test_script(mxs598.py ssl)
-add_test_executable(maxinfo.cpp maxinfocpp maxinfo)
 add_test_script(maxinfo.py maxinfo)
 
 # Label some tests as HEAVY to exclude them from quick test on every push
