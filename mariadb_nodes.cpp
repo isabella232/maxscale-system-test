@@ -34,7 +34,7 @@ int Mariadb_nodes::connect()
             {
                 mysql_close(nodes[i]);
             }
-            nodes[i] = open_conn_db_timeout(port[i], IP[i], "test", user_name, password, 10, ssl);
+            nodes[i] = open_conn_db_timeout(port[i], IP[i], "test", user_name, password, 50, ssl);
         }
 
         if ((nodes[i] != NULL) && (mysql_errno(nodes[i]) != 0))

@@ -37,20 +37,20 @@ int main(int argc, char *argv[])
             Test->repl->connect();
             Test->tprintf("install semisync plugin\n");
             execute_query(Test->repl->nodes[0], (char *) "INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';");
-            sleep(10);
+            //sleep(10);
             Test->tprintf("Reconnect\n");
             Test->repl->close_connections();
             Test->repl->connect();
             Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 1;\n");
             execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 1;");
-            sleep(10);
+            //sleep(10);
             Test->repl->close_connections();
             test_binlog(Test);
 
             Test->repl->connect();
             Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 0;\n");
             execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 0;");
-            sleep(10);
+            //sleep(10);
             Test->repl->close_connections();
             test_binlog(Test);
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
             Test->repl->connect();
             Test->tprintf("SET GLOBAL rpl_semi_sync_master_enabled = 1;\n");
             execute_query(Test->repl->nodes[0], (char *) "SET GLOBAL rpl_semi_sync_master_enabled = 1;");
-            sleep(10);
+            //sleep(10);
             Test->repl->close_connections();
             test_binlog(Test);
 
