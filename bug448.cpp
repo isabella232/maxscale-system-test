@@ -80,13 +80,10 @@ int main(int argc, char *argv[])
     Test->add_result(Test->connect_maxscale(), "Error connecting to Maxscale\n");
     Test->tprintf("Creating user 'user1' for %s host\n", my_ip);
     Test->set_timeout(30);
-    sprintf(sql, "CREATE USER user1@'%s';", my_ip);
-    Test->tprintf("Query: %s\n", sql);
-    Test->try_query(Test->conn_rwsplit, sql);
 
-    sprintf(sql, "GRANT ALL PRIVILEGES ON *.* TO user1@'%s' identified by 'pass1';  FLUSH PRIVILEGES;", my_ip);
-    Test->tprintf("Query: %s\n", sql);
-    Test->try_query(Test->conn_rwsplit, sql);
+    Test->add_result(execute_query(Test->conn_rwsplit, "CREATE USER user1@'%s';", my_ip), "Failed to create user");
+    Test->add_result(execute_query(Test->conn_rwsplit, "GRANT ALL PRIVILEGES ON *.* TO user1@'%s' identified by 'pass1';  FLUSH PRIVILEGES;", my_ip),
+                     "Failed to grant privileges.");
 
     Test->tprintf("Trying to open connection using user1\n");
 
