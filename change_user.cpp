@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating user 'user' \n");
 
-    Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%'");
-    Test->try_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%'  identified by 'pass2'");
+    Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%%'");
+    Test->try_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%%'  identified by 'pass2'");
     Test->try_query(Test->conn_rwsplit, (char *) "FLUSH PRIVILEGES;");
     Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE IF EXISTS t1");
     Test->try_query(Test->conn_rwsplit, (char *) "CREATE TABLE t1 (x1 int, fl int)");
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Changing user for ReadConn \n");
     Test->add_result(mysql_change_user(Test->conn_slave, (char *) "user", (char *) "pass2", (char *) "test") , "changing user failed \n");
 
-    Test->try_query(Test->conn_rwsplit, (char *) "DROP USER user@'%';");
+    Test->try_query(Test->conn_rwsplit, (char *) "DROP USER user@'%%';");
 
     Test->close_maxscale_connections();
     Test->copy_all_logs(); return(Test->global_result);

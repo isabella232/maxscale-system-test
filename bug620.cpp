@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Creating 'root'@'%%'\n");
     //global_result += execute_query(Test->conn_rwsplit, (char *) "CREATE USER 'root'@'%'; SET PASSWORD FOR 'root'@'%' = PASSWORD('skysqlroot');");
 
-    Test->try_query(Test->conn_rwsplit, (char *) "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'skysqlroot';");
+    Test->try_query(Test->conn_rwsplit, (char *) "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%%' IDENTIFIED BY 'skysqlroot';");
     sleep(10);
 
     MYSQL * conn;
@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
     if (conn != NULL) {mysql_close(conn);}
 
     Test->tprintf("Dropping 'root'@'%%'\n");
-    Test->try_query(Test->conn_rwsplit, (char *) "DROP USER 'root'@'%';");
+    Test->try_query(Test->conn_rwsplit, (char *) "DROP USER 'root'@'%%';");
 
     Test->close_maxscale_connections();
 

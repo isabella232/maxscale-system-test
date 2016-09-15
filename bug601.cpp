@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating one more user\n");
     execute_query_silent(Test->conn_rwsplit, (char *) "DROP USER user@'%'");
-    Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%'");
-    Test->try_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%'  identified by 'pass2';");
+    Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%%'");
+    Test->try_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%%'  identified by 'pass2';");
     Test->try_query(Test->conn_rwsplit, (char *) "FLUSH PRIVILEGES;");
 
     Test->tprintf("Starting parallel thread which opens/closes session in the loop\n");
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         mysql_change_user(Test->conn_rwsplit, Test->maxscale_user, Test->maxscale_password, NULL);
 
         Test->tprintf("DROP user\n", Test->maxscale_user);
-        Test->try_query(Test->conn_rwsplit, (char *) "DROP USER user@'%';");
+        Test->try_query(Test->conn_rwsplit, (char *) "DROP USER user@'%%';");
         Test->close_rwsplit();
         Test->repl->execute_query_all_nodes((char *) "set global max_connections=150;");
         Test->check_maxscale_alive();
