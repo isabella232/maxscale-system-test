@@ -32,9 +32,10 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Changing user... \n");
     Test->add_result(mysql_change_user(Test->conn_rwsplit, (char *) "user", (char *) "pass2", (char *) "test") , "changing user failed \n");
+    Test->tprintf("mysql_error is %s\n", mysql_error(Test->conn_rwsplit));
 
     Test->tprintf("Trying INSERT (expecting access denied)... \n");
-    if ( execute_query(Test->conn_rwsplit, (char *) "INSERT INTO t1 VALUES (1, 1);") == 0) {
+    if ( execute_query(Test->conn_rwsplit, (char *) "INSERT INTO t1 VALUES (77, 11);") == 0) {
         Test->add_result(1, "INSERT query succedded to user which does not have INSERT PRIVILEGES\n");
     }
 
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
     Test->add_result(mysql_change_user(Test->conn_rwsplit, Test->repl->user_name, Test->repl->password, (char *) "test"), "changing user failed \n");
 
     Test->tprintf("Trying INSERT (expecting success)... \n");
-    Test->try_query(Test->conn_rwsplit, (char *) "INSERT INTO t1 VALUES (1, 1);");
+    Test->try_query(Test->conn_rwsplit, (char *) "INSERT INTO t1 VALUES (77, 12);");
 
     Test->tprintf("Changing user with wrong password... \n");
     if (mysql_change_user(Test->conn_rwsplit, (char *) "user", (char *) "wrong_pass2", (char *) "test") == 0) {
@@ -54,7 +55,7 @@ int main(int argc, char *argv[])
     }
 
     Test->tprintf("Trying INSERT again (expecting success - use change should fail)... \n");
-    Test->try_query(Test->conn_rwsplit, (char *) "INSERT INTO t1 VALUES (1, 1);");
+    Test->try_query(Test->conn_rwsplit, (char *) "INSERT INTO t1 VALUES (77, 13);");
 
 
     Test->tprintf("Changing user with wrong password using ReadConn \n");
