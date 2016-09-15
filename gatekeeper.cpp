@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     for (int i = 0; training_queries[i]; i++)
         Test->try_query(Test->conn_rwsplit, training_queries[i]);
 
+    Test->ssh_maxscale(true, "rm -f /var/lib/maxscale/gatekeeper.data");
     Test->ssh_maxscale(true, "sed -i -e 's/mode=learn/mode=enforce/' /etc/maxscale.cnf");
 
     Test->restart_maxscale();
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
         Test->add_result(execute_query(Test->conn_rwsplit, denied_queries[i]) == 0, "Query should fail: %s", denied_queries[i]);
     }
 
+    Test->ssh_maxscale(true, "rm -f /var/lib/maxscale/gatekeeper.data");
     Test->copy_all_logs();
     return Test->global_result;
 }

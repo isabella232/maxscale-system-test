@@ -11,6 +11,12 @@ use_sql_variables_in=master
 router_options=slave_selection_criteria=LEAST_BEHIND_MASTER
 user=maxskysql
 passwd=skysql
+filters=gatekeeper
+
+[gatekeeper]
+type=filter
+module=gatekeeper
+mode=learn
 
 [Client Interface]
 type=service
@@ -22,12 +28,6 @@ service=RW Split Router
 protocol=MySQLClient
 port=4006
 socket=/tmp/rwsplit.sock
-filters=gatekeeper
-
-[gatekeeper]
-type=filter
-module=gatekeeper
-mode=learn
 
 [server1]
 type=server
