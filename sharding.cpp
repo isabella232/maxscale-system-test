@@ -55,28 +55,14 @@ int main(int argc, char *argv[])
 
     for (i = 0; i < Test->repl->N; i++) { //nodes
         for (j = 0; j < Test->repl->N; j++) { //users
-            //sprintf(str, "DELETE FROM  mysql.user WHERE User='user%d';", j);
             Test->set_timeout(10);
-            sprintf(str, "DROP USER 'user%d'@'%%';", j);
-            Test->tprintf("%s\n", str);
-            execute_query(Test->repl->nodes[i], str);
-
-            sprintf(str, "CREATE USER 'user%d'@'%%' IDENTIFIED BY 'pass%d';", j, j);
-            Test->tprintf("%s\n", str);
-            execute_query(Test->repl->nodes[i], str);
-
-            sprintf(str, "DROP DATABASE IF EXISTS shard_db");
-            Test->tprintf("%s\n", str);
-            execute_query(Test->repl->nodes[i], str);
+            execute_query(Test->repl->nodes[i], "DROP USER 'user%d'@'%%';", j);
+            execute_query(Test->repl->nodes[i], "CREATE USER 'user%d'@'%%' IDENTIFIED BY 'pass%d';", j, j);
+            execute_query(Test->repl->nodes[i], "DROP DATABASE IF EXISTS shard_db");
         }
 
-        sprintf(str, "DROP DATABASE IF EXISTS shard_db%d", i);
-        Test->tprintf("%s\n", str);
-        execute_query(Test->repl->nodes[i], str);
-
-        sprintf(str, "CREATE DATABASE shard_db%d", i);
-        Test->tprintf("%s\n", str);
-        execute_query(Test->repl->nodes[i], str);
+        execute_query(Test->repl->nodes[i], "DROP DATABASE IF EXISTS shard_db%d", i);
+        execute_query(Test->repl->nodes[i], "CREATE DATABASE shard_db%d", i);
     }
     Test->stop_timeout();
 
@@ -86,9 +72,7 @@ int main(int argc, char *argv[])
         Test->tprintf("Node %d\t", i);
         Test->tprintf("Creating shard_db\t");
         execute_query(Test->repl->nodes[i], "CREATE DATABASE shard_db");
-        sprintf(str, "GRANT SELECT,USAGE,CREATE ON shard_db.* TO 'user%d'@'%%'", i);
-        Test->tprintf("%s\n", str);
-        Test->try_query(Test->repl->nodes[i], str);
+        Test->add_result(execute_query(Test->repl->nodes[i], "GRANT SELECT,USAGE,CREATE ON shard_db.* TO 'user%d'@'%%'", i), "Query should succeed.");
     }
 
     Test->repl->close_connections();
@@ -101,10 +85,7 @@ int main(int argc, char *argv[])
         sprintf(pass_str, "pass%d", i);
         Test->tprintf("Open connection to Sharding router using %s %s\n", user_str, pass_str);
         conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "shard_db", user_str, pass_str, Test->ssl);
-
-        sprintf(str, "CREATE TABLE table%d (x1 int, fl int);", i);
-        Test->tprintf("%s\n", str);
-        Test->try_query(conn, str);
+        Test->add_result(execute_query(conn, "CREATE TABLE table%d (x1 int, fl int);", i), "Query should succeed.");
     }
 
     for (i = 0; i < Test->repl->N; i++) {
@@ -129,9 +110,7 @@ int main(int argc, char *argv[])
     execute_query(Test->conn_rwsplit, "USE shard_db");
 
     for (i = 0; i < Test->repl->N; i++) {
-        sprintf(str, "USE shard_db%d", i);
-        Test->tprintf("%s\n", str);
-        Test->try_query(Test->conn_rwsplit, str);
+        Test->add_result(execute_query(Test->conn_rwsplit, "USE shard_db%d", i), "Query should succeed.");
     }
 
     mysql_close(Test->conn_rwsplit);
