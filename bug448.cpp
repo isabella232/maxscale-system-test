@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Test machine IP (got via Show processlist) %s\n", my_ip);
 
     first_dot = strstr(my_ip, ".");
-    strcpy(first_dot, ".%.%.%");
+    strcpy(first_dot, ".%%.%%.%%");
 
     Test->tprintf("Test machine IP with %% %s\n", my_ip);
 
