@@ -42,6 +42,8 @@ int main(int argc, char *argv[])
 
     Test->connect_rwsplit();
 
+    Test->try_query(Test->conn_rwsplit, "CREATE OR REPLACE TABLE test.t1 (id INT)");
+
     for (int i = 0; training_queries[i]; i++)
         Test->try_query(Test->conn_rwsplit, training_queries[i]);
 
