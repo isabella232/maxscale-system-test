@@ -97,8 +97,8 @@ int main(int argc, char *argv[])
         Test->tprintf("Authentification for user@'%s' is ok", my_ip);
         if (conn != NULL) {mysql_close(conn);}
     }
-    sprintf(sql, "DROP USER user1@'%s';  FLUSH PRIVILEGES;", my_ip);
-    Test->add_result(execute_query(Test->conn_rwsplit, sql), "Query Failed\n");
+
+    Test->add_result(execute_query(Test->conn_rwsplit, "DROP USER user1@'%s';  FLUSH PRIVILEGES;", my_ip), "Query Failed\n");
 
     Test->close_maxscale_connections();
     Test->check_maxscale_alive();
