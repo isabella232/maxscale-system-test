@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
         execute_query(Test->repl->nodes[i], (char *) "stop slave;");
     }
 
-    execute_query(Test->conn_rwsplit, (char *) "CREATE USER 'test_user'@'%' IDENTIFIED BY 'pass'");
+    execute_query(Test->conn_rwsplit, (char *) "CREATE USER 'test_user'@'%%' IDENTIFIED BY 'pass'");
 
     MYSQL * conn = open_conn_no_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test_user", (char *) "pass", Test->ssl);
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
         execute_query(Test->repl->nodes[i], (char *) "start slave;");
     }
 
-    execute_query(Test->conn_rwsplit, (char *) "DROP USER 'test_user'@'%'");
+    execute_query(Test->conn_rwsplit, (char *) "DROP USER 'test_user'@'%%'");
 
     Test->repl->close_connections();
     Test->close_maxscale_connections();

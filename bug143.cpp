@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating user 'user' with 3 different passwords for different hosts\n");
     execute_query(Test->conn_rwsplit, (char *) "GRANT ALL PRIVILEGES ON *.* TO user@'non_existing_host1' identified by 'pass1';  FLUSH PRIVILEGES;");
-    execute_query(Test->conn_rwsplit, (char *) "GRANT ALL PRIVILEGES ON *.* TO user@'%'  identified by 'pass2';  FLUSH PRIVILEGES;");
+    execute_query(Test->conn_rwsplit, (char *) "GRANT ALL PRIVILEGES ON *.* TO user@'%%'  identified by 'pass2';  FLUSH PRIVILEGES;");
     execute_query(Test->conn_rwsplit, (char *) "GRANT ALL PRIVILEGES ON *.* TO user@'non_existing_host2' identified by 'pass3';  FLUSH PRIVILEGES;");
 
     printf("sleeping 20 seconds to let replication happen\n");  fflush(stdout);
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     }
     if (conn != NULL) {mysql_close(conn);}
 
-    execute_query(Test->conn_rwsplit, (char *) "DROP USER user@'%';");
+    execute_query(Test->conn_rwsplit, (char *) "DROP USER user@'%%';");
     execute_query(Test->conn_rwsplit, (char *) "DROP USER user@'non_existing_host1';");
     execute_query(Test->conn_rwsplit, (char *) "DROP USER user@'non_existing_host2';");
     Test->close_maxscale_connections();

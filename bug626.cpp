@@ -147,8 +147,8 @@ int main(int argc, char *argv[])
 
     printf("Creating user with old style password\n");
     Test->repl->connect();
-    execute_query(Test->repl->nodes[0], "CREATE USER 'old'@'%' IDENTIFIED BY 'old';");
-    execute_query(Test->repl->nodes[0], "SET PASSWORD FOR 'old'@'%' = OLD_PASSWORD('old');");
+    execute_query(Test->repl->nodes[0], "CREATE USER 'old'@'%%' IDENTIFIED BY 'old';");
+    execute_query(Test->repl->nodes[0], "SET PASSWORD FOR 'old'@'%%' = OLD_PASSWORD('old');");
     Test->stop_timeout();
     Test->repl->sync_slaves();
 
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
     }
     if (conn != NULL) {mysql_close(conn);}
 
-    execute_query(Test->repl->nodes[0], "DROP USER 'old'@'%'");
+    execute_query(Test->repl->nodes[0], "DROP USER 'old'@'%%'");
 
     Test->check_log_err((char *) "MaxScale does not support these old passwords", TRUE);
     Test->check_maxscale_alive();

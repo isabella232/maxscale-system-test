@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     execute_query_silent(Test->conn_rwsplit, "DROP USER table_privilege");
     //execute_query(Test->conn_rwsplit, (char *) "CREATE USER table_privilege");
     Test->tprintf("Create user with only SELECT priviledge\n");
-    execute_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.t1 TO 'table_privilege'@'%' IDENTIFIED BY 'pass'");
+    execute_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.t1 TO 'table_privilege'@'%%' IDENTIFIED BY 'pass'");
     Test->tprintf("flush privileges\n");
     execute_query(Test->conn_rwsplit, (char *) "flush privileges"); // does it work with Maxscale?
     // should this sleep be removed?
