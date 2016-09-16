@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Error: %s\n", mysql_error(binlog));
 
     Test->stop_timeout();
-    sleep(15);
+    sleep(25);
     Test->set_timeout(10);
     find_field(binlog, (char *) "show slave status", (char *) "Slave_IO_State", str);
     Test->add_result(strcasecmp(str, "Slave stopped"), "Wrong slave state: %s\n", str);
