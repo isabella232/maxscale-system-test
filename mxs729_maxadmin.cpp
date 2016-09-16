@@ -12,19 +12,19 @@
 
 using namespace std;
 
-const char * only_root = "No administration users have been defined.\n";
-const char * user_added = "User %s has been successfully added.\n";
-const char * user_removed = "User %s has been successfully removed.\n";
+const char * only_root = "Enabled Linux accounts (secure)    : \n";
+const char * user_added = "The Linux user %s has successfully been enabled.\n";
+const char * user_removed = "The Linux user %s has successfully been disabled.\n";
 const char * root_added = "User root has been successfully added.\n";
-const char * user_and_root = "User names: %s\n";
-const char * user_only = "User names: %s\n";
+const char * user_and_root = "Enabled Linux accounts (secure)    : %s\n";
+const char * user_only = "Enabled Linux accounts (secure)    : %s\n";
 
 void add_remove_maxadmin_user(TestConnections* Test)
 {
     char str[1024];
 
-    Test->tprintf("add user %s to maxadmin:\n", Test->maxscale_access_user);
-    char * st3 = Test->ssh_maxscale_output(TRUE, "maxadmin add user %s", Test->maxscale_access_user);
+    Test->tprintf("enable account %s to maxadmin:\n", Test->maxscale_access_user);
+    char * st3 = Test->ssh_maxscale_output(TRUE, "maxadmin enable account %s", Test->maxscale_access_user);
     Test->tprintf("Result: %s\n", st3);
     sprintf(str, user_added, Test->maxscale_access_user);
     if (strstr(st3, str) == NULL)
@@ -66,12 +66,12 @@ void add_remove_maxadmin_user(TestConnections* Test)
     }
 
     Test->tprintf("removing user '%s'\n", Test->maxscale_access_user);
-    char * st8 = Test->ssh_maxscale_output(TRUE, "maxadmin remove user %s", Test->maxscale_access_user);
+    char * st8 = Test->ssh_maxscale_output(TRUE, "maxadmin disable account %s", Test->maxscale_access_user);
     Test->tprintf("trying maxadmin with 'root': %s\n", st8);
     sprintf(str, user_removed, Test->maxscale_access_user);
     if (strstr(st8, str) == NULL)
     {
-        Test->add_result(1, "Wrong list of MaxAdmin users\n");
+        Test->add_result(1, "Wrong output of disable command\n");
     } else {
         Test->tprintf("OK\n");
     }
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 
     Test->tprintf("trying maxadmin with 'root'\n");
     char * st2 = Test->ssh_maxscale_output(TRUE, "maxadmin show users");
-    Test->tprintf("Result: %s\n", st2);
+    Test->tprintf("Result: \n %s\n", st2);
     if (strstr(st2, only_root) == NULL)
     {
         Test->add_result(1, "Wrong list of MaxAdmin users\n");
@@ -114,12 +114,12 @@ int main(int argc, char *argv[])
     add_remove_maxadmin_user(Test);
 
     Test->tprintf("trying long wierd user\n");
-    char * st10 = Test->ssh_maxscale_output(TRUE, "maxadmin add user yygrgtrпрекури6н33имн756ККККЕН:УИГГГГ*?:*;:;*fj34oru34h275g23457g2v90590+u764gv56837fbv62381§SDFERGtrg45ergfergergefewfergt456ty");
-    Test->tprintf("Result: %s\n", st10);
+    char * st10 = Test->ssh_maxscale_output(TRUE, "maxadmin enable account yygrgtrпрекури6н33имн756ККККЕН:УИГГГГ*?:*:*fj34oru34h275g23457g2v90590+u764gv56837fbv62381§SDFERGtrg45ergfergergefewfergt456ty");
+    /*Test->tprintf("Result: %s\n", st10);
     if (strstr(st10, "has been successfully added") == NULL)
     {
         Test->add_result(1, "Wrong list of MaxAdmin users\n");
-    }
+    }*/
 
     Test->check_maxscale_alive();
     Test->ssh_maxscale(TRUE, "rm -rf /var/lib/maxscale/passwd");

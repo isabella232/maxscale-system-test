@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
                                        str, Test->maxscale_user,
                                        Test->maxscale_password, Test->ssl);
             Test->set_timeout(15);
+            Test->tprintf("Trying DB %d\n", i);
             if(execute_query(conn, "SELECT 1"))
             {
                 Test->add_result(1, "Failed at %d\n", j);
