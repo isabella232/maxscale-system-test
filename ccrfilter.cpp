@@ -15,7 +15,11 @@ bool is_master(MYSQL *conn)
 
     if (find_field(conn, "SELECT @@server_id", "@@server_id", str) == 0)
     {
-        return master_id == atoi(str);
+        int server_id = atoi(str);
+        if (master_id != server_id)
+        {
+            printf("Expected %d but got %d\n", master_id, server_id);
+        }
     }
 
     return false;
@@ -31,6 +35,8 @@ int main(int argc, char *argv[])
      * Get the master's @@server_id
      */
     master_id = test->repl->get_server_id(0);
+    test->tprintf("Master server_id: %d", master_id);
+
 
     execute_query(test->repl->nodes[0], "CREATE OR REPLACE TABLE test.t1 (id INT);");
     execute_query(test->repl->nodes[0], "CREATE OR REPLACE TABLE test.t2 (id INT);");
@@ -95,7 +101,7 @@ int main(int argc, char *argv[])
      */
     test->close_maxscale_connections();
     test->ssh_maxscale(true, "sed -i -e 's/match/###match/' /etc/maxscale.cnf");
-    test->ssh_maxscale(true, "sed -i -e '/###ignore/ignore/' /etc/maxscale.cnf");
+    test->ssh_maxscale(true, "sed -i -e 's/###ignore/ignore/' /etc/maxscale.cnf");
     test->restart_maxscale();
     test->connect_maxscale();
 
