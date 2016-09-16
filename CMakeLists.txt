@@ -373,6 +373,7 @@ add_test_executable(mxs812_1.cpp mxs812_1 longblob)
 add_test_executable(mxs812_2.cpp mxs812_2 longblob)
 add_test_executable(maxinfo.cpp maxinfocpp maxinfo)
 add_test_executable(gatekeeper.cpp gatekeeper gatekeeper)
+add_test_executable(ccrfilter.cpp ccrfilter ccrfilter)
 
 # Python based tests
 add_test_script(mxs585.py replication)
