@@ -16,6 +16,11 @@ void check_status(TestConnections *Test, const char *server, const char *status)
     sprintf(cmd, "show server %s", server);
     Test->set_timeout(120);
     Test->get_maxadmin_param(cmd, (char *) "Status:", maxadmin_result);
+    if (maxadmin_result == NULL)
+    {
+        Test->add_result(1, "maxadmin execution error\n");
+        return;
+    }
     if (strstr(maxadmin_result, status)  == NULL ) {
         Test->add_result(1, "Test failed, server %s status is %s, expected %s\n", server, maxadmin_result, status);
     }
@@ -26,10 +31,26 @@ void check_group(TestConnections *Test, const char *server, const char *group)
 
     char *output = Test->ssh_maxscale_output(true, "maxadmin show monitor \"MySQL Monitor\"");
 
-    char *start = strstr(output, server);
-    char *value = strstr(start, "Master group");
-    value = strchr(value, ':') + 1;
+    if (output == NULL)
+    {
+        Test->add_result(1, "maxadmin execution error\n");
+        return;
+    }
 
+    char *start = strstr(output, server);
+    if (start == NULL)
+    {
+        Test->add_result(1, "maxadmin execution error\n");
+        return;
+    }
+    char *value = strstr(start, "Master group");
+    if (value == NULL)
+    {
+        Test->add_result(1, "maxadmin execution error\n");
+        return;
+    }
+
+    value = strchr(value, ':') + 1;
     while (isspace(*value))
     {
         value++;
@@ -70,10 +91,12 @@ int main(int argc, char *argv[])
 
     sleep(2);
 
+    Test->tprintf("Test 1 - checking status");
     check_status(Test, "server1", "Master, Running");
     check_status(Test, "server2", "Master, Running");
     check_status(Test, "server3", "Master, Running");
     check_status(Test, "server4", "Slave, Running");
+    Test->tprintf("Test 1 - checking groups");
     check_group(Test, "server1", "1");
     check_group(Test, "server2", "1");
     check_group(Test, "server3", "1");
