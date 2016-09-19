@@ -16,10 +16,7 @@ bool is_master(MYSQL *conn)
     if (find_field(conn, "SELECT @@server_id", "@@server_id", str) == 0)
     {
         int server_id = atoi(str);
-        if (master_id != server_id)
-        {
-            printf("Expected %d but got %d\n", master_id, server_id);
-        }
+        return server_id == master_id;
     }
 
     return false;
@@ -43,21 +40,19 @@ int main(int argc, char *argv[])
 
     test->connect_maxscale();
 
-    /**
-     * Test `time`. The first SELECT within 10 seconds should go the
-     * master and all SELECTs after it should go to the slaves.
-     */
+    test->tprintf("Test `time`. The first SELECT within 10 seconds should go the "
+                  "master and all SELECTs after it should go to the slaves.");
+
     test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
-    sleep(5);
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the first SELECT");
-    sleep(7);
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the second SELECT");
+    sleep(1);
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the first SELECT");
+    sleep(11);
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the second SELECT");
 
 
-    /**
-     * Change test setup for `count`, the first three selects after an
-     * insert should go to the master.
-     */
+    test->tprintf("Change test setup for `count`, the first three selects after an "
+                  "insert should go to the master.");
+
     test->close_maxscale_connections();
     test->ssh_maxscale(true, "sed -i -e 's/time.*/time=0/' /etc/maxscale.cnf");
     test->ssh_maxscale(true, "sed -i -e 's/###count/count/' /etc/maxscale.cnf");
@@ -65,58 +60,62 @@ int main(int argc, char *argv[])
     test->connect_maxscale();
 
     test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the first SELECT");
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the second SELECT");
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the third SELECT");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the fourth SELECT");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the fifth SELECT");
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the first SELECT");
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the second SELECT");
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the third SELECT");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the fourth SELECT");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the fifth SELECT");
 
-    /**
-     * Change test setup for `count` and `match`, selects after an insert
-     * to t1 should go to the slaves and selects after an insert to t2
-     * should go to the master.
-     */
+
+    test->tprintf("Change test setup for `count` and `match`, selects after an insert "
+                  "to t1 should go to the slaves and selects after an insert to t2 "
+                  "should go to the master.");
+
     test->close_maxscale_connections();
     test->ssh_maxscale(true, "sed -i -e 's/###match/match/' /etc/maxscale.cnf");
     test->restart_maxscale();
     test->connect_maxscale();
 
 
-    /** t1 first, should be ignored */
+    test->tprintf("t1 first, should be ignored");
+
     test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the first SELECT");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the second SELECT");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the first SELECT");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the second SELECT");
 
-    /** t2 should match and trigger the critical reads */
+    test->tprintf("t2 should match and trigger the critical reads");
+
     test->try_query(test->conn_rwsplit, "INSERT INTO test.t2 VALUES (1)");
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the first SELECT");
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the second SELECT");
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the third SELECT");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the fourth SELECT");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the fifth SELECT");
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the first SELECT");
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the second SELECT");
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the third SELECT");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the fourth SELECT");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the fifth SELECT");
 
-    /**
-     * Change test setup for `count` and `ignore`, expects the same
-     * results as previous test.
-     */
+
+    test->tprintf("Change test setup for `count` and `ignore`, expects the same "
+                  "results as previous test.");
+
     test->close_maxscale_connections();
     test->ssh_maxscale(true, "sed -i -e 's/match/###match/' /etc/maxscale.cnf");
     test->ssh_maxscale(true, "sed -i -e 's/###ignore/ignore/' /etc/maxscale.cnf");
     test->restart_maxscale();
     test->connect_maxscale();
 
-    /** t1 first, should be ignored */
-    test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the first SELECT");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the second SELECT");
+    test->tprintf("t1 first, should be ignored");
 
-    /** t2 should match and trigger the critical reads */
+    test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the first SELECT");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the second SELECT");
+
+    test->tprintf("t2 should match and trigger the critical reads");
+
     test->try_query(test->conn_rwsplit, "INSERT INTO test.t2 VALUES (1)");
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the first SELECT");
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the second SELECT");
-    test->add_result(is_master(test->conn_rwsplit), "Master should reply to the third SELECT");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the fourth SELECT");
-    test->add_result(!is_master(test->conn_rwsplit), "Master should NOT reply to the fifth SELECT");
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the first SELECT");
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the second SELECT");
+    test->add_result(!is_master(test->conn_rwsplit), "Master should reply to the third SELECT");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the fourth SELECT");
+    test->add_result(is_master(test->conn_rwsplit), "Master should NOT reply to the fifth SELECT");
 
     execute_query(test->repl->nodes[0], "DROP TABLE test.t1");
     execute_query(test->repl->nodes[0], "DROP TABLE test.t2");
