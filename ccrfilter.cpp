@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
      * insert should go to the master.
      */
     test->close_maxscale_connections();
-    test->ssh_maxscale(true, "sed -i -e 's/time/###time/' /etc/maxscale.cnf");
+    test->ssh_maxscale(true, "sed -i -e 's/time.*/time=0/' /etc/maxscale.cnf");
     test->ssh_maxscale(true, "sed -i -e 's/###count/count/' /etc/maxscale.cnf");
     test->restart_maxscale();
     test->connect_maxscale();
