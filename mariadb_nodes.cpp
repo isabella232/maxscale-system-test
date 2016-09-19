@@ -487,6 +487,7 @@ int Mariadb_nodes::check_replication(int master)
         }
         mysql_close(conn);
     }
+    printf("repl check res %d\n", res1);
     return(res1);
 }
 

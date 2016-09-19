@@ -1,5 +1,7 @@
 /**
  * @file mxs781_binlog_wrong_passwrd.cpp
+ * - try to put wrong password when connect binlog router to real master
+ * - check binlog router status using 'show slave status'
  */
 
 #include <my_config.h>
