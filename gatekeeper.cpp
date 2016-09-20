@@ -25,6 +25,7 @@ const char* allowed_queries[] = {
     "UPDATE test.t1 SET id = 3 WHERE id = 2",
     "UPDATE test.t1 SET id = 2 WHERE id = 3",
     "UPDATE test.t1 SET id = 1 WHERE id = 4",
+    "   UPDATE    test.t1    SET   id   =   1   WHERE   id   =   4    ",
     NULL
 };
 
