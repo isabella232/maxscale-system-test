@@ -83,8 +83,8 @@ int main(int argc, char *argv[])
     }
 
     Test->stop_timeout();
+    sleep(5);
     Test->check_maxscale_alive();
-    Test->check_current_connections(0);
     Test->check_current_operations(0);
 
     Test->copy_all_logs();
