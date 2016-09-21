@@ -40,6 +40,11 @@ int main(int argc, char *argv[])
     Test->connect_maxscale();
     Test->tprintf("Preparing test");
     Test->set_timeout(120);
+    Test->try_query(Test->conn_rwsplit, "DROP DATABASE db1");
+    Test->try_query(Test->conn_rwsplit, "DROP DATABASE db2");
+    Test->try_query(Test->conn_rwsplit, "DROP DATABASE db3");
+    Test->try_query(Test->conn_rwsplit, "DROP DATABASE db4");
+
     execute_query(Test->conn_rwsplit, "CREATE DATABASE db1");
     execute_query(Test->conn_rwsplit, "CREATE DATABASE db2");
     execute_query(Test->conn_rwsplit, "CREATE DATABASE db3");
