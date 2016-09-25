@@ -35,6 +35,17 @@ int main(int argc, char *argv[])
         Test->tprintf("Error executing sysbench test\n");
     }
 
+    //executing custom sysbench command
+    sprintf(sys1, "%s/sysbench %s prepare", Test->sysbench_dir, getenv("sysbench_params"));
+    system(sys1)
+    sprintf(sys1, "%s/sysbench %s run", Test->sysbench_dir, getenv("sysbench_params"));
+    Test->tprintf("Executing custom sysbench \n%s\n", sys1);
+    if (system(sys1) != 0) {
+        Test->tprintf("Error executing custom sysbench test\n");
+    }
+    sprintf(sys1, "%s/sysbench %s cleanup", Test->sysbench_dir, getenv("sysbench_params"));
+    system(sys1)
+
     Test->connect_maxscale();
 
     printf("Dropping sysbanch tables!\n"); fflush(stdout);
