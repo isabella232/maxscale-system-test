@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     vm_ip = getenv("VM_IP");
     vm_ssh_keypath = ("VM_SSH_KEYPATH");
     mdbci_dir = mdbci_dir_env == NULL ? "$HOME/mdbci" : mdbci_dir_env;
-    sprintf(sys1, "%s/scripts/install_sysbench.sh $s $s $s", mdbci_dir, vm_user, vm_ip, vm_ssh_keypath);
+    sprintf(sys1, "%s/scripts/install_sysbench.sh %s %s %s", mdbci_dir, vm_user, vm_ip, vm_ssh_keypath);
     if (system(sys1) != 0) {
         Test->tprintf("Unable to install sysbench\n");
     }
