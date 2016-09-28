@@ -32,13 +32,13 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(20);
 
-    int load_threads_num = 3;
+    int load_threads_num = 100;
     openclose_thread_data data_master[load_threads_num];
 
     int i;
 
-    int run_time = 300;
-    int iterations = 25;
+    int run_time = 3000;
+    int iterations = 250;
     int t_iterations = 3;
     int tt[t_iterations];
 
@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
     Test->repl->connect();
     Test->connect_maxscale();
     create_t1(Test->conn_rwsplit);
+    execute_query(Test->conn_rwsplit, (char*) "set global max_connections=1000");
     Test->close_maxscale_connections();
 
     for (i = 0; i < load_threads_num; i++) { data_master[i].rwsplit_only = 1;}
@@ -76,6 +77,8 @@ int main(int argc, char *argv[])
         iret_master[i] = pthread_create( &thread_master[i], NULL, disconnect_thread, &data_master[i]);
     }
 
+    Test->stop_timeout();
+    sleep(30);
     for (int j = 0; j < t_iterations; j++)
     {
         for (i = 0; i < iterations; i++)
@@ -91,7 +94,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    Test->set_timeout(120);
+    Test->set_timeout(240);
 
     Test->tprintf("Waiting for all master load threads exit\n");
     for (i = 0; i < load_threads_num; i++)
@@ -129,6 +132,7 @@ void *disconnect_thread( void *ptr )
         while (data->exit_flag == 0)
         {
             data->conn1 = data->Test->open_rwsplit_connection();
+            data->conn1 = open_conn_db_timeout(data->Test->rwsplit_port, data->Test->maxscale_IP, (char*) "test", data->Test->maxscale_user, data->Test->maxadmin_password, 10, data->Test->ssl);
             execute_query_silent(data->conn1, sql);
             mysql_close(data->conn1);
             data->i++;
