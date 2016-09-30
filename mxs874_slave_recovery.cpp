@@ -35,10 +35,10 @@ int main(int argc, char *argv[])
     Test->set_timeout(10);
     Test->tprintf("Unblocking first slave and blocking second slave\n");
 
-    Test->repl->block_node(2);
+    Test->repl->unblock_node(1);
     Test->stop_timeout();
     sleep(30);
-    Test->repl->unblock_node(1);
+    Test->repl->block_node(2);
     Test->stop_timeout();
     sleep(30);
     Test->set_timeout(20);
