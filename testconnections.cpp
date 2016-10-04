@@ -1152,7 +1152,12 @@ int TestConnections::tprintf(const char *format, ...)
     double elapsedTime = (t2.tv_sec - start_time.tv_sec);
     elapsedTime += (double) (t2.tv_usec - start_time.tv_usec) / 1000000.0;
 
-    printf("%04f: ", elapsedTime);
+    time_t time_now = time(NULL);
+    struct tm tm_now;
+    localtime_r(&time_now, &tm_now);
+    char strbuf[256];
+
+    printf("%s %04f: ", asctime_r(&tm_now, strbuf), elapsedTime);
 
     va_list argp;
     va_start(argp, format);
