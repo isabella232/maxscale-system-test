@@ -10,37 +10,36 @@ int main(int argc, char *argv[])
 {
     TestConnections * test = new TestConnections(argc, argv);
 
-    /** Create the test table and insert some data */
+    test->tprintf(" Create the test table and insert some data ");
     test->connect_maxscale();
     test->try_query("CREATE OR REPLACE TABLE test.t1 (id int)");
     test->try_query("INSERT INTO test.t1 VALUES (1)");
     test->close_maxscale_connections();
 
-    /** Block all but one node */
+    test->tprintf(" Block all but one node ");
     test->repl->block_node(0);
     test->repl->block_node(1);
     test->repl->block_node(2);
 
-    /** Wait for the monitor to detect it */
+    test->tprintf(" Wait for the monitor to detect it ");
     sleep(15);
 
-    /** Connect and insert should work */
+    test->tprintf(" Connect and insert should work ");
     test->connect_maxscale();
     test->try_query("INSERT INTO test.t1 VALUES (1)");
     test->close_maxscale_connections();
 
-    /** Unblock nodes */
+    test->tprintf(" Unblock nodes ");
     test->repl->unblock_node(0);
     test->repl->unblock_node(1);
     test->repl->unblock_node(2);
 
-    /** Wait for the monitor to detect it */
+    test->tprintf(" Wait for the monitor to detect it ");
     sleep(15);
 
-    /**
-     * Check that we are still using the last node to which we failed over
-     * to and that the old nodes are in maintenance mode
-     */
+    test->tprintf("Check that we are still using the last node to which we failed over"
+                  "to and that the old nodes are in maintenance mode");
+
     test->connect_maxscale();
     test->try_query("INSERT INTO test.t1 VALUES (1)");
     char maxscale_id[256], real_id[256];
@@ -50,8 +49,8 @@ int main(int argc, char *argv[])
                      "@@server_id is different: %s != %s", maxscale_id, real_id);
     test->close_maxscale_connections();
 
-    /** Check that MaxScale is running */
-    test->add_result(test->check_maxscale_alive(), "MaxScale is not running");
+    test->tprintf(" Check that MaxScale is running ");
+    test->check_maxscale_alive();
 
     test->copy_all_logs();
     return test->global_result;
