@@ -12,8 +12,8 @@ int main(int argc, char *argv[])
 
     test->tprintf(" Create the test table and insert some data ");
     test->connect_maxscale();
-    test->try_query("CREATE OR REPLACE TABLE test.t1 (id int)");
-    test->try_query("INSERT INTO test.t1 VALUES (1)");
+    test->try_query(test->conn_rwsplit, "CREATE OR REPLACE TABLE test.t1 (id int)");
+    test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
     test->close_maxscale_connections();
 
     test->tprintf(" Block all but one node ");
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
     test->tprintf(" Connect and insert should work ");
     test->connect_maxscale();
-    test->try_query("INSERT INTO test.t1 VALUES (1)");
+    test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
     test->close_maxscale_connections();
 
     test->tprintf(" Unblock nodes ");
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
                   "to and that the old nodes are in maintenance mode");
 
     test->connect_maxscale();
-    test->try_query("INSERT INTO test.t1 VALUES (1)");
+    test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
     char maxscale_id[256], real_id[256];
     find_field(test->conn_rwsplit, "SELECT @@server_id", "@@server_id", maxscale_id);
     find_field(test->repl->nodes[3], "SELECT @@server_id", "@@server_id", real_id);
