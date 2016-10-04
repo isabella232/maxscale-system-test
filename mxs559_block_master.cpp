@@ -88,17 +88,17 @@ int main(int argc, char *argv[])
     {
         for (i = 0; i < iterations; i++)
         {
-            Test->set_timeout(30);
+            Test->set_timeout(30+tt[j]*10);
             Test->tprintf("Block master\n");
             Test->repl->block_node(0);
             sleep(tt[j]);
-            Test->set_timeout(30);
+            Test->set_timeout(30+tt[j]*10);
             Test->tprintf("Unlock master\n");
             Test->repl->unblock_node(0);
             sleep(tt[j]);
-            Test->set_timeout(30);
-            Test->tprintf("flush hosts\n");
-            Test->repl->flush_hosts();
+            Test->set_timeout(30+tt[j]*10);
+            //Test->tprintf("flush hosts\n");
+            //Test->repl->flush_hosts();
         }
     }
 
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
         data_master[i].exit_flag = 1;
         pthread_join(iret_master[i], NULL);
     }
-    sleep(5);
+    sleep(30);
 
     Test->tprintf("Drop t1\n");
     Test->connect_maxscale();
@@ -135,19 +135,16 @@ void *disconnect_thread( void *ptr )
 
     sleep(data->thread_id);
     create_insert_string(sql, 50000, 2);
-    if (data->conn1 != NULL)
+
+    while (data->exit_flag == 0)
     {
-        while (data->exit_flag == 0)
-        {
-            //data->conn1 = data->Test->open_rwsplit_connection();
-            data->conn1 = open_conn_db_timeout(data->Test->rwsplit_port, data->Test->maxscale_IP, (char*) "test", data->Test->maxscale_user, data->Test->maxadmin_password, 10, data->Test->ssl);
-            execute_query_silent(data->conn1, sql);
-            mysql_close(data->conn1);
-            data->i++;
-        }
-    } else {
-        data->Test->add_result(1, "Error creating MYSQL struct for Master conn\n");
+        //data->conn1 = data->Test->open_rwsplit_connection();
+        data->conn1 = open_conn_db_timeout(data->Test->rwsplit_port, data->Test->maxscale_IP, (char*) "test", data->Test->maxscale_user, data->Test->maxscale_password, 10, data->Test->ssl);
+        execute_query_silent(data->conn1, sql);
+        mysql_close(data->conn1);
+        data->i++;
     }
+
 
     return NULL;
 }
