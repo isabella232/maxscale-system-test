@@ -621,6 +621,11 @@ char * Mariadb_nodes::ssh_node_output(int node, char * ssh, bool sudo)
     char sys[strlen(ssh) + 1024];
     generate_ssh_cmd(sys, node, ssh, sudo);
     FILE *output = popen(sys, "r");
+    if (output == NULL)
+    {
+        printf("Error opening ssh %s\n", strerror(errno));
+        return NULL;
+    }
     char buffer[1024];
     size_t rsize = sizeof(buffer);
     char* result = (char*)calloc(rsize, sizeof(char));
@@ -631,6 +636,7 @@ char * Mariadb_nodes::ssh_node_output(int node, char * ssh, bool sudo)
         rsize += sizeof(buffer);
         strcat(result, buffer);
     }
+    pclose(output);
     return result;
 }
 

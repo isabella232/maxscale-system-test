@@ -797,6 +797,10 @@ int TestConnections::find_connected_slave1()
 int TestConnections::check_maxscale_processes(int expected)
 {
     char* maxscale_num = ssh_maxscale_output(false, "ps -C maxscale | grep maxscale | wc -l");
+    if (maxscale_num == NULL)
+    {
+        return -1;
+    }
     char* nl = strchr(maxscale_num, '\n');
     if (nl)
     {
@@ -911,6 +915,11 @@ char* TestConnections::ssh_maxscale_output(bool sudo, const char* format, ...)
     generate_ssh_cmd(cmd, sys, sudo);
 
     FILE *output = popen(cmd, "r");
+    if (output == NULL)
+    {
+        printf("Error opening ssh %s\n", strerror(errno));
+        return NULL;
+    }
     char buffer[1024];
     size_t rsize = sizeof(buffer);
     char* result = (char*)calloc(rsize, sizeof(char));
@@ -924,6 +933,7 @@ char* TestConnections::ssh_maxscale_output(bool sudo, const char* format, ...)
 
     free(sys);
     free(cmd);
+    pclose(output);
 
     return result;
 }

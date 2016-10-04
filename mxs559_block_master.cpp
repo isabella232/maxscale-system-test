@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(20);
 
-    int load_threads_num = 100;
+    int load_threads_num = 25;
     openclose_thread_data data_master[load_threads_num];
 
     int i;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     int t_iterations = 3;
     int tt[t_iterations];
 
-    tt[0] = 1;
+    tt[0] = 3;
     tt[1] = 5;
     tt[2] = 10;
 
@@ -67,13 +67,18 @@ int main(int argc, char *argv[])
 
     Test->repl->connect();
     Test->connect_maxscale();
+
+    Test->tprintf("Create t1\n");
     create_t1(Test->conn_rwsplit);
+    Test->tprintf("set max_connections t1\n");
     execute_query(Test->conn_rwsplit, (char*) "set global max_connections=1000");
     Test->close_maxscale_connections();
 
+    Test->tprintf("Create threads\n");
     for (i = 0; i < load_threads_num; i++) { data_master[i].rwsplit_only = 1;}
     /* Create independent threads each of them will create some load on Mastet */
     for (i = 0; i < load_threads_num; i++) {
+        Test->tprintf("Thread %d\n", i);
         iret_master[i] = pthread_create( &thread_master[i], NULL, disconnect_thread, &data_master[i]);
     }
 
@@ -84,12 +89,15 @@ int main(int argc, char *argv[])
         for (i = 0; i < iterations; i++)
         {
             Test->set_timeout(30);
+            Test->tprintf("Block master\n");
             Test->repl->block_node(0);
             sleep(tt[j]);
             Test->set_timeout(30);
+            Test->tprintf("Unlock master\n");
             Test->repl->unblock_node(0);
             sleep(tt[j]);
             Test->set_timeout(30);
+            Test->tprintf("flush hosts\n");
             Test->repl->flush_hosts();
         }
     }
@@ -131,7 +139,7 @@ void *disconnect_thread( void *ptr )
     {
         while (data->exit_flag == 0)
         {
-            data->conn1 = data->Test->open_rwsplit_connection();
+            //data->conn1 = data->Test->open_rwsplit_connection();
             data->conn1 = open_conn_db_timeout(data->Test->rwsplit_port, data->Test->maxscale_IP, (char*) "test", data->Test->maxscale_user, data->Test->maxadmin_password, 10, data->Test->ssl);
             execute_query_silent(data->conn1, sql);
             mysql_close(data->conn1);
