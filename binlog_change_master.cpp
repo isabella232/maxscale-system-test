@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     {
         if (Test->smoke)
         {
-            sleep(15);
+            sleep(45);
         } else {
             sleep(45);
         }
@@ -219,6 +219,12 @@ int select_new_master(TestConnections * test)
     // Set Maxscale to new master
     test->try_query(binlog, "stop slave");
     test->tprintf("configuring Maxscale binlog router\n");
+
+
+    test->tprintf("reconnect to binlog\n");
+    mysql_close(binlog);
+    binlog = open_conn_no_db(test->binlog_port, test->maxscale_IP, test->repl->user_name, test->repl->password, test->ssl);
+    test->add_result(mysql_errno(binlog), "Error connection to binlog router %s\n", mysql_error(binlog));
 
     char str[1024];
     //sprintf(str, setup_slave1, test->repl->IP[2], log_file_new, test->repl->port[2]);

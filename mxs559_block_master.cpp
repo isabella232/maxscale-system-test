@@ -111,6 +111,8 @@ int main(int argc, char *argv[])
         pthread_join(iret_master[i], NULL);
     }
     sleep(30);
+    Test->tprintf("flush hosts\n");
+    Test->repl->flush_hosts();
 
     Test->tprintf("Drop t1\n");
     Test->connect_maxscale();

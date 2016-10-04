@@ -143,17 +143,17 @@ address=###node_server_IP_2###
 port=###node_server_port_2###
 protocol=MySQLBackend
 
-[server3]
-type=server
-address=###node_server_IP_3###
-port=###node_server_port_3###
-protocol=MySQLBackend
+#[server3]
+#type=server
+#address=###node_server_IP_3###
+#port=###node_server_port_3###
+#protocol=MySQLBackend
 
-[server4]
-type=server
-address=###node_server_IP_4###
-port=###node_server_port_4###
-protocol=MySQLBackend
+#[server4]
+#type=server
+#address=###node_server_IP_4###
+#port=###node_server_port_4###
+#protocol=MySQLBackend
 
 [QLA]
 type=filter
