@@ -413,6 +413,7 @@ medium_weight_tests(mxs564_big_dump rw_select_insert cdc_client ssl sql_queries
   max_connections binlog_change_master binlog_semisync_txs0_ss0 ssl_load)
 
 light_weight_tests(
+  avro
   bug359
   bug448
   bug469
@@ -421,11 +422,13 @@ light_weight_tests(
   bug526
   bug699
   bug729
+  ccrfilter
   change_user
   connect_to_nonexisting_db
   connection_limit
   encrypted_passwords
   galera_priority
+  gatekeeper
   kill_master
   load_balancing
   maxinfo.py
@@ -437,6 +440,7 @@ light_weight_tests(
   mxs37_table_privilege
   mxs47
   mxs682_cyrillic
+  mxs716
   mxs722
   mxs729_maxadmin
   mxs791.sh
@@ -451,7 +455,6 @@ light_weight_tests(
   server_weight
   setup_binlog_crc_none
   test_hints
-  mxs716
   )
 
 # See if we are on a RPM-capable or DEB-capable system
