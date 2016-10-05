@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     {
         if (Test->smoke)
         {
-            sleep(45);
+            sleep(15);
         } else {
             sleep(45);
         }
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     exit_flag = 1;
     pthread_join(transaction_thread_t, NULL );
     Test->tprintf("Done!\n");
-
+/*
     Test->tprintf("Checking data on the node3 (slave)\n");
     char sql[256];
     char rep[256];
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
         }
     }
     Test->repl->close_connections();
-
+*/
 
     Test->copy_all_logs(); return(Test->global_result);
 }
@@ -221,10 +221,10 @@ int select_new_master(TestConnections * test)
     test->tprintf("configuring Maxscale binlog router\n");
 
 
-    test->tprintf("reconnect to binlog\n");
+    /*test->tprintf("reconnect to binlog\n");
     mysql_close(binlog);
     binlog = open_conn_no_db(test->binlog_port, test->maxscale_IP, test->repl->user_name, test->repl->password, test->ssl);
-    test->add_result(mysql_errno(binlog), "Error connection to binlog router %s\n", mysql_error(binlog));
+    test->add_result(mysql_errno(binlog), "Error connection to binlog router %s\n", mysql_error(binlog));*/
 
     char str[1024];
     //sprintf(str, setup_slave1, test->repl->IP[2], log_file_new, test->repl->port[2]);

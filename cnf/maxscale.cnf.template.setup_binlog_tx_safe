@@ -10,6 +10,8 @@
 [maxscale]
 threads=###threads###
 log_warning=1
+log_notice=1
+log_info=1
 
 [Binlog_Service]
 type=service
