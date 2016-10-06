@@ -69,17 +69,17 @@ class MaxScaleTest:
 
         # Master-Slave nodes
         self.repl = dict()
-        self.repl['node0'] = SQLConnection(host = os.getenv("node_000"), port = os.getenv("node_port_000"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
-        self.repl['node1'] = SQLConnection(host = os.getenv("node_001"), port = os.getenv("node_port_001"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
-        self.repl['node2'] = SQLConnection(host = os.getenv("node_002"), port = os.getenv("node_port_002"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
-        self.repl['node3'] = SQLConnection(host = os.getenv("node_003"), port = os.getenv("node_port_003"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.repl['node0'] = SQLConnection(host = os.getenv("node_000_network"), port = os.getenv("node_000_port"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.repl['node1'] = SQLConnection(host = os.getenv("node_001_network"), port = os.getenv("node_001_port"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.repl['node2'] = SQLConnection(host = os.getenv("node_002_network"), port = os.getenv("node_002_port"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.repl['node3'] = SQLConnection(host = os.getenv("node_003_network"), port = os.getenv("node_003_port"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
 
         # Galera nodes
         self.galera = dict()
-        self.galera['node0'] = SQLConnection(host = os.getenv("galera_000"), port = os.getenv("galera_port_000"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
-        self.galera['node1'] = SQLConnection(host = os.getenv("galera_001"), port = os.getenv("galera_port_001"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
-        self.galera['node2'] = SQLConnection(host = os.getenv("galera_002"), port = os.getenv("galera_port_002"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
-        self.galera['node3'] = SQLConnection(host = os.getenv("galera_003"), port = os.getenv("galera_port_003"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.galera['node0'] = SQLConnection(host = os.getenv("galera_000_network"), port = os.getenv("galera_000_port"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.galera['node1'] = SQLConnection(host = os.getenv("galera_001_network"), port = os.getenv("galera_001_port"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.galera['node2'] = SQLConnection(host = os.getenv("galera_002_network"), port = os.getenv("galera_002_port"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
+        self.galera['node3'] = SQLConnection(host = os.getenv("galera_003_network"), port = os.getenv("galera_003_port"), user = os.getenv("maxscale_user"), password = os.getenv("maxscale_password"))
 
     def __del__(self):
         subprocess.call(os.getcwd() + "/copy_logs.sh " + str(self.testname), shell=True)

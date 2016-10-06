@@ -137,6 +137,9 @@ TestConnections::TestConnections(int argc, char *argv[])
     //sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", galera->user_name, galera->password);
     //galera->ssh_node(0, str, FALSE);
 
+    repl->flush_hosts();
+    galera->flush_hosts();
+
     if (!no_nodes_check) {
         //  checking all nodes and restart if needed
         repl->unblock_all_nodes();
@@ -144,27 +147,28 @@ TestConnections::TestConnections(int argc, char *argv[])
         repl->check_and_restart_nodes_vm();
         galera->check_and_restart_nodes_vm();
         //  checking repl
+        tprintf("Checking Master/Slave\n");
         if (repl->check_replication(0) != 0) {
-            printf("Backend broken! Restarting replication nodes\n");
+            tprintf("Backend broken! Restarting replication nodes\n");
             repl->start_replication();
         }
         //  checking galera
+        tprintf("Checking Galera\n");
         if  (galera->check_galera() != 0) {
-            printf("Backend broken! Restarting Galera nodes\n");
+            tprintf("Backend broken! Restarting Galera nodes\n");
             galera->start_galera();
         }
     }
-    repl->flush_hosts();
-    galera->flush_hosts();
+
     if (!no_nodes_check)
     {
         if ((repl->check_replication(0) != 0) || (galera->check_galera() != 0)) {
-            printf("****** BACKEND IS STILL BROKEN! Exiting\n *****");
+            tprintf("****** BACKEND IS STILL BROKEN! Exiting\n *****");
             exit(200);
         }
     }
     //repl->start_replication();
-tprintf(">>>>> init maxscale!\n");
+    tprintf(">>>>> init maxscale!\n");
     if (!no_maxscale_start) {init_maxscale();}
     if (backend_ssl)
     {
