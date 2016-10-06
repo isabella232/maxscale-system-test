@@ -25,6 +25,9 @@ int main(int argc, char *argv[])
     sleep(15);
 
     test->tprintf(" Connect and insert should work ");
+    char *output = test->ssh_maxscale_output(true, "maxadmin list servers");
+    test->tprintf("%s", output);
+    free(output);
     test->connect_maxscale();
     test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
     test->close_maxscale_connections();
