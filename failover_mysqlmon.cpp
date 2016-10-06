@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     test->try_query(test->conn_rwsplit, "INSERT INTO test.t1 VALUES (1)");
     char maxscale_id[256], real_id[256];
     find_field(test->conn_rwsplit, "SELECT @@server_id", "@@server_id", maxscale_id);
+    test->repl->connect();
     find_field(test->repl->nodes[3], "SELECT @@server_id", "@@server_id", real_id);
     test->add_result(strcmp(maxscale_id, real_id) != 0,
                      "@@server_id is different: %s != %s", maxscale_id, real_id);

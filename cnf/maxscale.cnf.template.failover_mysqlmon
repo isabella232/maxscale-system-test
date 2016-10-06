@@ -21,7 +21,7 @@ passwd=skysql
 type=service
 router=readconnroute
 router_options= slave
-servers=server1,server2
+servers=server1, server2, server3, server4
 user=maxskysql
 passwd=skysql
 
@@ -29,7 +29,7 @@ passwd=skysql
 type=service
 router=readconnroute
 router_options=master
-servers=server1,server2
+servers=server1, server2, server3, server4
 user=maxskysql
 passwd=skysql
 
