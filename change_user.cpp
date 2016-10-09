@@ -20,12 +20,13 @@ int main(int argc, char *argv[])
     Test->set_timeout(20);
 
     Test->repl->connect();
+    Test->repl->execute_query_all_nodes("DROP USER 'user'@'%%'");
     Test->connect_maxscale();
 
     Test->tprintf("Creating user 'user' \n");
 
-    Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%%'");
-    Test->try_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%%'  identified by 'pass2'");
+    Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%%' identified by 'pass2'");
+    Test->try_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%%'");
     Test->try_query(Test->conn_rwsplit, (char *) "FLUSH PRIVILEGES;");
     Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE IF EXISTS t1");
     Test->try_query(Test->conn_rwsplit, (char *) "CREATE TABLE t1 (x1 int, fl int)");
