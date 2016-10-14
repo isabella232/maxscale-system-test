@@ -7,7 +7,8 @@
 #include "templates.h"
 #include "mariadb_func.h"
 
-TestConnections::TestConnections(int argc, char *argv[])
+TestConnections::TestConnections(int argc, char *argv[]):
+copy_logs(true)
 {
     //char str[1024];
     gettimeofday(&start_time, NULL);
@@ -204,6 +205,11 @@ TestConnections::~TestConnections()
     {
         repl->disable_ssl();
         //galera->disable_ssl();
+    }
+
+    if (this->copy_logs)
+    {
+        copy_all_logs();
     }
 }
 
@@ -508,6 +514,7 @@ int TestConnections::copy_all_logs()
         return(1);
     } else {
         tprintf("copy_logs.sh OK!\n");
+        this->copy_logs = false;
         return(0);
     }
 }

@@ -31,6 +31,10 @@
  */
 class TestConnections
 {
+private:
+    /** If false, logs are copied in the destructor */
+    bool copy_logs;
+
 public:
     /**
      * @brief TestConnections constructor: reads environmental variables, copies MaxScale.cnf for MaxScale machine
