@@ -140,6 +140,8 @@ TestConnections::TestConnections(int argc, char *argv[])
     repl->flush_hosts();
     galera->flush_hosts();
 
+    int attempts = 5;
+
     if (!no_nodes_check) {
         //  checking all nodes and restart if needed
         repl->unblock_all_nodes();
@@ -148,15 +150,20 @@ TestConnections::TestConnections(int argc, char *argv[])
         galera->check_and_restart_nodes_vm();
         //  checking repl
         tprintf("Checking Master/Slave\n");
-        if (repl->check_replication(0) != 0) {
+        while ((attempts > 0) && (repl->check_replication(0) != 0))
+        {
             tprintf("Backend broken! Restarting replication nodes\n");
             repl->start_replication();
+            attempts--;
         }
         //  checking galera
         tprintf("Checking Galera\n");
-        if  (galera->check_galera() != 0) {
+        attempts = 5;
+        while ((attempts > 0) && (galera->check_galera() != 0))
+        {
             tprintf("Backend broken! Restarting Galera nodes\n");
             galera->start_galera();
+            attempts--;
         }
     }
 

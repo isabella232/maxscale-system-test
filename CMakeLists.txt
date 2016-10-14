@@ -1,4 +1,5 @@
-# libssl-dev libmariadbclient-dev php5 perl coreutils realpath libjansson-dev
+# libssl-dev libmariadbclient-dev php5 perl coreutils realpath libjansson-dev openjdk-7-jdk (openjdk-8-jdk, openjdk-9-jdk)
+# pip install JayDeBeApi
 project(maxscale_system_test)
 cmake_minimum_required(VERSION 2.8)
 
