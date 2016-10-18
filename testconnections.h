@@ -195,11 +195,6 @@ public:
     char maxscale_access_sudo[64];
 
     /**
-     * @brief maxscale_restart if TRUE Maxscale will be restarted before every test, else SIGHUP will be sent to Maxscale
-     */
-    bool maxscale_restart;
-
-    /**
      * @brief copy_mariadb_logs copies MariaDB logs from backend
      * @param repl Mariadb_nodes object
      * @param prefix file name prefix

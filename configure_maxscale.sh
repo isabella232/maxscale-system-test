@@ -106,34 +106,11 @@ ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_a
 ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo chmod 664 $maxscale_access_homedir/certs/*.pem; chmod a+x $maxscale_access_homedir" > /dev/null  2> /dev/null
 #ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo chmod a+r $maxscale_access_homedir"
 #ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo $maxdir_bin/maxkeys $max_dir/etc/.secrets"
-if [ -z "$maxscale_restart" ] ; then
-	export maxscale_restart="yes"
-fi
 
-if [ "$maxscale_restart" != "no" ] ; then
-	echo "restarting Maxscale"
-	ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo service maxscale stop"
-	ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo killall -9 maxscale"
-#	ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo mkdir -p $maxscale_access_homedir; $maxscale_access_sudo chmod 777 -R $maxscale_access_homedir"
-        ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo  truncate -s 0 $maxscale_log_dir/maxscale.log ; $maxscale_access_sudo chown maxscale:maxscale $maxscale_log_dir/maxscale.log" 
-	ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo  truncate -s 0 $maxscale_log_dir/maxscale1.log ; $maxscale_access_sudo chown maxscale:maxscale $maxscale_log_dir/maxscale1.log; $maxscale_access_sudo rm /tmp/core*; $maxscale_access_sudo rm -rf /dev/shm/*;  $maxscale_access_sudo ulimit -c unlimited; $maxscale_access_sudo service maxscale restart" 
-else
-	echo "reloading Maxscale configuration"
-#        ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "mkdir -p $maxscale_access_homedir; chmod 777 -R $maxscale_access_homedir"
-	ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo service maxscale status | grep running"
-	if [ $? == 0 ] ; then
-#		ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo echo " " > $maxscale_log_dir/maxscale1.log"
-#                ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo echo " " > $maxscale_log_dir/messages1.log"
-#                ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo echo " " > $maxscale_log_dir/debug1.log"
-#                ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo echo " " > $maxscale_log_dir/trace1.log"
-                ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo  truncate -s 0 $maxscale_log_dir/maxscale.log ; $maxscale_access_sudo chown maxscale:maxscale $maxscale_log_dir/maxscale.log" 
-	        ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo rm /tmp/core*; $maxscale_access_sudo truncate -s 0 $maxscale_log_dir/maxscale1.log ; $maxscale_access_sudo chown maxscale:maxscale $maxscale_log_dir/maxscale1.log; $maxscale_access_sudo ulimit -c unlimited; $maxscale_access_sudo killall -HUP maxscale" 
-	else
-                ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo  truncate -s 0 $maxscale_log_dir/maxscale.log ; $maxscale_access_sudo chown maxscale:maxscale $maxscale_log_dir/maxscale.log" 
-		ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo rm /tmp/core*; $maxscale_access_sudo truncate -s 0 $maxscale_log_dir/maxscale1.log ; $maxscale_access_sudo chown maxscale:maxscale $maxscale_log_dir/maxscale1.log; $maxscale_access_sudo ulimit -c unlimited; $maxscale_access_sudo service maxscale start"
-	fi
-fi
-#sleep 15
-#disown
+echo "restarting Maxscale"
+ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo service maxscale stop"
+ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo killall -9 maxscale"
+ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo  truncate -s 0 $maxscale_log_dir/maxscale.log ; $maxscale_access_sudo chown maxscale:maxscale $maxscale_log_dir/maxscale.log" 
+ssh -i $maxscale_sshkey $opt_str $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo  truncate -s 0 $maxscale_log_dir/maxscale1.log ; $maxscale_access_sudo chown maxscale:maxscale $maxscale_log_dir/maxscale1.log; $maxscale_access_sudo rm /tmp/core*; $maxscale_access_sudo rm -rf /dev/shm/*;  $maxscale_access_sudo ulimit -c unlimited; $maxscale_access_sudo service maxscale restart" 
 
 printenv > test.environment
