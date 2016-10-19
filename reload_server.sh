@@ -9,7 +9,6 @@ function check_server_count()
     then
         echo "Error: Incorrect amount of servers!"
         echo "Found $server_count servers when $1 was expected"
-        export maxscale_restart=$old_val
         return 1
     fi
     return 0
@@ -20,8 +19,6 @@ export test_dir=`dirname $rp`
 export test_name=`basename $rp`
 
 # Save the old configuration value
-old_val=$maxscale_restart
-export maxscale_restart=no
 
 # Start with a 4 server config file
 $test_dir/non_native_setup $test_name
@@ -62,5 +59,3 @@ if [[ $? -ne 0 ]]
 then
     exit 1
 fi
-
-export maxscale_restart=$old_val

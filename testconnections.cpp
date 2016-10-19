@@ -301,7 +301,6 @@ int TestConnections::read_env()
     }
 
     env = getenv("smoke"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {smoke = true;} else {smoke = false;}
-    env = getenv("maxscale_restart"); if ((env != NULL) && ((strcasecmp(env, "no") == 0) || (strcasecmp(env, "false") == 0) )) {maxscale_restart = false;} else {maxscale_restart = true;}
     env = getenv("threads"); if ((env != NULL)) {sscanf(env, "%d", &threads);} else {threads = 4;}
 }
 
@@ -399,21 +398,14 @@ int TestConnections::init_maxscale()
     ssh_maxscale(TRUE,  "chown maxscale:maxscale -R %s/certs", maxscale_access_homedir);
     ssh_maxscale(TRUE, "chmod 664 %s/certs/*.pem; chmod a+x %s", maxscale_access_homedir, maxscale_access_homedir);
 
-    if (maxscale_restart)
-    {
-        ssh_maxscale(TRUE, "service maxscale stop");
-        ssh_maxscale(TRUE, "killall -9 maxscale");
-    }
+    ssh_maxscale(TRUE, "service maxscale stop");
+    ssh_maxscale(TRUE, "killall -9 maxscale");
+
     ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale.log ; %s chown maxscale:maxscale %s/maxscale.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
     ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale1.log ; %s chown maxscale:maxscale %s/maxscale1.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
-    ssh_maxscale(TRUE, "rm /tmp/core*");
+    ssh_maxscale(TRUE, "rm -f /tmp/core*");
     ssh_maxscale(TRUE, "rm -rf /dev/shm/*");
-    if ((!maxscale_restart) && (ssh_maxscale(TRUE, "service maxscale status | grep running") == 0))
-    {
-        ssh_maxscale(TRUE, "ulimit -c unlimited; %s killall -HUP maxscale", maxscale_access_sudo);
-    } else {
-        ssh_maxscale(TRUE, "ulimit -c unlimited; %s service maxscale restart", maxscale_access_sudo);
-    }
+
     ssh_maxscale(FALSE, "printenv > test.environment");
     fflush(stdout);
 
@@ -742,7 +734,7 @@ void TestConnections::check_log_err(const char * err_msg, bool expected)
     tprintf("Getting logs\n");
     char sys1[4096];
     set_timeout(100);
-    sprintf(&sys1[0], "rm *.log; %s %s", get_logs_command, maxscale_IP);
+    sprintf(&sys1[0], "rm -f *.log; %s %s", get_logs_command, maxscale_IP);
     //tprintf("Executing: %s\n", sys1);
     system(sys1);
     set_timeout(50);
