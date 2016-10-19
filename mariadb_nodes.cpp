@@ -751,7 +751,7 @@ int Mariadb_nodes::disable_ssl()
     for (int i = 0; i < N; i++)
     {
         stop_node(i);
-        local_result += ssh_node(i, (char *) "rm /etc/my.cnf.d/ssl.cnf", TRUE);
+        local_result += ssh_node(i, (char *) "rm -f /etc/my.cnf.d/ssl.cnf", TRUE);
         start_node(i,  (char *) "");
     }
 

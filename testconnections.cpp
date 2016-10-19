@@ -403,7 +403,7 @@ int TestConnections::init_maxscale()
 
     ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale.log ; %s chown maxscale:maxscale %s/maxscale.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
     ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale1.log ; %s chown maxscale:maxscale %s/maxscale1.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
-    ssh_maxscale(TRUE, "rm /tmp/core*");
+    ssh_maxscale(TRUE, "rm -f /tmp/core*");
     ssh_maxscale(TRUE, "rm -rf /dev/shm/*");
 
     ssh_maxscale(FALSE, "printenv > test.environment");
@@ -734,7 +734,7 @@ void TestConnections::check_log_err(const char * err_msg, bool expected)
     tprintf("Getting logs\n");
     char sys1[4096];
     set_timeout(100);
-    sprintf(&sys1[0], "rm *.log; %s %s", get_logs_command, maxscale_IP);
+    sprintf(&sys1[0], "rm -f *.log; %s %s", get_logs_command, maxscale_IP);
     //tprintf("Executing: %s\n", sys1);
     system(sys1);
     set_timeout(50);
