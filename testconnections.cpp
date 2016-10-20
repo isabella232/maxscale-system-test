@@ -409,6 +409,8 @@ int TestConnections::init_maxscale()
     ssh_maxscale(FALSE, "printenv > test.environment");
     fflush(stdout);
 
+    ssh_maxscale(TRUE, "ulimit -c unlimited; %s service maxscale restart", maxscale_access_sudo);
+
     int waits;
 
     for (waits = 0; waits < 15; waits++)
