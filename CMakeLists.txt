@@ -380,6 +380,7 @@ add_test_executable(gatekeeper.cpp gatekeeper gatekeeper)
 add_test_executable(ccrfilter.cpp ccrfilter ccrfilter)
 #add_test_executable(auroramon.cpp auroramon auroramon)
 add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery repl2slaves)
+add_test_executable(mxs957.cpp mxs957 replication)
 
 # Python based tests
 add_test_script(mxs585.py replication)
