@@ -91,10 +91,12 @@ int main(int argc, char *argv[])
             Test->set_timeout(30+tt[j]*10);
             Test->tprintf("Block master\n");
             Test->repl->block_node(0);
+            Test->stop_timeout();
             sleep(tt[j]);
             Test->set_timeout(30+tt[j]*10);
             Test->tprintf("Unlock master\n");
             Test->repl->unblock_node(0);
+            Test->stop_timeout();
             sleep(tt[j]);
             Test->set_timeout(30+tt[j]*10);
             //Test->tprintf("flush hosts\n");
