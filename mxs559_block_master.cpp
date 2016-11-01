@@ -113,6 +113,7 @@ int main(int argc, char *argv[])
         pthread_join(iret_master[i], NULL);
     }
 
+    sleep(10);
     Test->tprintf("flush hosts\n");
     Test->repl->flush_hosts();
     Test->repl->check_and_restart_nodes_vm();
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
     {
         Test->repl->start_replication();
     }
-    sleep(15);
+    sleep(5);
     Test->tprintf("Drop t1\n");
     Test->connect_maxscale();
     Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE IF EXISTS t1;");
