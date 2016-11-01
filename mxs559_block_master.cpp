@@ -112,10 +112,11 @@ int main(int argc, char *argv[])
         data_master[i].exit_flag = 1;
         pthread_join(iret_master[i], NULL);
     }
-    sleep(30);
+
     Test->tprintf("flush hosts\n");
     Test->repl->flush_hosts();
-
+    Test->repl->check_and_restart_nodes_vm();
+    sleep(15);
     Test->tprintf("Drop t1\n");
     Test->connect_maxscale();
     Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE IF EXISTS t1;");
