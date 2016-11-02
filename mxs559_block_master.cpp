@@ -113,6 +113,7 @@ int main(int argc, char *argv[])
         pthread_join(iret_master[i], NULL);
     }
 
+    Test->stop_timeout();
     sleep(10);
     Test->tprintf("flush hosts\n");
     Test->repl->flush_hosts();
