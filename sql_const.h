@@ -10,7 +10,7 @@ const char * setup_slave =
         "MASTER_PASSWORD='repl', "
         "MASTER_LOG_FILE='%s', "
         "MASTER_LOG_POS=%s, "
-        "MASTER_PORT=%d, MASTER_CONNECT_RETRY=1; "
+        "MASTER_PORT=%d; "
         "start slave;";
 
 const char * setup_slave_no_pos =
@@ -19,7 +19,7 @@ const char * setup_slave_no_pos =
          "MASTER_PASSWORD='repl', "
          "MASTER_LOG_FILE='mar-bin.000001', "
          "MASTER_LOG_POS=4, "
-         "MASTER_PORT=%d, MASTER_CONNECT_RETRY=1";
+         "MASTER_PORT=%d";
 
 
 #endif // SQL_CONST_H
