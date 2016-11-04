@@ -197,6 +197,13 @@ int select_new_master(TestConnections * test)
     test->tprintf("show master status on maxscale\n");
     find_field(binlog, (char *) "show master status", (char *) "File", &maxscale_log_file[0]);
     find_field(binlog, (char *) "show master status", (char *) "Position", &maxscale_log_pos[0]);
+
+    if (!maxscale_log_file[0] || !maxscale_log_pos[0])
+    {
+        test->add_result(1, "Failed to query for master status");
+        return 1;
+    }
+
     test->tprintf("Real master file: %s\n", maxscale_log_file);
     test->tprintf("Real master pos : %s\n", maxscale_log_pos);
 
@@ -275,7 +282,7 @@ void *transaction_thread( void *ptr )
             failed_transaction_num = i_trans;
             Test->tprintf("Closing connection\n");
             mysql_close(conn);
-            Test->tprintf("Callinjg select_new_master()\n");
+            Test->tprintf("Calling select_new_master()\n");
             select_new_master(Test);
             master=2;
 
