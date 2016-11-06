@@ -29,6 +29,8 @@ int main(int argc, char** argv)
             Test->tprintf("Found limit, %d connections\n", limit);
             break;
         }
+        Test->stop_timeout();
+        sleep(1);
     }
 
     sleep(5);
