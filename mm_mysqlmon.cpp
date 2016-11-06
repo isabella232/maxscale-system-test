@@ -22,7 +22,7 @@ void check_status(TestConnections *Test, const char *server, const char *status)
         return;
     }
     if (strstr(maxadmin_result, status)  == NULL ) {
-        Test->add_result(1, "Test failed, server %s status is %s, expected %s\n", server, maxadmin_result, status);
+        Test->add_result(1, "Test failed, server '%s' status is '%s', expected '%s'\n", server, maxadmin_result, status);
     }
 }
 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Test 1 - Configure all servers into a multi-master ring with one slave");
 
     Test->set_timeout(120);
-    Test->repl->execute_query_all_nodes("STOP SLAVE; RESET SLAVE ALL; RESET MASTER;SET GLOBAL read_only='OFF'");
+    Test->repl->execute_query_all_nodes("STOP SLAVE; RESET SLAVE ALL; RESET MASTER; SET GLOBAL read_only='OFF'");
     Test->repl->connect();
     change_master(Test, 0, 1);
     change_master(Test, 1, 2);
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
     check_group(Test, "server3", "1");
     check_group(Test, "server4", "0");
 
-    Test->tprintf("Test 3 - Configure nodes 1 and 2 into a master-master pair, make node 0"
+    Test->tprintf("Test 3 - Configure nodes 1 and 2 into a master-master pair, make node 0 "
                   "a slave of node 1 and node 3 a slave of node 2");
 
     Test->set_timeout(120);
