@@ -420,7 +420,7 @@ set_tests_properties(different_size_rwsplit PROPERTIES LABELS "HEAVY")
 set_tests_properties(max_connections PROPERTIES LABELS "HEAVY")
 set_tests_properties(lots_of_rows PROPERTIES LABELS "HEAVY")
 set_tests_properties(binlog_change_master PROPERTIES LABELS "HEAVY")
-set_tests_properties(rwsplit_readonly_stress PROPERTIES LABELS "HEAVY")
+#set_tests_properties(rwsplit_readonly_stress PROPERTIES LABELS "HEAVY")
 set_tests_properties(mxs657_restart PROPERTIES LABELS "HEAVY")
 
 medium_weight_tests(mxs564_big_dump rw_select_insert cdc_client ssl sql_queries
@@ -438,13 +438,13 @@ light_weight_tests(
   bug526
   bug699
   bug729
-  ccrfilter
+  #ccrfilter
   change_user
   connect_to_nonexisting_db
-  connection_limit
+  #connection_limit
   encrypted_passwords
   galera_priority
-  gatekeeper
+  #gatekeeper
   kill_master
   load_balancing
   maxinfo.py
