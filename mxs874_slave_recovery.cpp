@@ -43,12 +43,21 @@ int main(int argc, char *argv[])
     sleep(30);
     Test->set_timeout(20);
 
-    char server1_status[256];
-    Test->get_maxadmin_param((char *) "show server server2", (char *) "Status", server1_status);
+    int retries;
 
-    if (strstr(server1_status, "Running") == NULL)
+    for (retries = 0; retries < 10; retries++)
     {
-        Test->add_result(1, "Slave is not recovered, slave status is %s\n", server1_status);
+        char server1_status[256];
+        Test->get_maxadmin_param((char *) "show server server2", (char *) "Status", server1_status);
+        if (strstr(server1_status, "Running"))
+        {
+            break;
+        }
+    }
+
+    if (retries == 10)
+    {
+        Test->add_result(1, "Slave is not recovered, slave status is not Running\n");
     }
 
     Test->tprintf("Unblocking second slave\n");
