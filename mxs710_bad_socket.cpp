@@ -16,7 +16,9 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
-    Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->check_maxscale_processes(0);
+    Test->check_log_err("Fatal", false);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

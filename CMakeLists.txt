@@ -351,8 +351,12 @@ add_test_executable(mxs720_line_with_no_equal.cpp mxs720_line_with_no_equal mxs7
 add_test_executable(mxs720_wierd_line.cpp mxs720_wierd_line mxs720_wierd_line)
 
 add_test_executable(mxs729_maxadmin.cpp mxs729_maxadmin replication)
+
+# Tests for bad sockets
 add_test_executable(mxs710_bad_socket.cpp mxs710_bad_socket mxs710_bad_socket)
 add_test_script(mxs711_two_ports mxs711_two_ports)
+add_test_script(mxs799_crash_bad_socket mxs799)
+
 add_test_executable(mxs682_cyrillic.cpp mxs682_cyrillic replication)
 add_test_script(mxs682_cyrillic_galera galera)
 add_test_executable(mxs657_restart.cpp mxs657_restart replication)
@@ -367,7 +371,6 @@ add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd 
 
 add_test_script(mxs791.sh replication)
 add_test_script(mxs791_galera.sh galera)
-add_test_executable(mxs799_crash_bad_socket.cpp mxs799_crash_bad_socket mxs799)
 # TODO: Alter the user_cache test
 # add_test_executable(user_cache.cpp user_cache user_cache)
 add_test_executable(mxs813_long_hostname.cpp mxs813_long_hostname setup_binlog)
