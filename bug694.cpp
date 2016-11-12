@@ -39,8 +39,8 @@ query_classifier.cc: set_query_type lost previous query type if the new was more
 int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
-    Test->set_timeout(10);
 
+    Test->set_timeout(120);
     Test->connect_maxscale();
 
     Test->try_query(Test->conn_rwsplit, "USE test");
@@ -51,9 +51,12 @@ int main(int argc, char *argv[])
     Test->tprintf("Creating and inserting %d rows into a table\n", iter);
 
     for (int i=0; i < iter; i++) {
-        Test->set_timeout(5);
+        Test->set_timeout(30);
         execute_query(Test->conn_rwsplit, "insert into test value(2);");
+        Test->stop_timeout();
     }
+
+    Test->set_timeout(200);
 
     Test->tprintf("Trying SELECT @a:=@a+1 as a, test.b FROM test\n");
     if (execute_query(Test->conn_rwsplit, "SELECT @a:=@a+1 as a, test.b FROM test;") == 0) {
@@ -75,4 +78,3 @@ int main(int argc, char *argv[])
 
     Test->copy_all_logs(); return(Test->global_result);
 }
-
