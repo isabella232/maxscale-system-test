@@ -56,10 +56,7 @@ int main(int argc, char *argv[])
         sleep(1);
     }
 
-    if (retries == 10)
-    {
-        Test->add_result(1, "Slave is not recovered, slave status is not Running\n");
-    }
+    Test->add_result(retries == 10, "Slave is not recovered, slave status is not Running\n");
 
     Test->repl->connect();
     int real_id = Test->repl->get_server_id(1);
@@ -68,12 +65,13 @@ int main(int argc, char *argv[])
     find_field(Test->conn_rwsplit, "SELECT @a, @@server_id", "@@server_id", server_id);
     int queried_id = atoi(server_id);
 
-    Test->add_result(queried_id != real_id, "The server ID does not match, slave was not recovered.");
+    Test->add_result(queried_id != real_id, "The query server ID '%d' does not match the one from server '%d'. "
+                     "Slave was not recovered.", queried_id, real_id);
 
     char userval[200] = "";
     find_field(Test->conn_rwsplit, "SELECT @a", "@a", userval);
 
-    Test->add_result(atoi(userval) != 1, "User variable @a is not 1");
+    Test->add_result(atoi(userval) != 1, "User variable @a is not 1, it is '%s'", userval);
 
     Test->tprintf("Unblocking second slave\n");
     Test->repl->unblock_node(2);
