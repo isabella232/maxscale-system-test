@@ -31,26 +31,33 @@ void* query_thread(void *data)
 
 void add_server(TestConnections *test, int num)
 {
+    test->set_timeout(120);
     test->ssh_maxscale(true, "maxadmin add server server%d " MONITOR_NAME, num);
     test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME, num);
+    test->stop_timeout();
 }
 
 void remove_server(TestConnections *test, int num)
 {
+    test->set_timeout(120);
     test->ssh_maxscale(true, "maxadmin remove server server%d " MONITOR_NAME, num);
     test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME, num);
+    test->stop_timeout();
 }
 
 void destroy_server(TestConnections *test, int num)
 {
+    test->set_timeout(120);
     test->ssh_maxscale(true, "maxadmin destroy server server%d", num);
-    test->ssh_maxscale(true, "maxadmin destroy server server%d", num);
+    test->stop_timeout();
 }
 
 void create_server(TestConnections *test, int num)
 {
-        test->ssh_maxscale(true, "maxadmin create server server%d %s",
-                           num, test->repl->IP[num]);
+    test->set_timeout(120);
+    test->ssh_maxscale(true, "maxadmin create server server%d %s",
+                       num, test->repl->IP[num]);
+    test->stop_timeout();
 }
 
 int main(int argc, char *argv[])

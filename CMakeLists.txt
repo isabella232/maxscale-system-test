@@ -384,8 +384,11 @@ add_test_executable(ccrfilter.cpp ccrfilter ccrfilter)
 #add_test_executable(auroramon.cpp auroramon auroramon)
 add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery repl2slaves)
 add_test_executable(mxs957.cpp mxs957 replication)
+
+# Tests for MXS-922: Dynamic server changes
 add_test_executable(mxs922_bad_server.cpp mxs922_bad_server mxs922)
 add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_scaling)
+add_test_executable(mxs922_restart.cpp mxs922_restart mxs922)
 
 # Python based tests
 add_test_script(mxs585.py replication)
