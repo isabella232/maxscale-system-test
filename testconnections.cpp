@@ -125,6 +125,9 @@ copy_logs(true)
     ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
     ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
 
+    // Clear the generated config dir if it exists
+    ssh_maxscale(true, "rm -rf /var/lib/maxscale/maxscale.cnf.d/");
+
     // Create DB user on master and on first Galera node
     //sprintf(str, "%s/create_user.sh", test_dir);
     //repl->copy_to_node(str, (char *) "~/", 0);
