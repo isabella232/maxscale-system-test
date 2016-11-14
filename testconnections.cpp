@@ -928,7 +928,7 @@ char* TestConnections::ssh_maxscale_output(bool sudo, const char* format, ...)
 
     char *cmd = (char*)malloc(message_len + 1024);
     generate_ssh_cmd(cmd, sys, sudo);
-
+//tprintf("############ssh smd %s\n:", cmd);
     FILE *output = popen(cmd, "r");
     if (output == NULL)
     {

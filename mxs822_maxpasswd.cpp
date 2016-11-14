@@ -40,7 +40,8 @@ void try_password(TestConnections* Test, char * pass)
     Test->tprintf("Encrypting password '%s'\n", pass);
 
     Test->set_timeout(30);
-    char * enc_pass = Test->ssh_maxscale_output(TRUE, "maxpasswd %s | tr -cd \"[:print:]\" ", pass);
+
+    char * enc_pass = Test->ssh_maxscale_output(TRUE, "maxpasswd '\"'\"'%s'\"'\"' | tr -cd \"[:print:]\" ", pass);
 
     Test->tprintf("Encripted password: %s\n", enc_pass);
 
