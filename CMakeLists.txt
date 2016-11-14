@@ -111,6 +111,13 @@ macro(light_weight_tests)
   endforeach()
 endmacro()
 
+# Unstable tests. Ideally, there should be no tests with this label.
+macro(unstable_tests)
+  foreach(name IN ITEMS ${ARGN})
+    set_property(TEST ${name} PROPERTY LABELS "UNSTABLE")
+  endforeach()
+endmacro()
+
 add_test_executable_notest(t.cpp t replication)
 add_test_executable_notest(non_native_setup.cpp non_native_setup replication)
 
@@ -469,6 +476,13 @@ light_weight_tests(
   setup_binlog_crc_none
   test_hints
   )
+
+unstable_tests(
+  longblob
+  bug670
+  max_connections
+  mxs598.py
+)
 
 # See if we are on a RPM-capable or DEB-capable system
 find_program(RPMBUILD rpmbuild)
