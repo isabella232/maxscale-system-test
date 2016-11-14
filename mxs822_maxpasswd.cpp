@@ -1,5 +1,5 @@
 /**
- * @file mxs822_maxpasswd.cpp Regression test for bug MXS-822 ("Session freeze when small tail packet")
+ * @file mxs822_maxpasswd.cpp Regression test for bug MXS-822 ("encrypted passwords containing special characters appear to not work")
  * - create .secret with maxkeys
  * - generate encripted password with maxpasswd, use password with special characters
  * - replace passwords in maxscale.cnf with generated encripted password
