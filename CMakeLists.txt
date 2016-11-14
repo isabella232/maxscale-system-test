@@ -384,6 +384,8 @@ add_test_executable(ccrfilter.cpp ccrfilter ccrfilter)
 #add_test_executable(auroramon.cpp auroramon auroramon)
 add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery repl2slaves)
 add_test_executable(mxs957.cpp mxs957 replication)
+add_test_executable(mxs951_utfmb4_galera.cpp mxs951_utfmb4_galera galera)
+add_test_executable(mxs822_maxpasswd.cpp mxs822_maxpasswd maxpasswd)
 
 # Tests for MXS-922: Dynamic server changes
 add_test_executable(mxs922_bad_server.cpp mxs922_bad_server mxs922)
