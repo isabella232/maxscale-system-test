@@ -487,6 +487,10 @@ int Mariadb_nodes::check_replication(int master)
         }
         mysql_close(conn);
     }
+
+    res1 += connect();
+    close_connections();
+
     printf("repl check res %d\n", res1);
     return(res1);
 }
@@ -518,6 +522,8 @@ int Mariadb_nodes::check_galera()
         }
         mysql_close(conn);
     }
+    res1 += connect();
+    close_connections();
     return(res1);
 }
 
