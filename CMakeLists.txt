@@ -478,9 +478,10 @@ light_weight_tests(
   )
 
 unstable_tests(
-  longblob
   bug670
+  longblob
   max_connections
+  maxinfocpp
   mxs598.py
 )
 
