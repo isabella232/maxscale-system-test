@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 {
     TestConnections *test = new TestConnections(argc, argv);
     int num_threads = 5;
-    int iterations = test->smoke ? 10 : 50;
+    int iterations = test->smoke ? 5 : 25;
     pthread_t threads[num_threads];
 
     test->tprintf("Creating client threads");
