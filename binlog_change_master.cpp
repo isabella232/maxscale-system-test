@@ -85,15 +85,10 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
 
     Test->repl->connect();
-    int flushes = Test->smoke ? 2 : 10;
+    int flushes = Test->smoke ? 2 : 5;
     for (j = 0; j < flushes; j++)
     {
-        if (Test->smoke)
-        {
-            sleep(45);
-        } else {
-            sleep(45);
-        }
+        sleep(45);
         Test->tprintf("Flush logs on master\n");
         execute_query(Test->repl->nodes[0], (char *) "flush logs");
     }
@@ -104,12 +99,7 @@ int main(int argc, char *argv[])
     Test->repl->block_node(0);
     Test->stop_timeout();
 
-    if (Test->smoke)
-    {
-        sleep(60);
-    } else {
-        sleep(180);
-    }
+    sleep(Test->smoke ? 60 : 180);
 
     Test->tprintf("Done! Waiting for thread\n");
     exit_flag = 1;

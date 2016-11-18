@@ -37,8 +37,7 @@ int main(int argc, char *argv[])
 
     int i;
 
-    int run_time = 3000;
-    int iterations = 250;
+    int iterations = 10;
     int t_iterations = 3;
     int tt[t_iterations];
 
@@ -47,7 +46,6 @@ int main(int argc, char *argv[])
     tt[2] = 10;
 
     if (Test->smoke) {
-        run_time = 10;
         iterations = 5;
         t_iterations = 1;
     }
