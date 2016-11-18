@@ -7,6 +7,8 @@
 
 #define MONITOR_NAME "mysql-monitor"
 #define SERVICE_NAME "rwsplit-service"
+#define SERVICE_NAME2 "read-connection-router-slave"
+#define SERVICE_NAME3 "read-connection-router-master"
 
 void add_servers(TestConnections *test)
 {
@@ -16,7 +18,9 @@ void add_servers(TestConnections *test)
     {
         test->set_timeout(120);
         test->ssh_maxscale(true, "maxadmin add server server%d " MONITOR_NAME, i + 1);
-        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME, i + 1);
+        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME1, i + 1);
+        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME2, i + 1);
+        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME3, i + 1);
         test->stop_timeout();
     }
 }
