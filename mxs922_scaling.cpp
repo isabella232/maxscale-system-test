@@ -6,7 +6,7 @@
 #include "testconnections.h"
 
 #define MONITOR_NAME "mysql-monitor"
-#define SERVICE_NAME "rwsplit-service"
+#define SERVICE_NAME1 "rwsplit-service"
 #define SERVICE_NAME2 "read-connection-router-slave"
 #define SERVICE_NAME3 "read-connection-router-master"
 
@@ -50,7 +50,7 @@ void remove_server(TestConnections *test, int num)
 {
     test->set_timeout(120);
     test->ssh_maxscale(true, "maxadmin remove server server%d " MONITOR_NAME, num);
-    test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME, num);
+    test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME1, num);
     test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME2, num);
     test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME3, num);
     test->stop_timeout();

@@ -6,7 +6,7 @@
 #include "testconnections.h"
 
 #define MONITOR_NAME "mysql-monitor"
-#define SERVICE_NAME "rwsplit-service"
+#define SERVICE_NAME1 "rwsplit-service"
 #define SERVICE_NAME2 "read-connection-router-slave"
 #define SERVICE_NAME3 "read-connection-router-master"
 
