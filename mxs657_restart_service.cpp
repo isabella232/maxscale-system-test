@@ -45,7 +45,7 @@ void sht_rst_service()
     {
         sleep(200);
     } else {
-        sleep(1200);
+        sleep(400);
     }
 
     Test->tprintf("Done, exiting threads\n\n");
