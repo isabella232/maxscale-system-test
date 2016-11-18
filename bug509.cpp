@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 
     char id_str[1024];
     char str1[1024];
-    int iterations = 1100;
+    int iterations = 500;
     if (Test->smoke) {iterations = 200;}
 
     for (int i = 100; i < iterations; i++) {
