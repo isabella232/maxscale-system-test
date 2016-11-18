@@ -31,17 +31,17 @@ void* query_thread(void *data)
     return NULL;
 }
 
-void add_servers(TestConnections *test)
+void add_server(TestConnections *test, int num)
 {
     test->tprintf("Adding the servers");
 
     for (int i = 0; i < 4; i++)
     {
         test->set_timeout(120);
-        test->ssh_maxscale(true, "maxadmin add server server%d " MONITOR_NAME, i + 1);
-        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME1, i + 1);
-        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME2, i + 1);
-        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME3, i + 1);
+        test->ssh_maxscale(true, "maxadmin add server server%d " MONITOR_NAME, num);
+        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME1, num);
+        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME2, num);
+        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME3, num);
         test->stop_timeout();
     }
 }
