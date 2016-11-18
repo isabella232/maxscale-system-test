@@ -7,6 +7,8 @@
 
 #define MONITOR_NAME "mysql-monitor"
 #define SERVICE_NAME "rwsplit-service"
+#define SERVICE_NAME2 "read-connection-router-slave"
+#define SERVICE_NAME3 "read-connection-router-master"
 
 static bool running = true;
 
@@ -29,12 +31,19 @@ void* query_thread(void *data)
     return NULL;
 }
 
-void add_server(TestConnections *test, int num)
+void add_servers(TestConnections *test)
 {
-    test->set_timeout(120);
-    test->ssh_maxscale(true, "maxadmin add server server%d " MONITOR_NAME, num);
-    test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME, num);
-    test->stop_timeout();
+    test->tprintf("Adding the servers");
+
+    for (int i = 0; i < 4; i++)
+    {
+        test->set_timeout(120);
+        test->ssh_maxscale(true, "maxadmin add server server%d " MONITOR_NAME, i + 1);
+        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME1, i + 1);
+        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME2, i + 1);
+        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME3, i + 1);
+        test->stop_timeout();
+    }
 }
 
 void remove_server(TestConnections *test, int num)
@@ -42,6 +51,8 @@ void remove_server(TestConnections *test, int num)
     test->set_timeout(120);
     test->ssh_maxscale(true, "maxadmin remove server server%d " MONITOR_NAME, num);
     test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME, num);
+    test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME2, num);
+    test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME3, num);
     test->stop_timeout();
 }
 
@@ -85,15 +96,11 @@ int main(int argc, char *argv[])
             {
                 create_server(test, i);
                 add_server(test, i);
-                remove_server(test, i);
-                destroy_server(test,i);
             }
             else
             {
                 remove_server(test, i);
                 destroy_server(test,i);
-                create_server(test, i);
-                add_server(test, i);
             }
 
             sleep(1);
