@@ -39,7 +39,7 @@ echo "PASSED" > fail.txt
 if [ $smoke == "yes" ] ; then 
 	iterations=10
 else
-	iterations=100
+	iterations=25
 fi
 
 for i in $(seq $iterations); do
