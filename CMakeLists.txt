@@ -115,6 +115,7 @@ endmacro()
 macro(unstable_tests)
   foreach(name IN ITEMS ${ARGN})
     set_property(TEST ${name} PROPERTY LABELS "UNSTABLE")
+    set_property(TEST ${name} PROPERTY LABELS "HEAVY")
   endforeach()
 endmacro()
 
