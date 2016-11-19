@@ -479,6 +479,8 @@ light_weight_tests(
   )
 
 unstable_tests(
+  bug649
+  bug657
   bug670
   longblob
   max_connections
