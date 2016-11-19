@@ -259,11 +259,8 @@ add_test_executable(mxs127.cpp mxs127 mxs127)
 add_test_executable(session_limits.cpp session_limits session_limits)
 add_test_executable(script.cpp script script)
 add_test_executable(mm.cpp mm mm)
-
-# Disabled for 2.0
-#add_test_executable(mm_mysqlmon.cpp mm_mysqlmon mm_mysqlmon)
-#add_test_executable(failover_mysqlmon.cpp failover_mysqlmon failover_mysqlmon)
-
+add_test_executable(mm_mysqlmon.cpp mm_mysqlmon mm_mysqlmon)
+add_test_executable(failover_mysqlmon.cpp failover_mysqlmon failover_mysqlmon)
 add_test_script(ssl_load ssl_load)
 add_test_script(ssl_load_galera ssl_load_galera)
 #add_test_executable(config_reload.cpp config_reload config_reload)
@@ -353,11 +350,9 @@ set_tests_properties(binlog_semisync_txs0_ss1 PROPERTIES TIMEOUT 3600)
 set_tests_properties(binlog_semisync_txs0_ss0 PROPERTIES TIMEOUT 3600)
 
 add_test_executable(stale_slaves.cpp stale_slaves replication)
-
-# Disabled for 2.0
-#add_test_executable(rwsplit_readonly.cpp rwsplit_readonly rwsplit_readonly)
-#add_test_executable(rwsplit_readonly_stress.cpp rwsplit_readonly_stress rwsplit_readonly)
-#set_tests_properties(rwsplit_readonly_stress PROPERTIES TIMEOUT 3600)
+add_test_executable(rwsplit_readonly.cpp rwsplit_readonly rwsplit_readonly)
+add_test_executable(rwsplit_readonly_stress.cpp rwsplit_readonly_stress rwsplit_readonly)
+set_tests_properties(rwsplit_readonly_stress PROPERTIES TIMEOUT 3600)
 
 add_test_executable(mxs621_unreadable_cnf.cpp mxs621_unreadable_cnf replication)
 add_test_executable(mxs720_line_with_no_equal.cpp mxs720_line_with_no_equal mxs720_line_with_no_equal)
@@ -376,10 +371,7 @@ add_test_executable(mxs657_restart.cpp mxs657_restart replication)
 set_tests_properties(mxs657_restart PROPERTIES TIMEOUT 4600)
 
 add_test_executable(show_monitor_crash.cpp show_monitor_crash show_monitor_crash)
-
-# Disabled for 2.0
-#add_test_executable(connection_limit.cpp connection_limit connection_limit)
-
+add_test_executable(connection_limit.cpp connection_limit connection_limit)
 add_test_executable(avro.cpp avro avro)
 add_test_executable(cdc_client.cpp cdc_client avro)
 
@@ -395,14 +387,9 @@ add_test_executable(mxs827_write_timeout.cpp mxs827_write_timeout replication)
 add_test_executable(mxs812_1.cpp mxs812_1 longblob)
 add_test_executable(mxs812_2.cpp mxs812_2 longblob)
 add_test_executable(maxinfo.cpp maxinfocpp maxinfo)
-
-# Disabled for 2.0
-#add_test_executable(gatekeeper.cpp gatekeeper gatekeeper)
-#add_test_executable(ccrfilter.cpp ccrfilter ccrfilter)
-
-# Disabled for 2.0
+add_test_executable(gatekeeper.cpp gatekeeper gatekeeper)
+add_test_executable(ccrfilter.cpp ccrfilter ccrfilter)
 #add_test_executable(auroramon.cpp auroramon auroramon)
-
 add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery repl2slaves)
 add_test_executable(mxs957.cpp mxs957 replication)
 add_test_executable(mxs951_utfmb4_galera.cpp mxs951_utfmb4_galera galera)
@@ -438,7 +425,7 @@ set_tests_properties(different_size_rwsplit PROPERTIES LABELS "HEAVY")
 set_tests_properties(max_connections PROPERTIES LABELS "HEAVY")
 set_tests_properties(lots_of_rows PROPERTIES LABELS "HEAVY")
 set_tests_properties(binlog_change_master PROPERTIES LABELS "HEAVY")
-#set_tests_properties(rwsplit_readonly_stress PROPERTIES LABELS "HEAVY")
+set_tests_properties(rwsplit_readonly_stress PROPERTIES LABELS "HEAVY")
 set_tests_properties(mxs657_restart PROPERTIES LABELS "HEAVY")
 
 medium_weight_tests(mxs564_big_dump rw_select_insert cdc_client ssl sql_queries
@@ -456,13 +443,13 @@ light_weight_tests(
   bug526
   bug699
   bug729
-  #ccrfilter
+  ccrfilter
   change_user
   connect_to_nonexisting_db
-  #connection_limit
+  connection_limit
   encrypted_passwords
   galera_priority
-  #gatekeeper
+  gatekeeper
   kill_master
   load_balancing
   maxinfo.py
