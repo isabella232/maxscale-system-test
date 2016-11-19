@@ -399,8 +399,7 @@ add_test_executable(maxinfo.cpp maxinfocpp maxinfo)
 
 # Disabled for 2.0
 #add_test_executable(auroramon.cpp auroramon auroramon)
-
-add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery repl2slaves)
+add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery mxs874)
 add_test_executable(mxs957.cpp mxs957 replication)
 
 # Python based tests
