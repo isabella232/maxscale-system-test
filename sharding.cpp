@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
     for (i = 0; i < Test->repl->N; i++) { //nodes
         for (j = 0; j < Test->repl->N; j++) { //users
-            Test->set_timeout(10);
+            Test->set_timeout(30);
             execute_query(Test->repl->nodes[i], "DROP USER 'user%d'@'%%';", j);
             execute_query(Test->repl->nodes[i], "CREATE USER 'user%d'@'%%' IDENTIFIED BY 'pass%d';", j, j);
             execute_query(Test->repl->nodes[i], "DROP DATABASE IF EXISTS shard_db");
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
     sleep(10);
     for (i = 0; i < Test->repl->N; i++) { //nodes
-        Test->set_timeout(10);
+        Test->set_timeout(30);
         Test->tprintf("Node %d\t", i);
         Test->tprintf("Creating shard_db\t");
         execute_query(Test->repl->nodes[i], "CREATE DATABASE shard_db");
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     sleep(30);
     MYSQL * conn;
     for (i = 0; i < Test->repl->N; i++) {
-        Test->set_timeout(5);
+        Test->set_timeout(30);
         sprintf(user_str, "user%d", i);
         sprintf(pass_str, "pass%d", i);
         Test->tprintf("Open connection to Sharding router using %s %s\n", user_str, pass_str);
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     }
 
     for (i = 0; i < Test->repl->N; i++) {
-        Test->set_timeout(5);
+        Test->set_timeout(30);
         sprintf(user_str, "user%d", i);
         sprintf(pass_str, "pass%d", i);
         Test->tprintf("Open connection to Sharding router using %s %s\n", user_str, pass_str);
