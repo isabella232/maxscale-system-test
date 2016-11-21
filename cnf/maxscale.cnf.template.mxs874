@@ -4,7 +4,7 @@ threads=###threads###
 [MySQL Monitor]
 type=monitor
 module=mysqlmon
-servers=server1,server2
+servers=server1,server2,server3
 user=maxskysql
 passwd=skysql
 monitor_interval=1000
@@ -13,7 +13,7 @@ detect_stale_master=false
 [RW Split Router]
 type=service
 router=readwritesplit
-servers=server1,server2
+servers=server1,server2,server3
 user=maxskysql
 passwd=skysql
 max_slave_connections=1
@@ -22,7 +22,7 @@ max_slave_connections=1
 type=service
 router=readconnroute
 router_options=slave
-servers=server1,server2
+servers=server1,server2,server3
 user=maxskysql
 passwd=skysql
 
@@ -30,7 +30,7 @@ passwd=skysql
 type=service
 router=readconnroute
 router_options=master
-servers=server1,server2
+servers=server1,server2,server3
 user=maxskysql
 passwd=skysql
 
@@ -72,4 +72,11 @@ protocol=MySQLBackend
 type=server
 address=###node_server_IP_2###
 port=###node_server_port_2###
+protocol=MySQLBackend
+
+
+[server3]
+type=server
+address=###node_server_IP_3###
+port=###node_server_port_3###
 protocol=MySQLBackend
