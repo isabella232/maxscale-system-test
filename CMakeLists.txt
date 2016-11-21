@@ -379,7 +379,8 @@ add_test_executable(show_monitor_crash.cpp show_monitor_crash show_monitor_crash
 add_test_executable(avro.cpp avro avro)
 add_test_executable(cdc_client.cpp cdc_client avro)
 
-add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd setup_binlog)
+# Disabled for 2.0
+#add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd setup_binlog)
 
 add_test_script(mxs791.sh replication)
 add_test_script(mxs791_galera.sh galera)
