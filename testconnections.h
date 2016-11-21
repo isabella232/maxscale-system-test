@@ -145,9 +145,24 @@ public:
     char maxscale_keyfile[4096];
 
     /**
-     * @brief GetLogsCommand    Command to copy log files from node virtual machines (should handle one parameter: IP address of virtual machine to kill)
+     * @brief GetLogsCommand Command to copy log files from node virtual machines (should handle one parameter: IP address of virtual machine to kill)
      */
     char get_logs_command[4096];
+
+    /**
+     * @brief make_snapshot_command Command line to create a snapshot of all VMs
+     */
+    char make_snapshot_command[4096];
+
+    /**
+     * @brief revert_snapshot_command Command line to revert a snapshot of all VMs
+     */
+    char revert_snapshot_command[4096];
+
+    /**
+     * @brief use_snapshots if TRUE every test is trying to revert snapshot before running the test
+     */
+    bool use_snapshots;
 
     /**
      * @brief SysbenchDir   path to SysBench directory (sysbanch should be >= 0.5)
@@ -623,6 +638,20 @@ public:
      * @return memory size in kilobytes
      */
     long unsigned get_maxscale_memsize();
+
+    /**
+     * @brief make_snapshot Makes a snapshot for all running VMs
+     * @param snapshot_name name of created snapshot
+     * @return 0 in case of success or mdbci error code in case of error
+     */
+    int make_snapshot(char * snapshot_name);
+
+    /**
+     * @brief revert_snapshot Revert snapshot for all running VMs
+     * @param snapshot_name name of snapshot to revert
+     * @return 0 in case of success or mdbci error code in case of error
+     */
+    int revert_snapshot(char * snapshot_name);
 
 };
 

@@ -61,3 +61,7 @@ System level tests for MaxScale
 |ssl|'yes' if tests should try to use ssl to connect to Maxscale and to backends (obsolete, now should be 'yes' in all cases)|
 |smoke|if 'yes' all tests are executed in 'quick' mode (less iterations, skip heavy operations)|
 |backend_ssl|if 'yes' ssl config will be added to all servers definition in maxscale.cnf|
+|use_snapshots|if TRUE every test is trying to revert snapshot before running the test|
+|make_snapshot_command|revert_snapshot_command|
+|revert_snapshot_command|Command line to revert a snapshot of all VMs|
+

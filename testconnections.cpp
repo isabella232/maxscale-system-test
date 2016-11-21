@@ -119,64 +119,74 @@ copy_logs(true)
         }
     }
 
-    repl->truncate_mariadb_logs();
-    galera->truncate_mariadb_logs();
-    ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 8080 -j ACCEPT");
-    ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
-    ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
-
-    // Clear the generated config dir if it exists
-    ssh_maxscale(true, "rm -rf /var/lib/maxscale/maxscale.cnf.d/");
-
-    // Create DB user on master and on first Galera node
-    //sprintf(str, "%s/create_user.sh", test_dir);
-    //repl->copy_to_node(str, (char *) "~/", 0);
-    //sprintf(str, "%s/create_user_galera.sh", test_dir);
-    //galera->copy_to_node(str, (char *) "~/", 0);
-
-    //sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", repl->user_name, repl->password);
-    //tprintf("cmd: %s\n", str);
-    //repl->ssh_node(0, str, FALSE);
-
-    //sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", galera->user_name, galera->password);
-    //galera->ssh_node(0, str, FALSE);
-
-    repl->flush_hosts();
-    galera->flush_hosts();
-
-    int attempts = 5;
-
-    if (!no_nodes_check) {
-        //  checking all nodes and restart if needed
-        repl->unblock_all_nodes();
-        galera->unblock_all_nodes();
-        repl->check_and_restart_nodes_vm();
-        galera->check_and_restart_nodes_vm();
-        //  checking repl
-        tprintf("Checking Master/Slave\n");
-        while ((attempts > 0) && (repl->check_replication(0) != 0))
-        {
-            tprintf("Backend broken! Restarting replication nodes\n");
-            repl->start_replication();
-            attempts--;
-        }
-        //  checking galera
-        tprintf("Checking Galera\n");
-        attempts = 5;
-        while ((attempts > 0) && (galera->check_galera() != 0))
-        {
-            tprintf("Backend broken! Restarting Galera nodes\n");
-            galera->start_galera();
-            attempts--;
-        }
+    bool snapshot_reverted = false;
+    if (use_snapshots)
+    {
+        snapshot_reverted = revert_snapshot((char *) "clean");
     }
 
-    if (!no_nodes_check)
+    if ((!use_snapshots) || (!snapshot_reverted))
     {
-        if ((repl->check_replication(0) != 0) || (galera->check_galera() != 0)) {
-            tprintf("****** BACKEND IS STILL BROKEN! Exiting\n *****");
-            exit(200);
+        repl->truncate_mariadb_logs();
+        galera->truncate_mariadb_logs();
+        ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 8080 -j ACCEPT");
+        ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
+        ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
+
+        // Clear the generated config dir if it exists
+        ssh_maxscale(true, "rm -rf /var/lib/maxscale/maxscale.cnf.d/");
+
+        // Create DB user on master and on first Galera node
+        //sprintf(str, "%s/create_user.sh", test_dir);
+        //repl->copy_to_node(str, (char *) "~/", 0);
+        //sprintf(str, "%s/create_user_galera.sh", test_dir);
+        //galera->copy_to_node(str, (char *) "~/", 0);
+
+        //sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", repl->user_name, repl->password);
+        //tprintf("cmd: %s\n", str);
+        //repl->ssh_node(0, str, FALSE);
+
+        //sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", galera->user_name, galera->password);
+        //galera->ssh_node(0, str, FALSE);
+
+        repl->flush_hosts();
+        galera->flush_hosts();
+
+        int attempts = 5;
+
+        if (!no_nodes_check) {
+            //  checking all nodes and restart if needed
+            repl->unblock_all_nodes();
+            galera->unblock_all_nodes();
+            repl->check_and_restart_nodes_vm();
+            galera->check_and_restart_nodes_vm();
+            //  checking repl
+            tprintf("Checking Master/Slave\n");
+            while ((attempts > 0) && (repl->check_replication(0) != 0))
+            {
+                tprintf("Backend broken! Restarting replication nodes\n");
+                repl->start_replication();
+                attempts--;
+            }
+            //  checking galera
+            tprintf("Checking Galera\n");
+            attempts = 5;
+            while ((attempts > 0) && (galera->check_galera() != 0))
+            {
+                tprintf("Backend broken! Restarting Galera nodes\n");
+                galera->start_galera();
+                attempts--;
+            }
         }
+
+        if (!no_nodes_check)
+        {
+            if ((repl->check_replication(0) != 0) || (galera->check_galera() != 0)) {
+                tprintf("****** BACKEND IS STILL BROKEN! Exiting\n *****");
+                exit(200);
+            }
+        }
+
     }
     //repl->start_replication();
     tprintf(">>>>> init maxscale!\n");
@@ -305,6 +315,10 @@ int TestConnections::read_env()
 
     env = getenv("smoke"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {smoke = true;} else {smoke = false;}
     env = getenv("threads"); if ((env != NULL)) {sscanf(env, "%d", &threads);} else {threads = 4;}
+
+    env = getenv("use_snapshot"); if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {use_snapshots = true;} else {use_snapshots = false;}
+    env = getenv("make_snapshot_command"); if (env != NULL) {sprintf(make_snapshot_command, "%s", env);} else {sprintf(make_snapshot_command, "exit 1");}
+    env = getenv("revert_snapshot_command"); if (env != NULL) {sprintf(revert_snapshot_command, "%s", env);} else {sprintf(revert_snapshot_command, "exit 1");}
 }
 
 int TestConnections::print_env()
@@ -1483,4 +1497,18 @@ void TestConnections::check_current_connections(int value)
         add_result(check_maxadmin_param(command, "Current no. of conns:", value_str),
                          "Current no. of conns is not %s", value_str);
     }
+}
+
+int TestConnections::make_snapshot(char * snapshot_name)
+{
+    char str[4096];
+    sprintf(str, "%s %s", make_snapshot_command, snapshot_name);
+    return system(str);
+}
+
+int TestConnections::revert_snapshot(char * snapshot_name)
+{
+    char str[4096];
+    sprintf(str, "%s %s", revert_snapshot_command, snapshot_name);
+    return system(str);
 }

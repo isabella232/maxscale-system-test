@@ -14,8 +14,6 @@ int main(int argc, char *argv[])
     sleep(5);*/
     Test->set_timeout(10);
 
-
-
     Test->tprintf("Connecting to Maxscale routers with Master/Slave backend\n");
     Test->connect_maxscale();
     Test->tprintf("Testing connections\n");
@@ -34,6 +32,12 @@ int main(int argc, char *argv[])
     Test->tprintf("Maxscale_full_version_start:");
     Test->ssh_maxscale(FALSE, "maxscale --version-full"); fflush(stdout);
     Test->tprintf("Maxscale_full_version_end:");
+
+    if ((Test->global_result == 0) && (Test->use_snapshots))
+    {
+        Test->make_snapshot((char *) "clean");
+    }
+
 
     Test->copy_all_logs(); return(Test->global_result);
 }
