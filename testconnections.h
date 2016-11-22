@@ -152,7 +152,7 @@ public:
     /**
      * @brief make_snapshot_command Command line to create a snapshot of all VMs
      */
-    char make_snapshot_command[4096];
+    char take_snapshot_command[4096];
 
     /**
      * @brief revert_snapshot_command Command line to revert a snapshot of all VMs
@@ -644,7 +644,7 @@ public:
      * @param snapshot_name name of created snapshot
      * @return 0 in case of success or mdbci error code in case of error
      */
-    int make_snapshot(char * snapshot_name);
+    int take_snapshot(char * snapshot_name);
 
     /**
      * @brief revert_snapshot Revert snapshot for all running VMs

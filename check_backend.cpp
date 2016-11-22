@@ -35,7 +35,10 @@ int main(int argc, char *argv[])
 
     if ((Test->global_result == 0) && (Test->use_snapshots))
     {
-        Test->make_snapshot((char *) "clean");
+        Test->tprintf("Taking snapshot\n");
+        Test->take_snapshot((char *) "clean");
+    } else {
+        Test->tprintf("Snapshots are not in use\n");
     }
 
 

@@ -316,8 +316,9 @@ int TestConnections::read_env()
     env = getenv("smoke"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {smoke = true;} else {smoke = false;}
     env = getenv("threads"); if ((env != NULL)) {sscanf(env, "%d", &threads);} else {threads = 4;}
 
-    env = getenv("use_snapshot"); if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {use_snapshots = true;} else {use_snapshots = false;}
-    env = getenv("make_snapshot_command"); if (env != NULL) {sprintf(make_snapshot_command, "%s", env);} else {sprintf(make_snapshot_command, "exit 1");}
+    env = getenv("use_snapshots"); if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {use_snapshots = true;} else {use_snapshots = false;}
+tprintf("use_snapshots: %s\n", env);
+    env = getenv("take_snapshot_command"); if (env != NULL) {sprintf(take_snapshot_command, "%s", env);} else {sprintf(take_snapshot_command, "exit 1");}
     env = getenv("revert_snapshot_command"); if (env != NULL) {sprintf(revert_snapshot_command, "%s", env);} else {sprintf(revert_snapshot_command, "exit 1");}
 }
 
@@ -1499,10 +1500,10 @@ void TestConnections::check_current_connections(int value)
     }
 }
 
-int TestConnections::make_snapshot(char * snapshot_name)
+int TestConnections::take_snapshot(char * snapshot_name)
 {
     char str[4096];
-    sprintf(str, "%s %s", make_snapshot_command, snapshot_name);
+    sprintf(str, "%s %s", take_snapshot_command, snapshot_name);
     return system(str);
 }
 
