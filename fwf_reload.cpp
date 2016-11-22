@@ -12,14 +12,11 @@
 
 int main(int argc, char *argv[])
 {
-    TestConnections * Test = new TestConnections(argc, argv);
-    int local_result;
-    char str[4096];
+    TestConnections *Test = new TestConnections(argc, argv);
     char sql[4096];
     char pass_file[4096];
     char deny_file[4096];
     char rules_dir[4096];
-    FILE* file;
 
     sprintf(rules_dir, "%s/fw/", Test->test_dir);
     int N = 10;
@@ -32,136 +29,81 @@ int main(int argc, char *argv[])
     Test->connect_rwsplit();
 
 
-    for (i = 1; i < N+1; i++){
-        Test->set_timeout(180);
-        local_result = 0;
-
+    for (i = 1; i <= N; i++)
+    {
+        char str[1024];
         sprintf(str, "rules%d", i);
+        Test->set_timeout(180);
         copy_rules(Test, str, rules_dir);
         Test->ssh_maxscale(true, "maxadmin call function dbfwfilter rules/reload \"Database Firewall\"");
 
+        int local_result = 0;
         sprintf(pass_file, "%s/fw/pass%d", Test->test_dir, i);
-        sprintf(deny_file, "%s/fw/deny%d", Test->test_dir, i);
-        Test->tprintf("Pass file: %s\n", pass_file);
-        Test->tprintf("Deny file: %s\n", deny_file);
+        FILE *file = fopen(pass_file, "r");
 
-        file = fopen(pass_file, "r");
-        if (file != NULL) {
+        if (file)
+        {
             Test->tprintf("********** Trying queries that should be OK ********** \n");
-            while (fgets(sql, sizeof(sql), file)) {
-                if (strlen(sql) > 1) {
-                    Test->tprintf("%s", sql);
-                    local_result += execute_query(Test->conn_rwsplit, sql);
-                }
-            }
-            fclose(file);
-        } else {
-            Test->add_result(1, "Error opening query file\n");
-        }
 
-        file = fopen(deny_file, "r");
-        if (file != NULL) {
-            Test->tprintf("********** Trying queries that should FAIL ********** \n");
-            while (fgets(sql, sizeof(sql), file)) {
-                Test->set_timeout(180);
-                if (strlen(sql) > 1) {
-                    Test->tprintf("%s", sql);
-                    execute_query(Test->conn_rwsplit, sql);
-                    if (mysql_errno(Test->conn_rwsplit) != 1141) {
-                        Test->tprintf("Query succeded, but fail expected, errono is %d\n", mysql_errno(Test->conn_rwsplit));
+            while (fgets(sql, sizeof(sql), file))
+            {
+                if (*sql)
+                {
+                    if (execute_query(Test->conn_rwsplit, sql))
+                    {
+                        Test->tprintf("Query should succeed: %s\n", sql);
                         local_result++;
                     }
                 }
             }
+
             fclose(file);
-        } else {
-            Test->add_result(1, "Error opening query file\n");
         }
-        if (local_result != 0)
+        else
         {
-            Test->add_result(1, "********** rules%d test FAILED\n", i);
-        }  else {
-            Test->tprintf("********** rules%d test PASSED\n", i);
+            Test->add_result(1, "Error opening file '%s': %d, %s\n", pass_file, errno, strerror(errno));
+            break;
         }
 
-        mysql_close(Test->conn_rwsplit);
+        sprintf(deny_file, "%s/fw/deny%d", Test->test_dir, i);
+        file = fopen(deny_file, "r");
+
+        if (file)
+        {
+            Test->tprintf("********** Trying queries that should FAIL ********** \n");
+
+            while (fgets(sql, sizeof(sql), file))
+            {
+                Test->set_timeout(180);
+                if (*sql)
+                {
+                    execute_query(Test->conn_rwsplit, sql);
+                    if (mysql_errno(Test->conn_rwsplit) != 1141)
+                    {
+                        Test->tprintf("Query should fail: %s\n", sql);
+                        local_result++;
+                    }
+                }
+            }
+
+            fclose(file);
+        }
+        else
+        {
+            Test->add_result(1, "Error opening file '%s': %d, %s\n", deny_file, errno, strerror(errno));
+            break;
+        }
+
+        Test->add_result(local_result, "********** rules%d test FAILED\n", i);
     }
-
-    Test->set_timeout(180);
-
-    // Test for at_times clause
-    Test->tprintf("Trying at_times clause\n");
-    copy_rules(Test, (char *) "rules_at_time", rules_dir);
-
-    Test->tprintf("DELETE quries without WHERE clause will be blocked during next 2 minutes\n");
-    Test->tprintf("Put time to rules.txt: %s\n", str);
-    Test->ssh_maxscale(false, "start_time=`date +%%T`; stop_time=` date --date "
-                       "\"now +2 mins\" +%%T`; %s sed -i \"s/###time###/$start_time-$stop_time/\" %s/rules/rules.txt",
-                       Test->maxscale_access_sudo, Test->maxscale_access_homedir);
-    Test->ssh_maxscale(true, "maxadmin call function dbfwfilter rules/reload \"Database Firewall\"");
-
-    Test->tprintf("Trying 'DELETE FROM t1' and expecting FAILURE\n");
-    execute_query(Test->conn_rwsplit, "DELETE FROM t1");
-    if (mysql_errno(Test->conn_rwsplit) != 1141) {
-        Test->add_result(1, "Query succeded, but fail expected, errono is %d\n", mysql_errno(Test->conn_rwsplit));
-    }
-    Test->tprintf("Waiting 3 minutes and trying 'DELETE FROM t1', expecting OK\n");
-    Test->stop_timeout();
-    sleep(180);
-    Test->set_timeout(180);
-    Test->try_query(Test->conn_rwsplit, "DELETE FROM t1");
-
-    mysql_close(Test->conn_rwsplit);
-
-    Test->tprintf("Trying limit_queries clause\n");
-    Test->tprintf("Copying rules to Maxscale machine: %s\n", str);
-    copy_rules(Test, (char *) "rules_limit_queries", rules_dir);
-    Test->ssh_maxscale(true, "maxadmin call function dbfwfilter rules/reload \"Database Firewall\"");
-
-    printf("Trying 10 quries as fast as possible\n");
-    for (i = 0; i < 10; i++) {
-        Test->add_result(execute_query(Test->conn_rwsplit, "SELECT * FROM t1"), "%d -query failed\n", i);
-    }
-
-    Test->tprintf("Expecting failures during next 5 seconds\n");
-
-    time_t start_time_clock = time(NULL);
-    timeval t1, t2;
-    double elapsedTime;
-    gettimeofday(&t1, NULL);
-
-
-    do {
-        gettimeofday(&t2, NULL);
-        elapsedTime = (t2.tv_sec - t1.tv_sec);
-        elapsedTime += (double) (t2.tv_usec - t1.tv_usec) / 1000000.0;
-    } while ((execute_query_silent(Test->conn_rwsplit, "SELECT * FROM t1") != 0) && (elapsedTime < 10));
-
-    Test->tprintf("Quries were blocked during %f (using clock_gettime())\n", elapsedTime);
-    Test->tprintf("Quries were blocked during %lu (using time())\n", time(NULL)-start_time_clock);
-    if ((elapsedTime > 6) or (elapsedTime < 4)) {
-        Test->add_result(1, "Queries were blocked during wrong time\n");
-    }
-
-    Test->set_timeout(180);
-    printf("Trying 20 quries, 1 query / second\n");
-    for (i = 0; i < 20; i++) {
-        sleep(1);
-        Test->add_result(execute_query(Test->conn_rwsplit, "SELECT * FROM t1"),"query failed\n");
-        Test->tprintf("%d ", i);
-    }
-    Test->tprintf("\n");
-    Test->set_timeout(180);
 
     Test->tprintf("Trying rules with syntax error\n");
-    Test->tprintf("Copying rules to Maxscale machine: %s\n", str);
     copy_rules(Test, (char *) "rules_syntax_error", rules_dir);
-    int rc = Test->ssh_maxscale(true, "maxadmin call function dbfwfilter rules/reload \"Database Firewall\"");
 
+    int rc = Test->ssh_maxscale(true, "maxadmin call function dbfwfilter rules/reload \"Database Firewall\"");
     Test->add_result(rc == 0, "Reloading rules should fail with syntax errors");
 
     Test->check_maxscale_processes(1);
-
     Test->copy_all_logs();
     return Test->global_result;
 }
