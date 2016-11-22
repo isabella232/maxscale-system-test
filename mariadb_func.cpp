@@ -12,6 +12,7 @@
 
 
 #include "mariadb_func.h"
+#include <ctype.h>
 
 int set_ssl(MYSQL * conn)
 {
@@ -191,6 +192,45 @@ int execute_query(MYSQL *conn, const char *format, ...)
     va_end(valist);
 
     return(execute_query1(conn, sql, false));
+}
+
+/**
+ * Read a line from a file, trim leading and trailing whitespace and execute it.
+ */
+int execute_query_from_file(MYSQL *conn, FILE *file)
+{
+    int rc = 0;
+    char buf[4096];
+
+    if (fgets(buf, sizeof(buf), file))
+    {
+        char *nul = strchr(buf, '\0') - 1;
+
+        while (isspace(*nul))
+        {
+            *nul-- = '\0';
+        }
+
+        char *ptr = buf;
+
+        while (isspace(*ptr))
+        {
+            ptr++;
+        }
+
+        if (*ptr)
+        {
+            rc = execute_query1(conn, buf, false);
+        }
+
+    }
+    else if (!feof(file))
+    {
+        printf("Failed to read file: %d, %s", errno, strerror(errno));
+        rc = 1;
+    }
+
+    return rc;
 }
 
 /**

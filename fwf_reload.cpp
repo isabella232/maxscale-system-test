@@ -45,18 +45,16 @@ int main(int argc, char *argv[])
         {
             Test->tprintf("********** Trying queries that should be OK ********** \n");
 
-            while (fgets(sql, sizeof(sql), file))
+            while (!feof(file))
             {
-                if (*sql)
+                Test->set_timeout(180);
+
+                if (execute_query_from_file(Test->conn_rwsplit, file))
                 {
-                    if (execute_query(Test->conn_rwsplit, sql))
-                    {
-                        Test->tprintf("Query should succeed: %s\n", sql);
-                        local_result++;
-                    }
+                    Test->tprintf("Query should succeed: %s\n", sql);
+                    local_result++;
                 }
             }
-
             fclose(file);
         }
         else
@@ -72,17 +70,15 @@ int main(int argc, char *argv[])
         {
             Test->tprintf("********** Trying queries that should FAIL ********** \n");
 
-            while (fgets(sql, sizeof(sql), file))
+            while (!feof(file))
             {
                 Test->set_timeout(180);
-                if (*sql)
+
+                if (execute_query_from_file(Test->conn_rwsplit, file) == 0 ||
+                    mysql_errno(Test->conn_rwsplit) != 1141)
                 {
-                    execute_query(Test->conn_rwsplit, sql);
-                    if (mysql_errno(Test->conn_rwsplit) != 1141)
-                    {
-                        Test->tprintf("Query should fail: %s\n", sql);
-                        local_result++;
-                    }
+                    Test->tprintf("Query should fail: %s\n", sql);
+                    local_result++;
                 }
             }
 
