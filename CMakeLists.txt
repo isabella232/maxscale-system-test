@@ -254,10 +254,7 @@ add_test_executable(sharding.cpp sharding sharding)
 add_test_executable(schemarouter_duplicate_db.cpp schemarouter_duplicate_db schemarouter_duplicate_db)
 add_test_executable(fwf.cpp fwf fwf)
 add_test_executable(fwf2.cpp fwf2 fwf)
-
-# Disabled until MXS-929 is done
-#add_test_executable(fwf_reload.cpp fwf_reload fwf)
-
+add_test_executable(fwf_reload.cpp fwf_reload fwf)
 add_test_executable(mxs118.cpp mxs118 mxs118)
 add_test_executable(mxs127.cpp mxs127 mxs127)
 add_test_executable(session_limits.cpp session_limits session_limits)
