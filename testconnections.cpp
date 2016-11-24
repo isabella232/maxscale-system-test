@@ -97,6 +97,7 @@ copy_logs(true)
                     "-s, --no-maxscale-start\n"
                     "-d, --no-maxscale-stop\n"
                     "-g, --restart-galera\n");
+            exit(0);
             break;
 
         case 's':
