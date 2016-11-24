@@ -376,7 +376,8 @@ add_test_executable(connection_limit.cpp connection_limit connection_limit)
 add_test_executable(avro.cpp avro avro)
 add_test_executable(cdc_client.cpp cdc_client avro)
 
-add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd setup_binlog)
+# Disabled for 2.0
+#add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd setup_binlog)
 
 add_test_script(mxs791.sh replication)
 add_test_script(mxs791_galera.sh galera)
@@ -391,7 +392,7 @@ add_test_executable(maxinfo.cpp maxinfocpp maxinfo)
 add_test_executable(gatekeeper.cpp gatekeeper gatekeeper)
 add_test_executable(ccrfilter.cpp ccrfilter ccrfilter)
 #add_test_executable(auroramon.cpp auroramon auroramon)
-add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery repl2slaves)
+add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery mxs874)
 add_test_executable(mxs957.cpp mxs957 replication)
 add_test_executable(mxs951_utfmb4_galera.cpp mxs951_utfmb4_galera galera)
 add_test_executable(mxs822_maxpasswd.cpp mxs822_maxpasswd maxpasswd)
