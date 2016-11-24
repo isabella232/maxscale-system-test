@@ -90,7 +90,13 @@ copy_logs(true)
             break;
 
         case 'h':
-            printf ("Options: --help --verbose --silent --no-maxscale-start --no-maxscale-stop");
+            printf ("Options:\n"
+                    "-h, --help\n"
+                    "-v, --verbose\n"
+                    "-q, --silent\n"
+                    "-s, --no-maxscale-start\n"
+                    "-d, --no-maxscale-stop\n"
+                    "-g, --restart-galera\n");
             break;
 
         case 's':
@@ -109,7 +115,7 @@ copy_logs(true)
             break;
 
         case 'g':
-            printf ("Restarting Galera srtup");
+            printf ("Restarting Galera setup");
             galera->stop_nodes();
             galera->start_galera();
             break;
