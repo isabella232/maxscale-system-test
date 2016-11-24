@@ -279,47 +279,72 @@ int execute_query1(MYSQL *conn, const char *sql, bool silent)
 
 int execute_query_check_one(MYSQL *conn, const char *sql, const char *expected)
 {
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-    int r = 0;
-    if (conn != NULL) {
-        if(mysql_query(conn, sql) != 0) {
-            printf("Error: can't execute SQL-query: %s\n", sql);
-            printf("%s\n\n", mysql_error(conn));
-            return(1);
-        } else {
-            res = mysql_store_result(conn);
-            if (mysql_num_rows(res) == 1) {
-                row = mysql_fetch_row(res);
-                if (row[0] != NULL) {
-                    r = strcmp(row[0], expected);
-                    if (r != 0) {
-                        printf("First field is '%s, but expected %s'\n", row[0], expected);
-                    } else {
-                        printf("First field is '%s' as expected\n", row[0]);
+    int r = 1;
+
+    if (conn != NULL)
+    {
+        const int n_attempts = 3;
+
+        for (int i = 0; i < n_attempts && r != 0; i++)
+        {
+            if (i > 0)
+            {
+                sleep(1);
+            }
+
+            if(mysql_query(conn, sql) != 0)
+            {
+                printf("Error: can't execute SQL-query: %s\n", sql);
+                printf("%s\n\n", mysql_error(conn));
+                break;
+            }
+            else
+            {
+                MYSQL_RES *res = mysql_store_result(conn);
+
+                if (mysql_num_rows(res) == 1)
+                {
+                    MYSQL_ROW row = mysql_fetch_row(res);
+
+                    if (row[0] != NULL)
+                    {
+                        if (strcmp(row[0], expected) == 0)
+                        {
+                            r = 0;
+                            printf("First field is '%s' as expected\n", row[0]);
+                        }
+                        else
+                        {
+                            printf("First field is '%s, but expected %s'\n", row[0], expected);
+                        }
                     }
-                } else {
-                    r = 1;
-                    printf("First field is NULL\n");
+                    else
+                    {
+                        printf("First field is NULL\n");
+                    }
                 }
-            }
-            else {
-                r = 1;
-                printf("Number of rows is not 1, it is %llu\n", mysql_num_rows(res));
-            }
+                else
+                {
+                    printf("Number of rows is not 1, it is %llu\n", mysql_num_rows(res));
+                }
 
-            mysql_free_result(res);
-
-            do {
-                res = mysql_store_result(conn);
                 mysql_free_result(res);
-            } while ( mysql_next_result(conn) == 0 );
-            return(r);
+
+                do
+                {
+                    res = mysql_store_result(conn);
+                    mysql_free_result(res);
+                }
+                while (mysql_next_result(conn) == 0);
+            }
         }
-    } else {
-        printf("Connection is broken\n");
-        return(1);
     }
+    else
+    {
+        printf("Connection is broken\n");
+    }
+
+    return r;
 }
 
 
