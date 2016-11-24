@@ -68,7 +68,7 @@ copy_logs(true)
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "h:q",
+        c = getopt_long (argc, argv, "vnhsdrqg",
                          long_options, &option_index);
 
         /* Detect the end of the options. */
