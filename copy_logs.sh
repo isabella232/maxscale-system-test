@@ -39,6 +39,6 @@ if [ -z $logs_publish_dir ] ; then
 	echo "logs are in workspace only"
 else
 	echo "Logs publish dir is $logs_publish_dir"
-	rsync -a LOGS $logs_publish_dir
+	rsync -a --no-o --no-g LOGS $logs_publish_dir
 fi
 
