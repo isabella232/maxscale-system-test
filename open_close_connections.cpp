@@ -21,6 +21,14 @@ int threads_num = 20;
 int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
+
+    // Tuning these kernel parameters removes any system limitations on
+    // how many connections can be created within a short period
+    Test->ssh_maxscale(true, "sysctl net.ipv4.tcp_tw_reuse=1");
+    Test->ssh_maxscale(true, "sysctl net.ipv4.tcp_tw_recycle=1");
+    Test->ssh_maxscale(true, "sysctl net.core.somaxconn=10000");
+    Test->ssh_maxscale(true, "sysctl net.ipv4.tcp_max_syn_backlog=10000");
+
     Test->set_timeout(20);
 
 
