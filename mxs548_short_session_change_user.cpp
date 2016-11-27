@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating user 'user' \n");
 
+    execute_query_silent(Test->conn_rwsplit, (char *) "DROP USER user@'%%'");
     Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%%'");
     Test->try_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%%'  identified by 'pass2';  FLUSH PRIVILEGES;");
     Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE IF EXISTS t1; CREATE TABLE t1 (x1 int, fl int)");
