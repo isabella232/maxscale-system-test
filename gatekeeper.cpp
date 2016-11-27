@@ -39,6 +39,7 @@ const char* denied_queries[] = {
 int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
+    Test->ssh_maxscale(true, "rm -f /var/lib/maxscale/gatekeeper.data");
     Test->set_timeout(30);
 
     Test->connect_rwsplit();
@@ -50,8 +51,6 @@ int main(int argc, char *argv[])
 
     Test->close_rwsplit();
 
-
-    Test->ssh_maxscale(true, "rm -f /var/lib/maxscale/gatekeeper.data");
     Test->ssh_maxscale(true, "sed -i -e 's/mode=learn/mode=enforce/' /etc/maxscale.cnf");
 
     Test->restart_maxscale();
