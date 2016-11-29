@@ -165,12 +165,14 @@ int main(int argc, char *argv[])
     }
     Test->tprintf("\n");
     Test->set_timeout(180);
+    Test->tprintf("Stopping Maxscale\n");
     Test->stop_maxscale();
 
     Test->tprintf("Trying rules with syntax error\n");
     Test->tprintf("Copying rules to Maxscale machine: %s\n", str);
     copy_rules(Test, (char *) "rules_syntax_error", rules_dir);
 
+    Test->tprintf("Starting Maxscale\n");
     Test->start_maxscale();
     Test->connect_rwsplit();
 

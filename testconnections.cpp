@@ -457,6 +457,7 @@ int TestConnections::close_maxscale_connections()
 int TestConnections::restart_maxscale()
 {
     int res = ssh_maxscale(true, "service maxscale restart");
+    fflush(stdout);
     sleep(10);
     return(res);
 }
@@ -464,6 +465,7 @@ int TestConnections::restart_maxscale()
 int TestConnections::start_maxscale()
 {
     int res = ssh_maxscale(true, "service maxscale start");
+    fflush(stdout);
     sleep(10);
     return(res);
 }
@@ -472,6 +474,7 @@ int TestConnections::stop_maxscale()
 {
     int res = ssh_maxscale(true, "service maxscale stop");
     check_maxscale_processes(0);
+    fflush(stdout);
     return(res);
 }
 
