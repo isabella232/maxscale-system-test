@@ -68,7 +68,7 @@ copy_logs(true)
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "h:q",
+        c = getopt_long (argc, argv, "vnhsdrqg",
                          long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -90,7 +90,14 @@ copy_logs(true)
             break;
 
         case 'h':
-            printf ("Options: --help --verbose --silent --no-maxscale-start --no-maxscale-stop");
+            printf ("Options:\n"
+                    "-h, --help\n"
+                    "-v, --verbose\n"
+                    "-q, --silent\n"
+                    "-s, --no-maxscale-start\n"
+                    "-d, --no-maxscale-stop\n"
+                    "-g, --restart-galera\n");
+            exit(0);
             break;
 
         case 's':
@@ -109,7 +116,7 @@ copy_logs(true)
             break;
 
         case 'g':
-            printf ("Restarting Galera srtup");
+            printf ("Restarting Galera setup");
             galera->stop_nodes();
             galera->start_galera();
             break;
@@ -447,6 +454,7 @@ int TestConnections::close_maxscale_connections()
 int TestConnections::restart_maxscale()
 {
     int res = ssh_maxscale(true, "service maxscale restart");
+    fflush(stdout);
     sleep(10);
     return(res);
 }
@@ -454,6 +462,7 @@ int TestConnections::restart_maxscale()
 int TestConnections::start_maxscale()
 {
     int res = ssh_maxscale(true, "service maxscale start");
+    fflush(stdout);
     sleep(10);
     return(res);
 }
@@ -462,6 +471,7 @@ int TestConnections::stop_maxscale()
 {
     int res = ssh_maxscale(true, "service maxscale stop");
     check_maxscale_processes(0);
+    fflush(stdout);
     return(res);
 }
 

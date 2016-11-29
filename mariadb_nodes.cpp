@@ -437,6 +437,13 @@ int Mariadb_nodes::check_replication(int master)
     get_versions();
 
     for (int i = 0; i < N; i++) {
+        conn = open_conn(port[i], IP[i], "maxskysql", "skysql", ssl);
+        if (mysql_errno(conn) != 0) {
+            printf("Error connectiong node %d with maxskysql user\n", i); fflush(stdout);
+            res1 = 1;
+        }
+        if (conn != NULL ) {mysql_close(conn);}
+
         conn = open_conn(port[i], IP[i], user_name, password, ssl);
         if (mysql_errno(conn) != 0) {
             printf("Error connectiong node %d\n", i); fflush(stdout);
@@ -487,6 +494,10 @@ int Mariadb_nodes::check_replication(int master)
         }
         mysql_close(conn);
     }
+
+    res1 += connect();
+    close_connections();
+
     printf("repl check res %d\n", res1);
     return(res1);
 }
@@ -500,6 +511,12 @@ int Mariadb_nodes::check_galera()
     printf("Checking Galera\n"); fflush(stdout);
     get_versions();
     for (int i = 0; i < N; i++) {
+        conn = open_conn(port[i], IP[i], "maxskysql", "skysql", ssl);
+        if (mysql_errno(conn) != 0) {
+            printf("Error connectiong node %d with maxskysql user\n", i); fflush(stdout);
+            res1 = 1;
+        }
+        if (conn != NULL ) {mysql_close(conn);}
         conn = open_conn(port[i], IP[i], user_name, password, ssl);
         if (mysql_errno(conn) != 0) {
             printf("Error connectiong node %d\n", i);
@@ -518,6 +535,8 @@ int Mariadb_nodes::check_galera()
         }
         mysql_close(conn);
     }
+    res1 += connect();
+    close_connections();
     return(res1);
 }
 
