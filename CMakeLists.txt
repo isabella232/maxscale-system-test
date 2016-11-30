@@ -481,6 +481,7 @@ light_weight_tests(
   )
 
 unstable_tests(
+  bug648
   bug649
   bug657
   bug670
