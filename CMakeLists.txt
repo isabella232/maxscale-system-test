@@ -1,150 +1,38 @@
-# libssl-dev libmariadbclient-dev php5 perl coreutils realpath libjansson-dev openjdk-7-jdk (openjdk-8-jdk, openjdk-9-jdk)
-# pip install JayDeBeApi
+# Building test package:
+#
+#     apt-get install libssl-dev libmariadbclient-dev php5 perl \
+#         coreutils realpath libjansson-dev openjdk-7-jdk
+#     pip install JayDeBeApi
+
 project(maxscale_system_test)
 cmake_minimum_required(VERSION 2.8)
-
-include(macros.cmake)
-
-set_maxscale_version()
-
-# Installation directory
-
-set(CMAKE_INSTALL_PREFIX "/usr/local/mariadb-maxscale" CACHE INTERNAL "Prefix prepended to install directories." FORCE)
-set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/system-test)
-# Build type
-set(CMAKE_BUILD_TYPE "None" CACHE STRING "Build type, possible values are:None, Debug, Optimized.")
-
-check_deps()
-check_dirs()
-
+include_directories("/usr/include/mysql/")
 set(CTEST_BUILD_NAME "${BUILDNAME}")
-enable_testing()
-ENABLE_TESTING()
-INCLUDE(CTest)
+
+# utilities.cmake contains all helper functions and extra tools
+include(utilities.cmake)
+
+# Is this needed?
+configure_file(${CMAKE_SOURCE_DIR}/cnf/maxscale.cnf.template.setup_binlog.in ${CMAKE_BINARY_DIR}/cnf/maxscale.cnf.template.setup_binlog @ONLY)
 
 # Enable Java
 find_package(Java)
 if(EXISTS ${Java_JAVA_EXECUTABLE} ${JAVA_JAVAC_EXECUTABLE} ${JAVA_JAR_EXECUTABLE})
   include(UseJava)
+  if(Java_FOUND)
+    add_subdirectory(maxscale/java/)
+  endif()
 else()
   message(WARNING "Java not found, Java based tests are not run.")
 endif()
 
-configure_file(${CMAKE_SOURCE_DIR}/cnf/maxscale.cnf.template.setup_binlog.in ${CMAKE_BINARY_DIR}/cnf/maxscale.cnf.template.setup_binlog @ONLY)
-#configure_file(${CMAKE_SOURCE_DIR}/set_env.sh.in ${CMAKE_BINARY_DIR}/set_env.sh @ONLY)
-#configure_file(${CMAKE_SOURCE_DIR}/test_ctrl_c/test_ctrl_c.sh.in ${CMAKE_BINARY_DIR}/test_ctrl_c/test_ctrl_c.sh @ONLY)
-
-include_directories("/usr/include/mysql/")
-#LINK_DIRECTORIES("/usr/lib/x86_64-linux-gnu/")
-aux_source_directory(. SRC_LIST)
-
-
-
+# The core library
 add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp config_check.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
   different_size.cpp fw_copy_rules maxinfo_func.cpp)
-target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
+target_link_libraries(testcore mysqlclient z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
-
-# Helper function to add a configuration template
-function(add_template name template)
-  set(CNF_TEMPLATES "${CNF_TEMPLATES}{\"${name}\",\"${template}\"}," CACHE INTERNAL "")
-endfunction()
-
-# This functions adds a source file as an executable, links that file against
-# the common test core and creates a test from it. The first parameter is the
-# source file, the second is the name of the executable and the test and the
-# last parameter is the template suffix of the test. The template should follow
-# the following naming policy: `maxscale.cnf.template.<template name>` and the
-# file should be located in the /cnf/ directory.
-#
-# Example: to add simple_test.cpp with maxscale.cnf.template.simple_config to the
-# test set, the function should be called as follows:
-#     add_test_executable(simple_test.cpp simple_test simple_config)
-function(add_test_executable source name template)
-  file(APPEND templates "${name} ${template}\n")
-  add_template(${name} ${template})
-  add_executable(${name} ${source})
-  target_link_libraries(${name} testcore)
-  install(TARGETS ${name} DESTINATION system-test)
-  add_test(${name} ${name})
-endfunction()
-
-# Same as add_test_executable, but do not add executable into tests list
-function(add_test_executable_notest source name template)
-  file(APPEND templates "${name} ${template}\n")
-  add_template(${name} ${template})
-  add_executable(${name} ${source})
-  target_link_libraries(${name} testcore)
-  install(TARGETS ${name} DESTINATION system-test)
-endfunction()
-
-# This function adds a script as a test with the specified name and template.
-# The naming of the templates follow the same principles as add_test_executable.
-# also suitable for symlinks
-function(add_test_script name template)
-  file(APPEND templates "${name} ${template}\n")
-  add_template(${name} ${template})
-  install(PROGRAMS ${name} DESTINATION system-test)
-  add_test(${name} ${name})
-endfunction()
-
-# Label a list of tests as heavy, long running tests
-macro(heavy_weight_tests)
-  foreach(name IN ITEMS ${ARGN})
-    set_property(TEST ${name} PROPERTY LABELS "HEAVY")
-  endforeach()
-endmacro()
-
-# Label tests as medium weight tests. These tests take more than 180 seconds to complete.
-macro(medium_weight_tests)
-  foreach(name IN ITEMS ${ARGN})
-    set_property(TEST ${name} PROPERTY LABELS "MEDIUM")
-  endforeach()
-endmacro()
-
-# Label tests as light weight tests. These tests take less than 90 seconds to complete.
-macro(light_weight_tests)
-  foreach(name IN ITEMS ${ARGN})
-    set_property(TEST ${name} PROPERTY LABELS "LIGHT")
-  endforeach()
-endmacro()
-
-# Unstable tests. Ideally, there should be no tests with this label.
-macro(unstable_tests)
-  foreach(name IN ITEMS ${ARGN})
-    set_property(TEST ${name} PROPERTY LABELS "UNSTABLE")
-    set_property(TEST ${name} PROPERTY LABELS "HEAVY")
-  endforeach()
-endmacro()
-
-add_test_executable_notest(t.cpp t replication)
-add_test_executable_notest(non_native_setup.cpp non_native_setup replication)
-
-add_test_executable_notest(binlog_big_transaction.cpp binlog_big_transaction setup_binlog2)
-
-add_test_executable_notest(avro_long.cpp avro_long avro)
-
-add_test_executable_notest(sysbench_example.cpp sysbench_example replication)
-
-if(Java_FOUND)
-  add_subdirectory(maxscale/java/)
-endif()
-
-install(FILES set_env.sh get_logs.sh long_insert.sh DESTINATION system-test PERMISSIONS WORLD_READ WORLD_EXECUTE OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE)
-
-install(FILES configure_maxscale.sh DESTINATION system-test PERMISSIONS WORLD_READ WORLD_EXECUTE OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE)
-install(FILES copy_logs.sh DESTINATION system-test PERMISSIONS WORLD_READ WORLD_EXECUTE OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE)
-
-install(FILES bug729.php DESTINATION system-test)
-install(DIRECTORY cnf DESTINATION system-test)
-install(DIRECTORY fw DESTINATION system-test)
-install(DIRECTORY test_ctrl_c DESTINATION system-test USE_SOURCE_PERMISSIONS)
-install(DIRECTORY long_insert_sql DESTINATION system-test USE_SOURCE_PERMISSIONS)
-install(DIRECTORY Hartmut_tests DESTINATION system-test USE_SOURCE_PERMISSIONS)
-install(DIRECTORY session_hang DESTINATION system-test USE_SOURCE_PERMISSIONS)
-install(DIRECTORY ssl-cert DESTINATION system-test USE_SOURCE_PERMISSIONS)
 
 add_test_executable(regexfilter1.cpp regexfilter1 regexfilter1)
 add_test_executable(namedserverfilter.cpp namedserverfilter namedserverfilter)
@@ -219,9 +107,6 @@ add_test_executable(bug673.cpp bug673 bug673)
 # ReadConn router in master mode with TEE filter
 add_test_executable(bug670.cpp bug670 bug670)
 
-# FAKE_CODE assert, sending 'fail clientfd' maxadmin command (should it be removed from Maxscale?)
-#add_test_executable(bug539.cpp bug539 bug539)
-
 # valid case, problem is not resolved, tracked by https://mariadb.atlassian.net/browse/MXS-15
 add_test_executable(bug699.cpp bug699 galera)
 add_test_executable(bug705.cpp bug705 bug705)
@@ -232,7 +117,6 @@ add_test_executable(bug729.cpp bug729 replication)
 add_test_script(mariadb_tests_hartmut.sh replication)
 add_test_script(mariadb_tests_hartmut_galera.sh replication)
 add_test_script(bug567.sh replication)
-#add_test_script(bug516.sh replication) # removing because maxadmin does not use TPC any more
 add_test_script(bug561.sh replication)
 add_test_script(bug562.sh replication)
 add_test_script(bug585 bug585)
@@ -296,7 +180,6 @@ add_test_executable(open_close_connections.cpp open_close_connections replicatio
 add_test_script(open_close_connections_ssl ssl)
 add_test_executable(galera_priority.cpp galera_priority galera_priority)
 add_test_executable(mxs548_short_session_change_user.cpp mxs548_short_session_change_user mxs548)
-#add_test_executable_notest(mxs559_block_master.cpp mxs559_block_master mxs559)
 add_test_executable(mxs559_block_master.cpp mxs559_block_master mxs559)
 add_test_script(sql_queries_pers1 sql_queries_pers1)
 add_test_script(sql_queries_pers10 sql_queries_pers10)
@@ -407,33 +290,31 @@ add_test_script(mxs598.py ssl)
 add_test_script(maxinfo.py maxinfo)
 
 # Label some tests as HEAVY to exclude them from quick test on every push
-set_tests_properties(binlog_semisync PROPERTIES LABELS "HEAVY")
-set_tests_properties(binlog_semisync_txs1_ss0 PROPERTIES LABELS "HEAVY")
-set_tests_properties(binlog_semisync_txs0_ss1 PROPERTIES LABELS "HEAVY")
-set_tests_properties(binlog_semisync_txs0_ss0 PROPERTIES LABELS "HEAVY")
-set_tests_properties(sql_queries_pers1 PROPERTIES LABELS "HEAVY")
-set_tests_properties(sql_queries_pers10 PROPERTIES LABELS "HEAVY")
-set_tests_properties(bug519 PROPERTIES LABELS "HEAVY")
-set_tests_properties(crash_out_of_files PROPERTIES LABELS "HEAVY")
-set_tests_properties(crash_out_of_files_galera PROPERTIES LABELS "HEAVY")
-set_tests_properties(sysbench_kill_slave PROPERTIES LABELS "HEAVY")
-set_tests_properties(load_balancing_pers1 PROPERTIES LABELS "HEAVY")
-set_tests_properties(load_balancing_pers10 PROPERTIES LABELS "HEAVY")
-set_tests_properties(load_balancing_galera_pers1 PROPERTIES LABELS "HEAVY")
-set_tests_properties(load_balancing_galera_pers10 PROPERTIES LABELS "HEAVY")
-set_tests_properties(different_size_binlog PROPERTIES LABELS "HEAVY")
-set_tests_properties(different_size_rwsplit PROPERTIES LABELS "HEAVY")
-set_tests_properties(max_connections PROPERTIES LABELS "HEAVY")
-set_tests_properties(lots_of_rows PROPERTIES LABELS "HEAVY")
-set_tests_properties(binlog_change_master PROPERTIES LABELS "HEAVY")
-set_tests_properties(rwsplit_readonly_stress PROPERTIES LABELS "HEAVY")
-set_tests_properties(mxs657_restart PROPERTIES LABELS "HEAVY")
+heavy_weight_tests(
+  binlog_semisync
+  binlog_change_master
+  binlog_semisync_txs0_ss0
+  binlog_semisync_txs0_ss1
+  binlog_semisync_txs1_ss0
+  bug519
+  crash_out_of_files
+  crash_out_of_files_galera
+  different_size_binlog
+  different_size_rwsplit
+  load_balancing_galera_pers1
+  load_balancing_galera_pers10
+  load_balancing_pers1
+  load_balancing_pers10
+  lots_of_rows
+  max_connections
+  mxs657_restart
+  rwsplit_readonly_stress
+  sql_queries_pers1
+  sql_queries_pers10
+  sysbench_kill_slave
+  )
 
-medium_weight_tests(mxs564_big_dump rw_select_insert cdc_client ssl sql_queries
-  mariadb_tests_hartmut_galera.sh bug648 longblob mariadb_tests_hartmut.sh
-  fwf_syntax mm bug509 script fwf setup_binlog run_session_hang.sh mxs657_restart_service
-  max_connections binlog_change_master binlog_semisync_txs0_ss0 ssl_load)
-
+# These are lightweight tests that are quick to run
 light_weight_tests(
   avro
   bug359
@@ -488,38 +369,9 @@ unstable_tests(
   max_connections
   maxinfocpp
   mxs598.py
-)
-
-# See if we are on a RPM-capable or DEB-capable system
-find_program(RPMBUILD rpmbuild)
-find_program(DEBBUILD dpkg-buildpackage)
-
-if(NOT ( ${RPMBUILD} STREQUAL "RPMBUILD-NOTFOUND" ) )
-  message(STATUS "Generating RPM packages")
-  set(CPACK_GENERATOR "${CPACK_GENERATOR};RPM;TGZ")
-endif()
-
-if(NOT ( ${DEBBUILD} STREQUAL "DEBBUILD-NOTFOUND" ) )
-  set(CPACK_GENERATOR "${CPACK_GENERATOR};DEB;TGZ")
-  execute_process(COMMAND dpgk --print-architecture OUTPUT_VARIABLE DEB_ARCHITECTURE)
-  set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCHITECTURE})
-  set (CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-  message(STATUS "Generating DEB packages for ${DEB_ARCHITECTURE}")
-endif()
-
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "MaxScale-system-test")
-set(CPACK_PACKAGE_VERSION_MAJOR "${MAXSCALE_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${MAXSCALE_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${MAXSCALE_VERSION_PATCH}")
-set(CPACK_PACKAGE_CONTACT "MariaDB Corporation Ab")
-set(CPACK_PACKAGE_FILE_NAME "maxscale-system-test-${MAXSCALE_VERSION}")
-set(CPACK_PACKAGE_NAME "maxscale-system-test")
-set(CPACK_PACKAGE_VENDOR "MariaDB Corporation Ab")
-set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_SOURCE_DIR}/README)
-set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-set(CPACK_RPM_PACKAGE_NAME "maxscale-system-test")
-set(CPACK_RPM_PACKAGE_VENDOR "MariaDB Corporation Ab")
-set(CPACK_RPM_PACKAGE_LICENSE "GPLv2")
-include(CPack)
+  )
 
 configure_file(templates.h.in templates.h @ONLY)
+
+enable_testing()
+include(CTest)
