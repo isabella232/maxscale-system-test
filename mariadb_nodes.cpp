@@ -686,8 +686,26 @@ int Mariadb_nodes::flush_hosts()
     int local_result = 0;
     for (int i = 0; i < N; i++)
     {
-        local_result += ssh_node(i, (char *) "mysqladmin flush-hosts", true);
+        int rc = 1;
+
+        MYSQL *conn = open_conn(port[i], IP[i], "maxskysql", "skysql", ssl);
+        if (conn)
+        {
+            if(mysql_query(conn, (char *) "FLUSH HOSTS") == 0)
+            {
+                rc = 0;
+            }
+            else
+            {
+                printf("%s\n", mysql_error(conn));
+            }
+            mysql_close(conn);
+        }
+
+        local_result += rc;
     }
+
+    return local_result;
 }
 
 int Mariadb_nodes::execute_query_all_nodes(const char* sql)

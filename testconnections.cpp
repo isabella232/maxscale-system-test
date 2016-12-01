@@ -8,7 +8,7 @@
 #include "mariadb_func.h"
 
 TestConnections::TestConnections(int argc, char *argv[]):
-copy_logs(true)
+copy_logs(true), use_snapshots(false)
 {
     //char str[1024];
     gettimeofday(&start_time, NULL);
@@ -159,43 +159,61 @@ copy_logs(true)
         repl->flush_hosts();
         galera->flush_hosts();
 
-        int attempts = 5;
-
-        if (!no_nodes_check) {
-            //  checking all nodes and restart if needed
-            repl->check_and_restart_nodes_vm();
-            galera->check_and_restart_nodes_vm();
-            //  checking repl
-            tprintf("Checking Master/Slave\n");
-            while ((attempts > 0) && (repl->check_replication(0) != 0))
-            {
-                tprintf("Backend broken! Restarting replication nodes\n");
-                repl->start_replication();
-                attempts--;
-            }
-            //  checking galera
-            tprintf("Checking Galera\n");
-            attempts = 5;
-            while ((attempts > 0) && (galera->check_galera() != 0))
-            {
-                tprintf("Backend broken! Restarting Galera nodes\n");
-                galera->start_galera();
-                attempts--;
-            }
-        }
-
         if (!no_nodes_check)
         {
-            if ((repl->check_replication(0) != 0) || (galera->check_galera() != 0)) {
-                tprintf("****** BACKEND IS STILL BROKEN! Exiting\n *****");
-                exit(200);
+            if (repl->check_replication(0) || galera->check_galera())
+            {
+                // Make sure the VMs are OK
+                if (repl->check_and_restart_nodes_vm() ||
+                    galera->check_and_restart_nodes_vm())
+                {
+                    tprintf("****** VMS ARE BROKEN! Exiting\n *****");
+                    exit(200);
+                }
+
+                //  checking all nodes and restart if needed
+                tprintf("Checking Master/Slave\n");
+                int attempts = 2;
+
+                while (attempts > 0)
+                {
+                    int err = 0;
+                    if (repl->check_replication(0))
+                    {
+                        tprintf("Backend broken! Restarting replication nodes\n");
+                        repl->start_replication();
+                        err++;
+                    }
+
+                    if (galera->check_galera())
+                    {
+                        tprintf("Backend broken! Restarting Galera nodes\n");
+                        galera->start_galera();
+                        err++;
+                    }
+
+                    if (err == 0)
+                    {
+                        break;
+                    }
+
+                    attempts--;
+                }
+
+                if (attempts == 0)
+                {
+                    tprintf("****** BACKEND IS STILL BROKEN! Exiting\n *****");
+                    exit(200);
+                }
             }
         }
-
     }
-    //repl->start_replication();
-    tprintf(">>>>> init maxscale!\n");
-    if (!no_maxscale_start) {init_maxscale();}
+
+    if (!no_maxscale_start)
+    {
+        init_maxscale();
+    }
+
     if (backend_ssl)
     {
         tprintf("Configuring backends for ssl \n");
@@ -205,11 +223,8 @@ copy_logs(true)
         galera->configure_ssl(FALSE);
         galera->ssl = TRUE;
         galera->start_galera();
-        /*tprintf("Restarting Maxscale\n");
-        restart_maxscale();
-        tprintf("Restarting Maxscale again\n");
-        restart_maxscale();*/
     }
+
     timeout = 999999999;
     set_log_copy_interval(999999999);
     pthread_create( &timeout_thread_p, NULL, timeout_thread, this);
@@ -776,7 +791,7 @@ void TestConnections::check_log_err(const char * err_msg, bool expected)
         }
     }
     //printf("\n\n%s\n\n", err_log_content);
-    if (err_log_content != NULL) 
+    if (err_log_content != NULL)
     {
         if (expected) {
             if (strstr(err_log_content, err_msg) == NULL) {
@@ -1033,7 +1048,7 @@ int TestConnections::reconfigure_maxscale(char* config_template)
     char cmd[1024];
     setenv("test_name",config_template,1);
     sprintf(cmd,"%s/configure_maxscale.sh",test_dir);
-    return system(cmd); 
+    return system(cmd);
 }
 
 int TestConnections::create_connections(int conn_N, bool rwsplit_flag, bool master_flag, bool slave_flag, bool galera_flag)
