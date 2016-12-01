@@ -749,9 +749,12 @@ int Mariadb_nodes::get_versions()
 int Mariadb_nodes::truncate_mariadb_logs()
 {
     int local_result = 0;
-    for (int i = 0; i < N; i++)
+    for (int node = 0; node < N; node++)
     {
-        local_result += ssh_node(i, (char *) "truncate  /var/lib/mysql/*.err --size 0", TRUE);
+       char sys[1024];
+        sprintf(sys, "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s 'sudo truncate  /var/lib/mysql/*.err --size 0\' &",
+                sshkey[node], access_user[node], IP[node]);
+       local_result += system(sys);
     }
     return local_result;
 }
