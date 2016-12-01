@@ -14,14 +14,20 @@ endfunction()
 # Example: to add simple_test.cpp with maxscale.cnf.template.simple_config to the
 # test set, the function should be called as follows:
 #     add_test_executable(simple_test.cpp simple_test simple_config)
-function(add_test_executable source name template labels)
+function(add_test_executable source name template)
   file(APPEND templates "${name} ${template}\n")
   add_template(${name} ${template})
   add_executable(${name} ${source})
   target_link_libraries(${name} testcore)
   install(TARGETS ${name} DESTINATION system-test)
   add_test(${name} ${name})
-  set_property(TEST ${name} PROPERTY LABELS ${labels})
+
+  list(REMOVE_AT ARGV 0 1 2 3)
+
+  foreach (label IN LISTS ARGV)
+    get_property(prev_labels TEST ${name} PROPERTY LABELS)
+    set_property(TEST ${name} PROPERTY LABELS ${label} ${prev_labels})
+  endforeach()
 endfunction()
 
 # Same as add_test_executable, but do not add executable into tests list
@@ -41,7 +47,13 @@ function(add_test_script name template labels)
   add_template(${name} ${template})
   install(PROGRAMS ${name} DESTINATION system-test)
   add_test(${name} ${name})
-  set_property(TEST ${name} PROPERTY LABELS ${labels})
+
+  list(REMOVE_AT ARGV 0 1 2)
+
+  foreach (label IN LISTS ARGV)
+    get_property(prev_labels TEST ${name} PROPERTY LABELS)
+    set_property(TEST ${name} PROPERTY LABELS ${label} ${prev_labels})
+  endforeach()
 endfunction()
 
 # Label a list of tests as heavy, long running tests
