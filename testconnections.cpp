@@ -136,9 +136,9 @@ copy_logs(true)
     {
         repl->truncate_mariadb_logs();
         galera->truncate_mariadb_logs();
-        ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 8080 -j ACCEPT");
-        ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
-        ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
+        //ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 8080 -j ACCEPT");
+        //ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
+        //ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
 
         // Clear the generated config dir if it exists
         ssh_maxscale(true, "rm -rf /var/lib/maxscale/maxscale.cnf.d/");
