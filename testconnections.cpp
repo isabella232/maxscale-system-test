@@ -163,8 +163,6 @@ copy_logs(true)
 
         if (!no_nodes_check) {
             //  checking all nodes and restart if needed
-            repl->unblock_all_nodes();
-            galera->unblock_all_nodes();
             repl->check_and_restart_nodes_vm();
             galera->check_and_restart_nodes_vm();
             //  checking repl

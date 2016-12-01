@@ -34,6 +34,9 @@ public:
      * @param pref  name of backend setup (like 'repl' or 'galera')
      */
     Mariadb_nodes(char * pref);
+
+    ~Mariadb_nodes();
+
     /**
     * @brief  MYSQL structs for every backend node
     */
@@ -151,6 +154,13 @@ public:
     * @brief test_dir path to test application
     */
    char test_dir[4096];
+
+
+    /**
+     * @brief List of blocked nodes
+     */
+
+    bool blocked[256];
 
     /**
      * @brief connect Open MariaDB connections to all nodes

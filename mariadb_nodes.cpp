@@ -18,8 +18,20 @@ Mariadb_nodes::Mariadb_nodes(char * pref)
 {
     strcpy(prefix, pref);
     memset(this->nodes, 0, sizeof(this->nodes));
+    memset(blocked, 0, sizeof(blocked));
     no_set_pos = false;
     verbose = true;
+}
+
+Mariadb_nodes::~Mariadb_nodes()
+{
+    for (int i = 0; i < N; i++)
+    {
+        if (blocked[i])
+        {
+            unblock_node(i);
+        }
+    }
 }
 
 int Mariadb_nodes::connect()
@@ -358,6 +370,7 @@ int Mariadb_nodes::block_node(int node)
         fflush(stdout);
     }
     local_result += ssh_node(node, sys1, TRUE);
+    blocked[node] = true;
     return(local_result);
 }
 
@@ -373,6 +386,7 @@ int Mariadb_nodes::unblock_node(int node)
         fflush(stdout);
     }
     local_result += ssh_node(node, sys1, TRUE);
+    blocked[node] = false;
     return(local_result);
 }
 
