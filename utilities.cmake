@@ -14,13 +14,14 @@ endfunction()
 # Example: to add simple_test.cpp with maxscale.cnf.template.simple_config to the
 # test set, the function should be called as follows:
 #     add_test_executable(simple_test.cpp simple_test simple_config)
-function(add_test_executable source name template)
+function(add_test_executable source name template labels)
   file(APPEND templates "${name} ${template}\n")
   add_template(${name} ${template})
   add_executable(${name} ${source})
   target_link_libraries(${name} testcore)
   install(TARGETS ${name} DESTINATION system-test)
   add_test(${name} ${name})
+  set_property(TEST ${name} PROPERTY LABELS ${labels})
 endfunction()
 
 # Same as add_test_executable, but do not add executable into tests list
@@ -35,11 +36,12 @@ endfunction()
 # This function adds a script as a test with the specified name and template.
 # The naming of the templates follow the same principles as add_test_executable.
 # also suitable for symlinks
-function(add_test_script name template)
+function(add_test_script name template labels)
   file(APPEND templates "${name} ${template}\n")
   add_template(${name} ${template})
   install(PROGRAMS ${name} DESTINATION system-test)
   add_test(${name} ${name})
+  set_property(TEST ${name} PROPERTY LABELS ${labels})
 endfunction()
 
 # Label a list of tests as heavy, long running tests
