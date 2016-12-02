@@ -41,10 +41,6 @@ servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
 
-[Debug Interface]
-type=service
-router=debugcli
-
 [RW Split Listener]
 type=listener
 service=RW Split Router
@@ -62,12 +58,6 @@ type=listener
 service=Read Connection Router Master
 protocol=MySQLClient
 port=4008
-
-[Debug Listener]
-type=listener
-service=Debug Interface
-protocol=telnetd
-port=4442
 
 [CLI]
 type=service
