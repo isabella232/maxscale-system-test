@@ -8,7 +8,7 @@
 #include "mariadb_func.h"
 
 TestConnections::TestConnections(int argc, char *argv[]):
-copy_logs(true), use_snapshots(false)
+copy_logs(true), use_snapshots(false), verbose(false)
 {
     //char str[1024];
     gettimeofday(&start_time, NULL);
@@ -125,6 +125,9 @@ copy_logs(true), use_snapshots(false)
             run_flag = false;
         }
     }
+
+    repl->verbose = verbose;
+    galera->verbose = verbose;
 
     bool snapshot_reverted = false;
     if (use_snapshots)

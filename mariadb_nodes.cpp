@@ -447,8 +447,13 @@ int Mariadb_nodes::check_replication(int master)
     MYSQL *conn;
     MYSQL_RES *res;
     //bool v51 = false;
-    printf("Checking Master/Slave setup\n"); fflush(stdout);
-    get_versions();
+    if (verbose)
+    {
+        printf("Checking Master/Slave setup\n");
+        fflush(stdout);
+    }
+
+    res1 = get_versions();
 
     for (int i = 0; i < N; i++) {
         conn = open_conn(port[i], IP[i], "maxskysql", "skysql", ssl);
@@ -509,10 +514,6 @@ int Mariadb_nodes::check_replication(int master)
         mysql_close(conn);
     }
 
-    res1 += connect();
-    close_connections();
-
-    printf("repl check res %d\n", res1);
     return(res1);
 }
 
@@ -522,8 +523,15 @@ int Mariadb_nodes::check_galera()
     char str[1024];
     int cluster_size;
     MYSQL *conn;
-    printf("Checking Galera\n"); fflush(stdout);
-    get_versions();
+
+    if (verbose)
+    {
+        printf("Checking Galera\n");
+        fflush(stdout);
+    }
+
+    res1 = get_versions();
+
     for (int i = 0; i < N; i++) {
         conn = open_conn(port[i], IP[i], "maxskysql", "skysql", ssl);
         if (mysql_errno(conn) != 0) {
@@ -549,8 +557,7 @@ int Mariadb_nodes::check_galera()
         }
         mysql_close(conn);
     }
-    res1 += connect();
-    close_connections();
+
     return(res1);
 }
 
@@ -733,7 +740,9 @@ int Mariadb_nodes::get_versions()
         strcpy(version_major[i], version_number[i]);
         if (strstr(version_major[i], "5.") ==  version_major[i]) {version_major[i][3] = 0;}
         if (strstr(version_major[i], "10.") ==  version_major[i]) {version_major[i][4] = 0;}
-        printf("Node %s%d: %s\t %s \t %s\n", prefix, i, version[i], version_number[i], version_major[i]);
+
+        if (verbose)
+            printf("Node %s%d: %s\t %s \t %s\n", prefix, i, version[i], version_number[i], version_major[i]);
     }
     close_connections();
     for (int i = 0; i < N; i++)
