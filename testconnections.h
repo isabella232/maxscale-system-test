@@ -456,6 +456,14 @@ public:
     int ssh_maxscale(bool sudo, const char* format, ...);
 
     /**
+     * @brief Execute a shell command on Maxscale
+     * @param sudo Use root
+     * @param format printf style format string
+     * @return 0 on success
+     */
+    int ssh_maxscale_sh(bool sudo, const char* format, ...);
+
+    /**
      * @brief Copy a local file to the MaxScale machine
      * @param src Source file on the local filesystem
      * @param dest Destination file on the MaxScale machine's file system

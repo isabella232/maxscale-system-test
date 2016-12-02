@@ -140,9 +140,6 @@ copy_logs(true), use_snapshots(false)
         //ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
         //ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
 
-        // Clear the generated config dir if it exists
-        ssh_maxscale(true, "rm -rf /var/lib/maxscale/maxscale.cnf.d/");
-
         // Create DB user on master and on first Galera node
         //sprintf(str, "%s/create_user.sh", test_dir);
         //repl->copy_to_node(str, (char *) "~/", 0);
@@ -427,27 +424,24 @@ int TestConnections::init_maxscale()
     }
 
     copy_to_maxscale((char *) "maxscale.cnf", (char *) "./");
-    ssh_maxscale(TRUE, "cp maxscale.cnf %s", maxscale_cnf);
-    ssh_maxscale(TRUE, "rm -rf %s/certs", maxscale_access_homedir);
-    ssh_maxscale(FALSE, "mkdir %s/certs", maxscale_access_homedir);
+    ssh_maxscale_sh(true, "cp maxscale.cnf %s;rm -rf %s/certs;mkdir %s/certs;", maxscale_cnf, maxscale_access_homedir, maxscale_access_homedir);
+
     sprintf(str, "%s/ssl-cert/*", test_dir);
     copy_to_maxscale(str, (char *) "./certs/");
     sprintf(str, "cp %s/ssl-cert/* .", test_dir); system(str);
-    ssh_maxscale(TRUE,  "chown maxscale:maxscale -R %s/certs", maxscale_access_homedir);
-    ssh_maxscale(TRUE, "chmod 664 %s/certs/*.pem; chmod a+x %s", maxscale_access_homedir, maxscale_access_homedir);
 
-    ssh_maxscale(TRUE, "service maxscale stop");
-    ssh_maxscale(TRUE, "killall -9 maxscale");
+    ssh_maxscale_sh(TRUE, "chown maxscale:maxscale -R %s/certs;"
+                    "chmod 664 %s/certs/*.pem;"
+                    " chmod a+x %s;"
+                    "killall -9 maxscale;"
+                    "truncate -s 0 %s/maxscale*.log;"
+                    "chown maxscale:maxscale %s/maxscale*.log;"
+                    "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;"
+                    "service maxscale restart",
+                    maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
+                    maxscale_log_dir, maxscale_log_dir);
 
-    ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale.log ; %s chown maxscale:maxscale %s/maxscale.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
-    ssh_maxscale(TRUE, "truncate -s 0 %s/maxscale1.log ; %s chown maxscale:maxscale %s/maxscale1.log", maxscale_log_dir, maxscale_access_sudo, maxscale_log_dir);
-    ssh_maxscale(TRUE, "rm -f /tmp/core*");
-    ssh_maxscale(TRUE, "rm -rf /dev/shm/*");
-
-    ssh_maxscale(FALSE, "printenv > test.environment");
     fflush(stdout);
-
-    ssh_maxscale(TRUE, "ulimit -c unlimited; %s service maxscale restart", maxscale_access_sudo);
 
     int waits;
 
@@ -989,6 +983,50 @@ char* TestConnections::ssh_maxscale_output(bool sudo, const char* format, ...)
     pclose(output);
 
     return result;
+}
+
+int  TestConnections::ssh_maxscale_sh(bool sudo, const char* format, ...)
+{
+    va_list valist;
+
+    va_start(valist, format);
+    int message_len = vsnprintf(NULL, 0, format, valist);
+    va_end(valist);
+
+    if(message_len < 0)
+    {
+        return -1;
+    }
+
+    char *sys = (char*)malloc(message_len + 1);
+
+    va_start(valist, format);
+    vsnprintf(sys, message_len + 1, format, valist);
+    va_end(valist);
+
+    char *cmd = (char*)malloc(message_len + 1024);
+
+    sprintf(cmd, "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s",
+            maxscale_keyfile, maxscale_access_user, maxscale_IP);
+
+    int rc = 1;
+    FILE *in = popen(cmd, "w");
+
+    if (in)
+    {
+        if (sudo)
+        {
+            fprintf(in, "sudo su -\n");
+            fprintf(in, "cd /home/%s\n", maxscale_access_user);
+        }
+
+        fprintf(in, "%s\n", sys);
+        rc = pclose(in);
+    }
+
+    free(sys);
+    free(cmd);
+    return rc;
 }
 
 int  TestConnections::ssh_maxscale(bool sudo, const char* format, ...)
