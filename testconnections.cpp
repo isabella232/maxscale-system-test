@@ -163,6 +163,8 @@ copy_logs(true), use_snapshots(false), verbose(false)
         {
             if (repl->check_replication(0) || galera->check_galera())
             {
+                repl->unblock_all_nodes();
+                galera->unblock_all_nodes();
                 // Make sure the VMs are OK
                 if (repl->check_and_restart_nodes_vm() ||
                     galera->check_and_restart_nodes_vm())
