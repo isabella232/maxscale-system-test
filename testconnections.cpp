@@ -424,11 +424,12 @@ int TestConnections::init_maxscale()
     }
 
     copy_to_maxscale((char *) "maxscale.cnf", (char *) "./");
-    ssh_maxscale_sh(true, "cp maxscale.cnf %s;rm -rf %s/certs;mkdir %s/certs;", maxscale_cnf, maxscale_access_homedir, maxscale_access_homedir);
+    ssh_maxscale_sh(true, "cp maxscale.cnf %s;rm -rf %s/certs;mkdir -m a+wrx %s/certs;", maxscale_cnf, maxscale_access_homedir, maxscale_access_homedir);
 
     sprintf(str, "%s/ssl-cert/*", test_dir);
     copy_to_maxscale(str, (char *) "./certs/");
-    sprintf(str, "cp %s/ssl-cert/* .", test_dir); system(str);
+    sprintf(str, "cp %s/ssl-cert/* .", test_dir);
+    system(str);
 
     ssh_maxscale_sh(TRUE, "chown maxscale:maxscale -R %s/certs;"
                     "chmod 664 %s/certs/*.pem;"
