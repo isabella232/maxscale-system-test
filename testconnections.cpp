@@ -226,6 +226,7 @@ copy_logs(true), use_snapshots(false)
     set_log_copy_interval(999999999);
     pthread_create( &timeout_thread_p, NULL, timeout_thread, this);
     pthread_create( &log_copy_thread_p, NULL, log_copy_thread, this);
+    tprintf("Starting test");
     gettimeofday(&start_time, NULL);
 }
 
