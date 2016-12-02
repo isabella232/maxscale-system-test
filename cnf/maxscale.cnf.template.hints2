@@ -67,7 +67,7 @@ router=cli
 type=listener
 service=CLI
 protocol=maxscaled
-address=localhost
+
 socket=default
 
 [server1]
