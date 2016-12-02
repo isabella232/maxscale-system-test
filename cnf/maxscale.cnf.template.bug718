@@ -1,58 +1,6 @@
-#
-# Example MaxScale.cnf configuration file
-#
-#
-#
-# Number of server threads
-# Valid options are:
-# 	threads=<number of threads>
-
 [maxscale]
 threads=1
 log_warning=1
-
-# Define a monitor that can be used to determine the state and role of
-# the servers.
-#
-# Valid options are:
-#
-# 	module=<name of module to load>
-# 	servers=<server name>,<server name>,...
-# 	user =<user name - must have slave replication and 
-#                          slave client privileges>
-# 	passwd=<password of the above user, plain text currently>
-#	monitor_interval=<sampling interval in milliseconds,
-#                          default value is 10000>
-
-#[MySQL Monitor]
-#type=monitor
-#module=mysqlmon
-###repl51###
-#servers= server1, server2,server3  ,server4
-#user=maxskysql
-#passwd= skysql
-
-#[Galera Monitor]
-#type=monitor
-#module=galeramon
-#servers=g_server1,g_server2,g_server3,g_server4
-#user=maxskysql
-#passwd=skysql
-
-# A series of service definition
-#
-# Valid options are:
-#
-# 	router=<name of router module>
-# 	servers=<server name>,<server name>,...
-# 	user=<User to fetch password inforamtion with>
-# 	passwd=<Password of the user, plain text currently>
-#	enable_root_user=<0 or 1, default is 0>
-#	version_string=<specific string for server handshake,
-#		default is the MariaDB embedded library version>
-#
-# Valid router modules currently are:
-# 	readwritesplit, readconnroute and debugcli
 
 [RW Split Router]
 type=service
@@ -60,7 +8,6 @@ router= readwritesplit
 servers=server1,     server2,              server3,server4
 user=maxskysql
 passwd=skysql
-filters=QLA
 
 [Read Connection Router Slave]
 type=service
@@ -69,7 +16,6 @@ router_options= slave
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
-filters=QLA
 
 [Read Connection Router Master]
 type=service
@@ -78,7 +24,6 @@ router_options=master
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
-filters=QLA
 
 
 [RW Split Router Galera]
@@ -87,22 +32,6 @@ router= readwritesplit
 servers=g_server1, g_server2, g_server3, g_server4
 user=maxskysql
 passwd=skysql
-filters=QLA
-
-
-[Debug Interface]
-type=service
-router=debugcli
-
-# Listener definitions for the services
-#
-# Valid options are:
-#
-# 	service=<name of service defined elsewhere>
-# 	protocol=<name of protocol module with which to listen>
-# 	port=<Listening port>
-#	address=<Address to bind to>
-#	socket=<Listening socket>
 
 [RW Split Listener]
 type=listener
@@ -129,14 +58,6 @@ service=RW Split Router Galera
 protocol=MySQLClient
 port=4016
 
-[Debug Listener]
-type=listener
-service=Debug Interface
-protocol=telnetd
-port=4442
-#address=127.0.0.1
-
-
 [CLI]
 type=service
 router=cli
@@ -147,9 +68,6 @@ service=CLI
 protocol=maxscaled
 #address=localhost
 socket=default
-
-
-# Definition of the servers
 
 [server1]
 type=server
@@ -174,12 +92,6 @@ type=server
 address=###node_server_IP_4###
 port=###node_server_port_4###
 protocol=MySQLBackend
-
-[QLA]
-type=filter
-module=qlafilter
-filebase=/tmp/QueryLog
-
 
 [g_server1]
 type=server
