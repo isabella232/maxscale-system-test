@@ -4,11 +4,7 @@
  */
 
 #include "testconnections.h"
-
-#define MONITOR_NAME "mysql-monitor"
-#define SERVICE_NAME1 "rwsplit-service"
-#define SERVICE_NAME2 "read-connection-router-slave"
-#define SERVICE_NAME3 "read-connection-router-master"
+#include "config_operations.h"
 
 static bool running = true;
 
@@ -31,49 +27,12 @@ void* query_thread(void *data)
     return NULL;
 }
 
-void add_server(TestConnections *test, int num)
-{
-    test->tprintf("Adding the servers");
-
-    for (int i = 0; i < 4; i++)
-    {
-        test->set_timeout(120);
-        test->ssh_maxscale(true, "maxadmin add server server%d " MONITOR_NAME, num);
-        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME1, num);
-        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME2, num);
-        test->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME3, num);
-        test->stop_timeout();
-    }
-}
-
-void remove_server(TestConnections *test, int num)
-{
-    test->set_timeout(120);
-    test->ssh_maxscale(true, "maxadmin remove server server%d " MONITOR_NAME, num);
-    test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME1, num);
-    test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME2, num);
-    test->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME3, num);
-    test->stop_timeout();
-}
-
-void destroy_server(TestConnections *test, int num)
-{
-    test->set_timeout(120);
-    test->ssh_maxscale(true, "maxadmin destroy server server%d", num);
-    test->stop_timeout();
-}
-
-void create_server(TestConnections *test, int num)
-{
-    test->set_timeout(120);
-    test->ssh_maxscale(true, "maxadmin create server server%d %s",
-                       num, test->repl->IP[num]);
-    test->stop_timeout();
-}
 
 int main(int argc, char *argv[])
 {
     TestConnections *test = new TestConnections(argc, argv);
+    Config config(test);
+
     int num_threads = 5;
     int iterations = test->smoke ? 5 : 25;
     pthread_t threads[num_threads];
@@ -94,13 +53,13 @@ int main(int argc, char *argv[])
         {
             if ((x + i) % 2 == 0)
             {
-                create_server(test, i);
-                add_server(test, i);
+                config.create_server(i);
+                config.add_server(i);
             }
             else
             {
-                remove_server(test, i);
-                destroy_server(test,i);
+                config.remove_server(i);
+                config.destroy_server(i);
             }
 
             sleep(1);
@@ -117,8 +76,8 @@ int main(int argc, char *argv[])
     /** Make sure the servers exist before checking that connectivity is OK */
     for (int i = 0; i < test->repl->N; i++)
     {
-        create_server(test, i);
-        add_server(test, i);
+        config.create_server(i);
+        config.add_server(i);
     }
 
     test->check_maxscale_alive();
