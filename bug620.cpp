@@ -209,7 +209,7 @@ Check for lack of "Error : getaddrinfo failed" added (just in case) and for warn
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"
@@ -246,9 +246,9 @@ int main(int argc, char *argv[])
 
     Test->close_maxscale_connections();
 
-    Test->check_log_err((char *) "Failed to add user skysql", FALSE);
-    Test->check_log_err((char *) "getaddrinfo failed", FALSE);
-    Test->check_log_err((char *) "Couldn't find suitable Master", FALSE);
+    Test->check_log_err((char *) "Failed to add user skysql", false);
+    Test->check_log_err((char *) "getaddrinfo failed", false);
+    Test->check_log_err((char *) "Couldn't find suitable Master", false);
 
     Test->check_maxscale_alive();
     Test->copy_all_logs(); return(Test->global_result);

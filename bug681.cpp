@@ -20,7 +20,7 @@ Added casts to floating point values when doing divisions.
 
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "mariadb_func.h"
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     Test->close_maxscale_connections();
 
-    Test->check_log_err((char *) "Unable to start RW Split Router service. There are too few backend servers configured in", TRUE);
+    Test->check_log_err((char *) "Unable to start RW Split Router service. There are too few backend servers configured in", true);
 
     Test->copy_all_logs(); return(Test->global_result);
 }

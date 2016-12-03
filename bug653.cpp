@@ -34,7 +34,7 @@ I'm not sure I understand the bug correctly.
 But 60-chars long host name does not cause problem (longer is not possible "String 'very_long_hostname_that_can_not_be_resolved_and_it_probably_caused_cra' is too long for host name (should be no longer than 60)"
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

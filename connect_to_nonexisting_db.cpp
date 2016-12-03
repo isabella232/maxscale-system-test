@@ -1,7 +1,7 @@
 // some relations to bug#425
 // connect to no-existing DB
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "sql_t1.h"

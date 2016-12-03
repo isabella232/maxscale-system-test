@@ -10,7 +10,7 @@
 
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"
@@ -33,20 +33,20 @@ void try_password(TestConnections* Test, char * pass)
     Test->close_maxscale_connections();
 
     Test->tprintf("Executing 'maxkeys'\n");
-    Test->ssh_maxscale(TRUE, "maxkeys");
+    Test->ssh_maxscale(true, "maxkeys");
 
-    Test->ssh_maxscale(TRUE, "sudo chown maxscale:maxscale /var/lib/maxscale/.secrets");
+    Test->ssh_maxscale(true, "sudo chown maxscale:maxscale /var/lib/maxscale/.secrets");
 
     Test->tprintf("Encrypting password '%s'\n", pass);
 
     Test->set_timeout(30);
 
-    char * enc_pass = Test->ssh_maxscale_output(TRUE, "maxpasswd '\"'\"'%s'\"'\"' | tr -cd \"[:print:]\" ", pass);
+    char * enc_pass = Test->ssh_maxscale_output(true, "maxpasswd '\"'\"'%s'\"'\"' | tr -cd \"[:print:]\" ", pass);
 
     Test->tprintf("Encripted password: %s\n", enc_pass);
 
     Test->set_timeout(30);
-    Test->ssh_maxscale(TRUE, "sed -i \"s/passwd=skysql/passwd=%s/\" /etc/maxscale.cnf", enc_pass);
+    Test->ssh_maxscale(true, "sed -i \"s/passwd=skysql/passwd=%s/\" /etc/maxscale.cnf", enc_pass);
 
     Test->tprintf("sed \"s/passwd=skysql/passwd=%s/\" ", enc_pass);
 
@@ -67,7 +67,7 @@ void try_password(TestConnections* Test, char * pass)
     mysql_close(conn);
 
     Test->tprintf("Restoring password: %s\n", sql);
-    Test->ssh_maxscale(TRUE, "sed -i \"s/passwd=%s/passwd=skysql/\" /etc/maxscale.cnf", enc_pass);
+    Test->ssh_maxscale(true, "sed -i \"s/passwd=%s/passwd=skysql/\" /etc/maxscale.cnf", enc_pass);
 
     Test->restart_maxscale();
 }

@@ -11,7 +11,7 @@
  * - check if Maxscale is alive
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "sql_t1.h"

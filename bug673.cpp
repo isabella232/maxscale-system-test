@@ -54,7 +54,7 @@ dcb.c:dcb_hashtable_stats:division by zero
 
 */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 #include "maxadmin_operations.h"
 

@@ -10,7 +10,7 @@
  * - chack data on all nodes
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "maxadmin_operations.h"

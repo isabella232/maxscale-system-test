@@ -8,7 +8,7 @@
  * - Check that queries through MaxScale are OK
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

@@ -36,7 +36,7 @@ Added SQL packet length modifications to modutil_replace_SQL when the original l
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

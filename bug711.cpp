@@ -33,7 +33,7 @@ This way everything seems ok
 
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

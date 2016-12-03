@@ -57,7 +57,7 @@ ERROR 2013 (HY000) at line 1 in file: '/Users/kolbe/Devel/seattleparking/loaddat
 mysql 5.5.38-MariaDB (maxuser) [test]> Bye
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "sql_t1.h"

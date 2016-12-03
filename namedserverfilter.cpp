@@ -6,7 +6,7 @@
  * `match=SELECT` which should match any SELECT query.
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

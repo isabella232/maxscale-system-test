@@ -7,7 +7,7 @@
  * status if replication is running.
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

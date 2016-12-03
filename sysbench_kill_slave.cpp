@@ -9,7 +9,7 @@
  */
 
 
-#include <my_config.h>
+
 #include "testconnections.h"
 #include "sysbench_commands.h"
 

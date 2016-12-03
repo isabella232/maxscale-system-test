@@ -84,7 +84,7 @@ In the reload users routine, if there is a master available then use that rather
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

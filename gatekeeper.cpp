@@ -1,4 +1,4 @@
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

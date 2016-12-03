@@ -113,7 +113,7 @@ The problem reappeared later and was eventually fixed in release-1.0beta-refresh
 
 // counting connection to all services
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "sql_t1.h"

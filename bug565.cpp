@@ -49,7 +49,7 @@ Comment 2 Vilho Raatikka 2014-10-08 19:35:58 UTC
 Pushed initial fix to MAX-311. Waiting for validation for the fix.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

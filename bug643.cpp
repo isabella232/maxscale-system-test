@@ -31,7 +31,7 @@ The "RW Split Router" uses the"duplicate" filter that will then duplicate all tr
 Really this needs to be trapped as a configuration error.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
         Test->add_result(1, "FAIL: Query to broken service succeeded!\n");
     }
     Test->close_maxscale_connections();
-    Test->check_log_err((char *) "RW Split Router: Recursive use of tee filter in service", TRUE);
+    Test->check_log_err((char *) "RW Split Router: Recursive use of tee filter in service", true);
 
     Test->copy_all_logs(); return(Test->global_result);
 }

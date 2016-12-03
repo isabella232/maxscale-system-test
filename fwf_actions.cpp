@@ -6,7 +6,7 @@
  * to three services configured in block, allow and ignore modes.
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

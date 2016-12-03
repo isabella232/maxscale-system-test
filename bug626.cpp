@@ -136,7 +136,7 @@ No issues/crea found with user and old_password style.
 Message is logged into the error log where there is such case.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
 
     execute_query(Test->repl->nodes[0], "DROP USER 'old'@'%%'");
 
-    Test->check_log_err((char *) "MaxScale does not support these old passwords", TRUE);
+    Test->check_log_err((char *) "MaxScale does not support these old passwords", true);
     Test->check_maxscale_alive();
 
     Test->copy_all_logs(); return(Test->global_result);

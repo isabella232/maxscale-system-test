@@ -2,7 +2,7 @@
  * @file fwf_reload - Same as fwf but with reloading of rules
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <ctime>
 #include "testconnections.h"

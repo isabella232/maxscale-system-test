@@ -4,7 +4,7 @@
  * Check if the log_match and log_no_match parameters work
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

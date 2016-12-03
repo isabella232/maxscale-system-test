@@ -21,7 +21,7 @@ Comment 1 Markus Mäkelä 2014-12-23 09:19:17 UTC
 Added a check for server status before routing the query. Now if the server is down it returns an error.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

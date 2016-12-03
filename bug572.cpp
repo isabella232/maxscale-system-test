@@ -9,7 +9,7 @@
  * - do "select * from mysql.user" using RWSplit to check if Maxsclae crashed
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

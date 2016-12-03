@@ -2,7 +2,7 @@
  * @file binlog_big_transaction.cpp test of simple binlog router setup and execute a number of big transactions
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "maxadmin_operations.h"

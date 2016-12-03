@@ -56,7 +56,7 @@ Comment 2 Vilho Raatikka 2014-09-01 20:01:35 UTC
 An autoincrement attribute was missing.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

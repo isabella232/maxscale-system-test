@@ -6,7 +6,7 @@
  * log should contain a message about a syntax error.
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

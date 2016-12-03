@@ -44,7 +44,7 @@ $6 = {type = HINT_PARAMETER, data = 0x0, value = 0x743a60, dsize = 0, next = 0x0
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

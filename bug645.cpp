@@ -190,7 +190,7 @@ Required changes are:
 - remove checks which enforce rules which are based on false assumption.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

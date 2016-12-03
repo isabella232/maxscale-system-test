@@ -71,7 +71,7 @@ ERROR 1045 (2800): Authorization failed
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

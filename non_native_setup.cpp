@@ -2,7 +2,7 @@
  * Simple dummy configuration program for non-C++ tests
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

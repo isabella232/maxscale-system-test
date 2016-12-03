@@ -75,7 +75,7 @@ filter.c:filter_free:if filter parameter is NULL, return.
     tee.c:freeSession: if my_session->dummy_filterdef is NULL, don't try to release the memory
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "sql_t1.h"

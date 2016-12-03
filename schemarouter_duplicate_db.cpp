@@ -7,7 +7,7 @@
  * - Check that message about duplicate databases is logged into error log
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

@@ -10,7 +10,7 @@
  * - try INSERT again expecting success (user should not be changed)
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

@@ -60,7 +60,7 @@ Comment 1 Vilho Raatikka 2014-10-23 18:08:07 UTC
 buffer.c:gwbuf_make_contiguous: hint wasn't duplicated to new GWBUF struct. As a result hints were lost if query rewriting resulted in longer query than the original.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

@@ -14,10 +14,6 @@
  * @endverbatim
  */
 
-
-
-#include <my_config.h>
-#include <my_global.h>
 #include <mysql.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +21,8 @@
 #include <unistd.h>
 #include <math.h>
 #include <time.h>
+#include <stdarg.h>
+#include <errno.h>
 
 MYSQL * open_conn_db_flags(int port, const char* ip, const char* db, const char* User, const char* Password, unsigned long flag, bool ssl);
 MYSQL * open_conn_db_timeout(int port, const char* ip, const char* db, const char* User, const char* Password, unsigned long timeout, bool ssl);

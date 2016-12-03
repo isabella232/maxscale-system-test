@@ -32,7 +32,7 @@ service=RW_Split
  * - reconnect and check if query execution is ok
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "sql_t1.h"

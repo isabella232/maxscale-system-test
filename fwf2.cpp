@@ -12,7 +12,7 @@
  * - try to load rules with syntax error, expect failure for all sessions and queries
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <ctime>
 #include "testconnections.h"

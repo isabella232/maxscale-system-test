@@ -51,7 +51,7 @@ Comment 2 Vilho Raatikka 2014-12-23 16:11:12 UTC
 NULL-terminated argument list in case where there are given more arguments than expected.
 */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 #include "maxadmin_operations.h"
 

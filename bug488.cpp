@@ -70,7 +70,7 @@ T 127.0.0.1:4006 -> 127.0.0.1:59776 [AP]
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

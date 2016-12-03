@@ -140,7 +140,7 @@ Replication lag is not checked if routing hint is used.
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

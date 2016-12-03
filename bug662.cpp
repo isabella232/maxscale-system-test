@@ -25,7 +25,7 @@ dbusers.c: Added function for setting read, write and connection timeout values.
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "maxadmin_operations.h"

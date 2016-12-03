@@ -7,7 +7,7 @@
  * - check if Maxscale is alive
  */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 #include "sysbench_commands.h"
 

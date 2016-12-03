@@ -2,7 +2,7 @@
  * @file routing_hints.cpp - Test routing hints
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

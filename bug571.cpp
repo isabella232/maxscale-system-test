@@ -111,7 +111,7 @@ T 127.0.0.1:44591 -> 127.0.0.1:3000 [AP]
 
 // the same code is used for bug585
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

@@ -5,7 +5,7 @@
  * - Connect repeatedly to MaxScale with 'testdb' as the default database and execute SELECT 1
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

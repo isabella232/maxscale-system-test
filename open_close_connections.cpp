@@ -4,7 +4,7 @@
  * - 20 threads are opening and immediatelly closing connection in the loop
  */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 //#include "sql_t1.h"
 //#include "get_com_select_insert.h"

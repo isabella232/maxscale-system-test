@@ -218,7 +218,7 @@ Reopen: starting from 1.0.5 test for bug670 start to fail with debug assert:
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

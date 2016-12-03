@@ -2,7 +2,7 @@
  * @file config_reload.cpp Configuration reload test
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

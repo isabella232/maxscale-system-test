@@ -32,7 +32,7 @@ Comment 3 Vilho Raatikka 2014-11-13 15:58:34 UTC
 if (func.auth ==)gw_change_user->gw_send_change_user_to_backend is called before backend has its scramble, auth packet is set to backend's delauqueue instead of writing it to backend. When backend_write_delayqueue is called COM_CHANGE_USER packets are rewritten with backend's current data.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

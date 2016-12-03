@@ -1,4 +1,4 @@
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"
@@ -14,6 +14,7 @@
 #include "maxinfo_func.h"
 #include <sys/epoll.h>
 #include <jansson.h>
+#include <fcntl.h>
 
 using namespace std;
 

@@ -8,7 +8,7 @@
  * - check Mascale is alive
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "big_load.h"

@@ -19,7 +19,7 @@
  * - check server status using maxadmin interface, expect Master on node0 and Slave on node1
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "maxadmin_operations.h"

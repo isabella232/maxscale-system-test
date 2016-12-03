@@ -6,7 +6,7 @@
  * - try simple query *show servers" via Maxadmin
  */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 #include "maxadmin_operations.h"
 

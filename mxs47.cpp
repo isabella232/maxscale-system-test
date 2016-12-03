@@ -3,7 +3,7 @@
  * - execute SELECT REPEAT('a',i), where 'i' is changing from 1 to 50000 using all Maxscale services
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

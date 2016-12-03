@@ -14,7 +14,7 @@ Comment 2 Vilho Raatikka 2014-12-03 11:26:17 UTC
 COM_SHOW_SLAVE_STAT wasn't classified but it was treated as 'unknown' and thus routed to master.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

@@ -15,6 +15,7 @@
 
 
 #include "mariadb_func.h"
+#include <errno.h>
 
 /**
  * @brief A class to handle backend nodes

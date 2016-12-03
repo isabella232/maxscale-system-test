@@ -5,7 +5,7 @@
  * - check if all slave have equal number of connections (+-1)
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

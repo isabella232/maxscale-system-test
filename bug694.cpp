@@ -31,7 +31,7 @@ Comment 1 Vilho Raatikka 2015-01-15 13:19:18 UTC
 query_classifier.cc: set_query_type lost previous query type if the new was more restrictive. Problem was that if query is both READ and SESSION_WRITE and configuration parameter use_sql_variables_in=all was set, routing target became ambiguous. Replaced call to set_query_type with simply adding new type to type (=bit field) and checking unsupported combinations in readwritesplit.c:get_route_target. If such a case is met, a detailed error is written to error log in readwritesplit.c. mysql_client.c sees the error code and sends an error to client. Then mysql_client.c calls router's handleError which ensures that there are enough backend servers so that the session can continue.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "mariadb_func.h"
@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
 
     Test->tprintf("Checking logs\n");
-    Test->check_log_err((char *) "The query can't be routed to all backend servers because it includes SELECT and SQL variable modifications which is not supported", TRUE);
-    Test->check_log_err((char *) "SELECT with session data modification is not supported if configuration parameter use_sql_variables_in=all", TRUE);
+    Test->check_log_err((char *) "The query can't be routed to all backend servers because it includes SELECT and SQL variable modifications which is not supported", true);
+    Test->check_log_err((char *) "SELECT with session data modification is not supported if configuration parameter use_sql_variables_in=all", true);
 
     Test->check_maxscale_alive();
 

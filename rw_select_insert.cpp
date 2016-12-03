@@ -10,7 +10,7 @@
  * - execute INSERT 100 times, check COM_SELECT and COM_INSERT after every query (tolerate 2*N+1 queries)
  */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 #include "get_com_select_insert.h"
 #include "maxadmin_operations.h"

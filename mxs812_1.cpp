@@ -2,7 +2,7 @@
  * @file longblob.cpp - trying to use LONGBLOB
  */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 
 void run_test(TestConnections *Test, size_t size, int chunks)

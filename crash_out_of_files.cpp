@@ -1,4 +1,4 @@
-#include <my_config.h>
+
 #include "testconnections.h"
 #include "sql_t1.h"
 #include "get_com_select_insert.h"
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     }
     Test->repl->close_connections();
 
-    Test->check_log_err((char *) "refresh rate limit exceeded", FALSE);
+    Test->check_log_err((char *) "refresh rate limit exceeded", false);
 
     Test->tprintf("Sleeping\n");
     Test->stop_timeout();

@@ -8,7 +8,7 @@
  * - check that now queries go to Master
  */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 #include "sql_t1.h"
 #include "maxadmin_operations.h"

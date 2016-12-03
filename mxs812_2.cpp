@@ -2,7 +2,6 @@
  * @file binary_ps.cpp - Execute binary protocol prepared statements while master is blocked
  */
 
-#include <my_config.h>
 #include "testconnections.h"
 
 int test_ps(TestConnections* Test, MYSQL * conn)

@@ -1,7 +1,7 @@
 /**
  * @file encrypted_passwords.cpp - Test maxkeys and maxpasswd interaction with MaxScale
  */
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

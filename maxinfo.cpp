@@ -3,7 +3,7 @@
  * sends 1000 'status' request to the listener
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

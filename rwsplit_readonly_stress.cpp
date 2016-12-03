@@ -2,7 +2,7 @@
  * @file rwsplit_readonly.cpp Testing of the read-only mode for readwritesplit when master fails
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>

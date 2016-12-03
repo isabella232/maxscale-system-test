@@ -6,6 +6,9 @@
 #include "maxadmin_operations.h"
 #include "templates.h"
 #include "mariadb_func.h"
+#include <stdarg.h>
+#include <sys/time.h>
+#include <pthread.h>
 
 TestConnections::TestConnections(int argc, char *argv[]):
 copy_logs(true), use_snapshots(false), verbose(false)
@@ -205,11 +208,11 @@ copy_logs(true), use_snapshots(false), verbose(false)
     if (backend_ssl)
     {
         tprintf("Configuring backends for ssl \n");
-        repl->configure_ssl(TRUE);
-        ssl = TRUE;
-        repl->ssl = TRUE;
-        galera->configure_ssl(FALSE);
-        galera->ssl = TRUE;
+        repl->configure_ssl(true);
+        ssl = true;
+        repl->ssl = true;
+        galera->configure_ssl(false);
+        galera->ssl = true;
         galera->start_galera();
     }
 
@@ -505,7 +508,7 @@ int TestConnections::copy_mariadb_logs(Mariadb_nodes * repl, char * prefix)
     system(str);
     for (i = 0; i < repl->N; i++)
     {
-        mariadb_log = repl->ssh_node_output(i, (char *) "cat /var/lib/mysql/*.err", TRUE);
+        mariadb_log = repl->ssh_node_output(i, (char *) "cat /var/lib/mysql/*.err", true);
         sprintf(str, "LOGS/%s/%s%d_mariadb_log", test_name, prefix, i);
         f = fopen(str, "w");
         if (f != NULL)
@@ -1429,11 +1432,11 @@ int TestConnections::find_master_maxadmin(Mariadb_nodes * nodes)
 
 int TestConnections::execute_maxadmin_command(char * cmd)
 {
-    return(ssh_maxscale(TRUE, "maxadmin %s", cmd));
+    return(ssh_maxscale(true, "maxadmin %s", cmd));
 }
 int TestConnections::execute_maxadmin_command_print(char * cmd)
 {
-    printf("%s\n", ssh_maxscale_output(TRUE, "maxadmin %s", cmd));
+    printf("%s\n", ssh_maxscale_output(true, "maxadmin %s", cmd));
     return 0;
 }
 
@@ -1475,7 +1478,7 @@ int TestConnections::get_maxadmin_param(char *command, char *param, char *result
 {
     char		* buf;
 
-    buf = ssh_maxscale_output(TRUE, "maxadmin %s", command);
+    buf = ssh_maxscale_output(true, "maxadmin %s", command);
 
     //printf("%s\n", buf);
 
@@ -1510,16 +1513,16 @@ int TestConnections::list_dirs()
     for (int i = 0; i < repl->N; i++)
     {
         tprintf("ls on node %d\n", i);
-        repl->ssh_node(i, (char *) "ls -la /var/lib/mysql", TRUE); fflush(stdout);
+        repl->ssh_node(i, (char *) "ls -la /var/lib/mysql", true); fflush(stdout);
     }
     tprintf("ls maxscale \n");
-    ssh_maxscale(TRUE, "ls -la /var/lib/maxscale/"); fflush(stdout);
+    ssh_maxscale(true, "ls -la /var/lib/maxscale/"); fflush(stdout);
     return 0;
 }
 
 long unsigned TestConnections::get_maxscale_memsize()
 {
-    char * ps_out = ssh_maxscale_output(FALSE, "ps -e -o pid,vsz,comm= | grep maxscale");
+    char * ps_out = ssh_maxscale_output(false, "ps -e -o pid,vsz,comm= | grep maxscale");
     long unsigned mem = 0;
     pid_t pid;
     sscanf(ps_out, "%d %lu", &pid, &mem);

@@ -48,7 +48,7 @@ User names: foo@%, repluser@%, joy@107.%.%.%, joy@107.0.0.%, going@107.170.19.%,
 */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "get_my_ip.h"

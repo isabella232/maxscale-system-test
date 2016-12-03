@@ -96,7 +96,7 @@ gserver4:    0
 
  */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 #include "maxadmin_operations.h"
 

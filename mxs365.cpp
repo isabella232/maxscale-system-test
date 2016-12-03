@@ -6,7 +6,7 @@
  */
 
 
-#include <my_config.h>
+
 #include "testconnections.h"
 
 void create_data_file(char* filename, size_t size)

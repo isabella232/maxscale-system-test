@@ -2,7 +2,7 @@
  * @file longblob.cpp - trying to use LONGBLOB
  */
 
-#include <my_config.h>
+
 #include "testconnections.h"
 
 int test_longblob(TestConnections* Test, MYSQL * conn, char * blob_name, long int chunk_size, int chunks)

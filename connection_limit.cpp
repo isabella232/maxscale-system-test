@@ -5,7 +5,7 @@
  * - create max num of connections and check tha N+1 connection fails
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

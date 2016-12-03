@@ -8,7 +8,7 @@
  * - Check that maxadmin list servers shows 0 connections
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>

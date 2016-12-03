@@ -1,5 +1,5 @@
 
-#include <my_config.h>
+
 #include <iostream>
 #include <ctime>
 #include "testconnections.h"

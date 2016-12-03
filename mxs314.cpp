@@ -4,7 +4,7 @@
  * - check if Maxscale alive
  */
 
-#include <my_config.h>
+
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>

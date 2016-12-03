@@ -235,7 +235,7 @@ test added, closing
 
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "mariadb_func.h"

@@ -5,7 +5,7 @@
  */
 
 
-#include <my_config.h>
+
 #include "testconnections.h"
 int main(int argc, char *argv[])
 {

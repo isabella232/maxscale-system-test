@@ -12,7 +12,7 @@
  */
 
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     printf("Changing master back to node 0\n");
     Test->repl->change_master(0, 1);
 
-    Test->check_log_err((char *) "The service 'CLI' is missing a definition of the servers", FALSE);
+    Test->check_log_err((char *) "The service 'CLI' is missing a definition of the servers", false);
 
     Test->copy_all_logs();
     return(Test->global_result);

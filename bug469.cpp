@@ -39,7 +39,7 @@ Server 0x21705e0 (server2)
 
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 #include "maxadmin_operations.h"

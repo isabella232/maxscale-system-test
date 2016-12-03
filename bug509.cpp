@@ -34,7 +34,7 @@ Comment 1 Vilho Raatikka 2014-09-03 20:44:17 UTC
 Added code to detect last_insert_id() function and now both types of elements are routed to master and their order of appearance doesn't matter.
 */
 
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 

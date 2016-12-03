@@ -10,7 +10,7 @@ SET @a = "Com_stmt_close";
 EXECUTE s1 USING @a;
 @endverbatim
  */
-#include <my_config.h>
+
 #include <iostream>
 #include "testconnections.h"
 
