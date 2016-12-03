@@ -1,15 +1,7 @@
 #pragma once
 
 #include "testconnections.h"
-
-// The configuration should use these names for the services, listeners and monitors
-#define MONITOR_NAME "mysql-monitor"
-#define SERVICE_NAME1 "rwsplit-service"
-#define SERVICE_NAME2 "read-connection-router-slave"
-#define SERVICE_NAME3 "read-connection-router-master"
-#define LISTENER_NAME1 "rwsplit-service-listener"
-#define LISTENER_NAME2 "read-connection-router-slave-listener"
-#define LISTENER_NAME3 "read-connection-router-master-listener"
+#include <set>
 
 class Config
 {
@@ -18,22 +10,46 @@ class Config
     ~Config();
 
     /**
+     * Service identifiers for listener creation
+     */
+    enum Service
+    {
+        SERVICE_RWSPLIT = 0,
+        SERVICE_RCONN_SLAVE = 1,
+        SERVICE_RCONN_MASTER = 2
+    };
+
+    /**
      * Add a server to all services and monitors
+     *
      * @param num Backend number
      */
     void add_server(int num);
 
     /**
      * Remove a server
+     *
      * @param num Backend number
      */
     void remove_server(int num);
 
     /**
      * Create a new server
+     *
      * @param num Backend number
      */
     void create_server(int num);
+
+    /**
+     * Alter a server
+     *
+     * @param num Backend number
+     * @param key Key to alter
+     * @oaram value Value for @c key, empty string for no value
+     */
+    void alter_server(int num, const char *key, const char *value);
+    void alter_server(int num, const char *key, int value);
+    void alter_server(int num, const char *key, float value);
 
     /**
      * Destroy a server
@@ -41,6 +57,52 @@ class Config
      */
     void destroy_server(int num);
 
+    /**
+     * Create the monitor
+     * @param type The name of the monitor module to use
+     * @param interval Monitoring interval
+     */
+    void create_monitor(const char *module, int interval = 1000);
+
+    /**
+     * Alter a monitor
+     * @param key Key to alter
+     * @oaram value Value for @c key, empty string for no value
+     */
+    void alter_monitor(const char *key, const char *value);
+    void alter_monitor(const char *key, int value);
+    void alter_monitor(const char *key, float value);
+
+    /**
+     * Destroy the monitor
+     */
+    void destroy_monitor();
+
+    /**
+     * Create a listener
+     *
+     * @param service Service where listener is created
+     */
+    void create_listener(Service service);
+
+    /**
+     * Destroy a listener
+     *
+     * @param service Service whose listener is destroyed
+     */
+    void destroy_listener(Service service);
+
+    /**
+     * Create all basic listeners
+     */
+    void create_all_listeners();
+
+    /**
+     * Reset the configuration to a standard state
+     */
+    void reset();
+
     private:
-    TestConnections *test;
+    TestConnections *test_;
+    std::set<int> created_servers_;
 };
