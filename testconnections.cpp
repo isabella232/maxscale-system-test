@@ -137,25 +137,11 @@ copy_logs(true), use_snapshots(false), verbose(false)
 
     if ((!use_snapshots) || (!snapshot_reverted))
     {
+        // Truncate log files
         repl->truncate_mariadb_logs();
         galera->truncate_mariadb_logs();
-        //ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 8080 -j ACCEPT");
-        //ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4000 -j ACCEPT");
-        //ssh_maxscale(TRUE, "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT");
 
-        // Create DB user on master and on first Galera node
-        //sprintf(str, "%s/create_user.sh", test_dir);
-        //repl->copy_to_node(str, (char *) "~/", 0);
-        //sprintf(str, "%s/create_user_galera.sh", test_dir);
-        //galera->copy_to_node(str, (char *) "~/", 0);
-
-        //sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", repl->user_name, repl->password);
-        //tprintf("cmd: %s\n", str);
-        //repl->ssh_node(0, str, FALSE);
-
-        //sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", galera->user_name, galera->password);
-        //galera->ssh_node(0, str, FALSE);
-
+        // Flush hosts
         repl->flush_hosts();
         galera->flush_hosts();
 
@@ -437,7 +423,7 @@ int TestConnections::init_maxscale()
     sprintf(str, "cp %s/ssl-cert/* .", test_dir);
     system(str);
 
-    ssh_maxscale_sh(TRUE, "chown maxscale:maxscale -R %s/certs;"
+    ssh_maxscale_sh(true, "chown maxscale:maxscale -R %s/certs;"
                     "chmod 664 %s/certs/*.pem;"
                     " chmod a+x %s;"
                     "killall -9 maxscale;"
