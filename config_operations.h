@@ -65,6 +65,11 @@ class Config
     void create_monitor(const char *module, int interval = 1000);
 
     /**
+     * Start the created monitor
+     */
+    void start_monitor();
+
+    /**
      * Alter a monitor
      * @param key Key to alter
      * @oaram value Value for @c key, empty string for no value

@@ -88,6 +88,8 @@ void Config::create_monitor(const char *module, int interval)
     test_->set_timeout(120);
     test_->ssh_maxscale(true, "maxadmin create monitor " MONITOR_NAME " %s", module);
     alter_monitor("monitor_interval", interval);
+    alter_monitor("user", test_->maxscale_user);
+    alter_monitor("password", test_->maxscale_password);
     test_->ssh_maxscale(true, "maxadmin restart monitor " MONITOR_NAME);
     test_->stop_timeout();
 }
@@ -105,6 +107,11 @@ void Config::alter_monitor(const char *key, int value)
 void Config::alter_monitor(const char *key, float value)
 {
     test_->ssh_maxscale(true, "maxadmin alter monitor " MONITOR_NAME " %s=%f", key, value);
+}
+
+void Config::start_monitor()
+{
+    test_->ssh_maxscale(true, "maxadmin restart monitor " MONITOR_NAME);
 }
 
 void Config::destroy_monitor()
