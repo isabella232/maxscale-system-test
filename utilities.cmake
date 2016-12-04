@@ -19,7 +19,6 @@ function(add_test_executable source name template)
   add_template(${name} ${template})
   add_executable(${name} ${source})
   target_link_libraries(${name} testcore)
-  install(TARGETS ${name} DESTINATION system-test)
   add_test(${name} ${name})
 
   list(REMOVE_AT ARGV 0 1 2 3)
@@ -36,17 +35,15 @@ function(add_test_executable_notest source name template)
   add_template(${name} ${template})
   add_executable(${name} ${source})
   target_link_libraries(${name} testcore)
-  install(TARGETS ${name} DESTINATION system-test)
 endfunction()
 
 # This function adds a script as a test with the specified name and template.
 # The naming of the templates follow the same principles as add_test_executable.
 # also suitable for symlinks
-function(add_test_script name template labels)
+function(add_test_script name script template labels)
   file(APPEND templates "${name} ${template}\n")
   add_template(${name} ${template})
-  install(PROGRAMS ${name} DESTINATION system-test)
-  add_test(${name} ${name})
+  add_test(${name} ${script})
 
   list(REMOVE_AT ARGV 0 1 2)
 
