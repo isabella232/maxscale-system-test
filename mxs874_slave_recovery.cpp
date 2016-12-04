@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     Test->set_timeout(10);
     Test->try_query(Test->conn_rwsplit, (char *) "SET @a=1");
     Test->stop_timeout();
-    sleep(5);
+    sleep(1);
     Test->set_timeout(20);
     Test->tprintf("Blocking first slave\n");
     Test->repl->block_node(1);
