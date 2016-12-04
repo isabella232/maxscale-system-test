@@ -74,7 +74,6 @@ address=###node_server_IP_2###
 port=###node_server_port_2###
 protocol=MySQLBackend
 
-
 [server3]
 type=server
 address=###node_server_IP_3###

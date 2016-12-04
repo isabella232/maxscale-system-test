@@ -26,21 +26,21 @@ int main(int argc, char *argv[])
     Test->set_timeout(10);
     Test->try_query(Test->conn_rwsplit, (char *) "SET @a=1");
     Test->stop_timeout();
-    sleep(30);
+    sleep(5);
     Test->set_timeout(20);
     Test->tprintf("Blocking first slave\n");
     Test->repl->block_node(1);
     Test->stop_timeout();
-    sleep(30);
+    sleep(5);
     Test->set_timeout(10);
     Test->tprintf("Unblocking first slave and blocking second slave\n");
 
     Test->repl->unblock_node(1);
     Test->stop_timeout();
-    sleep(30);
+    sleep(5);
     Test->repl->block_node(2);
     Test->stop_timeout();
-    sleep(30);
+    sleep(5);
     Test->set_timeout(20);
 
     int retries;
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     int real_id = Test->repl->get_server_id(1);
 
     char server_id[200] = "";
-    find_field(Test->conn_rwsplit, "SELECT @a, @@server_id", "@@server_id", server_id);
+    find_field(Test->conn_rwsplit, "SELECT @@server_id", "@@server_id", server_id);
     int queried_id = atoi(server_id);
 
     Test->add_result(queried_id != real_id, "The query server ID '%d' does not match the one from server '%d'. "
@@ -77,5 +77,6 @@ int main(int argc, char *argv[])
     Test->repl->unblock_node(2);
 
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
