@@ -430,8 +430,7 @@ int TestConnections::init_maxscale()
                     "chmod 664 %s/certs/*.pem;"
                     " chmod a+x %s;"
                     "killall -9 maxscale;"
-                    "truncate -s 0 %s/maxscale*.log;"
-                    "chown maxscale:maxscale %s/maxscale*.log;"
+                    "rm -f %s/maxscale.log %s/maxscale1.log;"
                     "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;"
                     "service maxscale restart",
                     maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
