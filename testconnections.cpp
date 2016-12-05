@@ -236,6 +236,9 @@ TestConnections::~TestConnections()
     {
         copy_all_logs();
     }
+
+    delete repl;
+    delete galera;
 }
 
 TestConnections::TestConnections()
@@ -1568,4 +1571,14 @@ int TestConnections::revert_snapshot(char * snapshot_name)
     char str[4096];
     sprintf(str, "%s %s", revert_snapshot_command, snapshot_name);
     return system(str);
+}
+
+bool TestConnections::load_new_config(const char *config)
+{
+    char src[PATH_MAX];
+
+    sprintf(src, "%s/cnf/maxscale.cnf.template.%s", test_dir, config);
+    copy_to_maxscale(src, (char*)"/etc/maxscale.cnf");
+
+    return ssh_maxscale(true, "sudo service maxscale restart") == 0;
 }

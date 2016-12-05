@@ -664,6 +664,12 @@ public:
      */
     int revert_snapshot(char * snapshot_name);
 
+    /**
+     * @brief Load a new config and restart maxscale
+     * @param config Name of the config template
+     * @return True if configuration was successfully loaded
+     */
+    bool load_new_config(const char *config);
 };
 
 /**

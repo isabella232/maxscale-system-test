@@ -35,31 +35,32 @@ endif()
 find_library(MYSQL_CLIENT mariadbclient mysqlclient PATH_SUFFIXES mysql mariadb)
 
 # The core library
-add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp config_check.cpp
+add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
   different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp)
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 
-# Configuration tests
-# TODO: Combine them into one test
-add_test_executable(bug359.cpp bug359 bug359 LABELS CONFIG LIGHT)
-add_test_executable(bug495.cpp bug495 bug495 LABELS CONFIG LIGHT)
-add_test_executable(bug526.cpp bug526 bug526 LABELS CONFIG LIGHT)
-add_test_executable(bug479.cpp bug479 bug479 LABELS CONFIG)
-add_test_executable(bug493.cpp bug493 bug493 LABELS CONFIG)
-add_test_executable(bug643.cpp bug643 bug643 LABELS CONFIG)
-add_test_executable(bug643_1.cpp bug643_1 bug643_1 LABELS CONFIG)
-add_test_executable(bug681.cpp bug681 galera.bug681 LABELS CONFIG)
+# Tool used to check backend state
 add_test_executable_notest(check_backend.cpp check_backend check_backend LABELS CONFIG)
+
+# Configuration tests
+add_template(bug359 bug359)
+add_template(bug495 bug495)
+add_template(bug526 bug526)
+add_template(bug479 bug479)
+add_template(bug493 bug493)
+add_template(bug643 bug643)
+add_template(bug643_1 bug643_1)
+add_template(bug681 galera.bug681)
+add_template(mxs652_bad_ssl bad_ssl)
+add_template(mxs710_bad_socket mxs710_bad_socket)
+add_template(mxs710_bad_socket mxs711_two_ports)
+add_template(mxs720_line_with_no_equal mxs720_line_with_no_equal)
+add_template(mxs720_wierd_line mxs720_wierd_line)
+add_template(mxs710_bad_socket mxs799)
 add_test_executable(config_test.cpp config_test replication LABELS CONFIG)
-add_test_executable(mxs652_bad_ssl.cpp mxs652_bad_ssl bad_ssl LABELS CONFIG)
-add_test_executable(mxs710_bad_socket.cpp mxs710_bad_socket mxs710_bad_socket LABELS CONFIG)
-add_test_script(mxs711_two_ports mxs710_bad_socket mxs711_two_ports LABELS CONFIG)
-add_test_executable(mxs720_line_with_no_equal.cpp mxs720_line_with_no_equal mxs720_line_with_no_equal LABELS CONFIG)
-add_test_executable(mxs720_wierd_line.cpp mxs720_wierd_line mxs720_wierd_line LABELS CONFIG)
-add_test_script(mxs799_crash_bad_socket mxs710_bad_socket mxs799 LABELS CONFIG)
 
 add_test_executable(backend_auth_fail.cpp backend_auth_fail replication LABELS readconnroute)
 add_test_executable(bug143.cpp bug143 replication LABELS MySQLAuth)

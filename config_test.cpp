@@ -1,36 +1,47 @@
 /**
-* Simple configuration test
+* Bad configuration test
 */
 
 
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"
-#include "config_check.h"
 
-const char *config[] =
+const char *bad_configs[] =
 {
-    "galera_priority",
-    "ssl",
-    "regexfilter1",
+    "bug359",
+    "bug495",
+    "bug526",
+    "bug479",
+    "bug493",
+    "bug643",
+    "bug643_1",
+    "galera.bug681",
+    "bad_ssl",
+    "mxs710_bad_socket",
+    "mxs711_two_ports",
+    "mxs720_line_with_no_equal",
+    "mxs720_wierd_line",
+    "mxs799",
     NULL
 };
 
-int main()
+int main(int argc, char **argv)
 {
+    TestConnections *test = new TestConnections(argc, argv);
     int rval = 0;
 
-    for (int i = 0; config[i]; i++)
+    for (int i = 0; bad_configs[i]; i++)
     {
-        printf("Testing %s...\n", config[i]);
-        if (test_config_works(config[i], NULL))
-        {
-            printf("SUCCESS\n");
-        }
-        else
+        printf("Testing %s...\n", bad_configs[i]);
+        if (test->load_new_config(bad_configs[i]))
         {
             printf("FAILED\n");
             rval++;
+        }
+        else
+        {
+            printf("SUCCESS\n");
         }
     }
 

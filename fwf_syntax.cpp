@@ -10,7 +10,6 @@
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"
-#include "config_check.h"
 #include "fw_copy_rules.h"
 
 const char *temp_rules = "rules_tmp.txt";

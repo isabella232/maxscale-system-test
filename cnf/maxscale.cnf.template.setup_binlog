@@ -12,8 +12,6 @@ version_string=5.6.15-log
 router_options=server-id=3,user=repl,password=repl,longburst=500,heartbeat=30,binlogdir=/var/lib/maxscale/Binlog_Service,mariadb10-compatibility=1
 
 
-
-#
 [Binlog Listener]
 type=listener
 service=Binlog_Service
