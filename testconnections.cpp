@@ -369,32 +369,27 @@ printf("test name is %s\n", test_name);
     return default_template;
 }
 
-int TestConnections::init_maxscale()
+void TestConnections::process_template(const char *template_name, const char *dest)
 {
     char str[4096];
-    const char * template_name = get_template_name(test_name);
     char template_file[1024];
-    tprintf("Template is %s\n", template_name);
 
     sprintf(template_file, "%s/cnf/maxscale.cnf.template.%s", test_dir, template_name);
     sprintf(str, "cp %s maxscale.cnf", template_file);
     if (system(str) != 0)
     {
         tprintf("Error copying maxscale.cnf template\n");
-        return 1;
+        return;
     }
 
     if (backend_ssl)
     {
         tprintf("Adding ssl settings\n");
         system("sed -i \"s|type=server|type=server\\nssl=required\\nssl_cert=/###access_homedir###/certs/client-cert.pem\\nssl_key=/###access_homedir###/certs/client-key.pem\\nssl_ca_cert=/###access_homedir###/certs/ca.pem|g\" maxscale.cnf");
-        //tprintf("Adding ssl use_ssl_if_enabled=true\n");
-        //sprintf(str, "sed -i \"s|^threads=|use_ssl_if_enabled=true\\nthreads=|\" maxscale.cnf");
-        //tprintf("%s\n", str);
-        //system(str);
     }
 
-    sprintf(str, "sed -i \"s/###threads###/%d/\"  maxscale.cnf", threads); system(str);
+    sprintf(str, "sed -i \"s/###threads###/%d/\"  maxscale.cnf", threads);
+    system(str);
 
     Mariadb_nodes * mdn[2];
     mdn[0] = repl;
@@ -405,25 +400,44 @@ int TestConnections::init_maxscale()
     {
         for (i = 0; i < mdn[j]->N; i++)
         {
-            sprintf(str, "sed -i \"s/###%s_server_IP_%0d###/%s/\" maxscale.cnf", mdn[j]->prefix, i+1, mdn[j]->IP[i]); system(str);
-            sprintf(str, "sed -i \"s/###%s_server_port_%0d###/%d/\" maxscale.cnf", mdn[j]->prefix, i+1, mdn[j]->port[i]); system(str);
+            sprintf(str, "sed -i \"s/###%s_server_IP_%0d###/%s/\" maxscale.cnf",
+                    mdn[j]->prefix, i+1, mdn[j]->IP[i]);
+            system(str);
+
+            sprintf(str, "sed -i \"s/###%s_server_port_%0d###/%d/\" maxscale.cnf",
+                    mdn[j]->prefix, i+1, mdn[j]->port[i]);
+            system(str);
         }
+
         mdn[j]->connect();
         execute_query(mdn[j]->nodes[0], (char *) "CREATE DATABASE IF NOT EXISTS test");
         mdn[j]->close_connections();
     }
 
-    sprintf(str, "sed -i \"s/###access_user###/%s/g\" maxscale.cnf", maxscale_access_user); system(str);
-    sprintf(str, "sed -i \"s|###access_homedir###|%s|g\" maxscale.cnf", maxscale_access_homedir);  system(str);
+    sprintf(str, "sed -i \"s/###access_user###/%s/g\" maxscale.cnf", maxscale_access_user);
+    system(str);
+
+    sprintf(str, "sed -i \"s|###access_homedir###|%s|g\" maxscale.cnf", maxscale_access_homedir);
+    system(str);
 
     if (repl->v51)
     {
         system("sed -i \"s/###repl51###/mysql51_replication=true/g\" maxscale.cnf");
     }
 
-    copy_to_maxscale((char *) "maxscale.cnf", (char *) "./");
+    copy_to_maxscale((char *) "maxscale.cnf", (char *) dest);
+}
+
+int TestConnections::init_maxscale()
+{
+    const char * template_name = get_template_name(test_name);
+    tprintf("Template is %s\n", template_name);
+
+    process_template(template_name, "./");
+
     ssh_maxscale_sh(true, "cp maxscale.cnf %s;rm -rf %s/certs;mkdir -m a+wrx %s/certs;", maxscale_cnf, maxscale_access_homedir, maxscale_access_homedir);
 
+    char str[4096];
     sprintf(str, "%s/ssl-cert/*", test_dir);
     copy_to_maxscale(str, (char *) "./certs/");
     sprintf(str, "cp %s/ssl-cert/* .", test_dir);
@@ -1059,7 +1073,7 @@ int TestConnections::copy_to_maxscale(char* src, char* dest)
 {
     char sys[strlen(src) + strlen(dest) + 1024];
 
-    sprintf(sys, "scp -i %s -o UserKnownHostsFile=/dev/null "
+    sprintf(sys, "scp -q -i %s -o UserKnownHostsFile=/dev/null "
             "-o StrictHostKeyChecking=no -o LogLevel=quiet %s %s@%s:%s",
             maxscale_keyfile, src, maxscale_access_user, maxscale_IP, dest);
 
@@ -1577,11 +1591,10 @@ bool TestConnections::test_bad_config(const char *config)
 {
     char src[PATH_MAX];
 
-    sprintf(src, "%s/cnf/maxscale.cnf.template.%s", test_dir, config);
-    copy_to_maxscale(src, (char*)"/etc/maxscale.cnf");
+    process_template(config, "/etc/maxscale.cnf");
 
     // Set the timeout to prevent hangs with configurations that work
-    set_timeout(30);
+    set_timeout(20);
 
-    return ssh_maxscale(true, "maxscale -d") == 0;
+    return ssh_maxscale_sh(true, "maxscale -U maxscale -lstdout &> /dev/null && sleep 1 && pkill -9 maxscale") == 0;
 }

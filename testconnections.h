@@ -670,6 +670,13 @@ public:
      * @return Always false, the test will time out if the loading is successful
      */
     bool test_bad_config(const char *config);
+
+    /**
+     * @brief Process a template configuration file
+     *
+     * @param dest Destination file name for actual configuration file
+     */
+    void process_template(const char *src, const char *dest = "/etc/maxscale.cnf");
 };
 
 /**

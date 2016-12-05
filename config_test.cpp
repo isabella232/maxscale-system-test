@@ -14,9 +14,6 @@ const char *bad_configs[] =
     "bug526",
     "bug479",
     "bug493",
-    "bug643",
-    "bug643_1",
-    "galera.bug681",
     "bad_ssl",
     "mxs710_bad_socket",
     "mxs711_two_ports",
@@ -30,6 +27,8 @@ int main(int argc, char **argv)
 {
     TestConnections *test = new TestConnections(argc, argv);
     int rval = 0;
+
+    test->stop_maxscale();
 
     for (int i = 0; bad_configs[i]; i++)
     {
