@@ -1573,12 +1573,15 @@ int TestConnections::revert_snapshot(char * snapshot_name)
     return system(str);
 }
 
-bool TestConnections::load_new_config(const char *config)
+bool TestConnections::test_bad_config(const char *config)
 {
     char src[PATH_MAX];
 
     sprintf(src, "%s/cnf/maxscale.cnf.template.%s", test_dir, config);
     copy_to_maxscale(src, (char*)"/etc/maxscale.cnf");
 
-    return ssh_maxscale(true, "sudo service maxscale restart") == 0;
+    // Set the timeout to prevent hangs with configurations that work
+    set_timeout(30);
+
+    return ssh_maxscale(true, "maxscale -d") == 0;
 }

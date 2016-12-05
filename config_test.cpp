@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     for (int i = 0; bad_configs[i]; i++)
     {
         printf("Testing %s...\n", bad_configs[i]);
-        if (test->load_new_config(bad_configs[i]))
+        if (test->test_bad_config(bad_configs[i]))
         {
             printf("FAILED\n");
             rval++;

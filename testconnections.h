@@ -665,11 +665,11 @@ public:
     int revert_snapshot(char * snapshot_name);
 
     /**
-     * @brief Load a new config and restart maxscale
+     * @brief Test a bad configuration
      * @param config Name of the config template
-     * @return True if configuration was successfully loaded
+     * @return Always false, the test will time out if the loading is successful
      */
-    bool load_new_config(const char *config);
+    bool test_bad_config(const char *config);
 };
 
 /**
