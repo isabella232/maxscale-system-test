@@ -121,14 +121,12 @@ add_test_executable(different_size_rwsplit.cpp different_size_rwsplit replicatio
 add_test_executable(encrypted_passwords.cpp encrypted_passwords replication LABELS maxscale LIGHT)
 add_test_executable(failover_mysqlmon.cpp failover_mysqlmon failover_mysqlmon LABELS mysqlmon)
 add_test_executable(fwf.cpp fwf fwf LABELS dbfwfilter)
-# Disabled for the time being
 add_test_executable(fwf2.cpp fwf2 fwf LABELS dbfwfilter)
 add_test_executable(fwf_actions.cpp fwf_actions fwf_action LABELS dbfwfilter)
 add_test_executable(fwf_logging.cpp fwf_logging fwf_logging LABELS dbfwfilter)
 add_test_executable(fwf_reload.cpp fwf_reload fwf LABELS dbfwfilter)
 add_test_executable(fwf_syntax.cpp fwf_syntax fwf_syntax LABELS dbfwfilter)
 add_test_executable(galera_priority.cpp galera_priority galera_priority LABELS galeramon LIGHT)
-# add_test_executable(gatekeeper.cpp gatekeeper gatekeeper LABELS gatekeeper)
 add_test_executable(kill_master.cpp kill_master replication LABELS readwritesplit LIGHT)
 add_test_executable(load_balancing.cpp load_balancing load LABELS readwritesplit LIGHT)
 add_test_executable(load_balancing_galera.cpp load_balancing_galera load_galera LABELS readwritesplit)
@@ -252,6 +250,9 @@ add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog
 
 # Disabled until test system supports RDS backends
 # add_test_executable(auroramon.cpp auroramon auroramon)
+
+# Disabled for the time being
+# add_test_executable(gatekeeper.cpp gatekeeper gatekeeper LABELS gatekeeper)
 
 configure_file(templates.h.in templates.h @ONLY)
 
