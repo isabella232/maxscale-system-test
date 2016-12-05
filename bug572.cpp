@@ -35,10 +35,7 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Trying GRANT for with bad IP: RWSplit\n");
     CreateDropBadUser(Test->conn_rwsplit, Test);
-    Test->tprintf("Trying GRANT for with bad IP: ReadConn slave\n");
-    CreateDropBadUser(Test->conn_slave, Test);
-    Test->tprintf("Trying GRANT for with bad IP: ReadConn master\n");
-    CreateDropBadUser(Test->conn_master, Test);
+
     Test->tprintf("Trying SELECT to check if Maxscale hangs\n");
     Test->try_query(Test->conn_rwsplit, (char *) "select * from mysql.user");
 
