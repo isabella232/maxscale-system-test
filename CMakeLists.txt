@@ -163,7 +163,7 @@ add_test_executable(mxs548_short_session_change_user.cpp mxs548_short_session_ch
 add_test_executable(mxs559_block_master.cpp mxs559_block_master mxs559 LABELS readwritesplit)
 add_test_executable(mxs564_big_dump.cpp mxs564_big_dump galera_mxs564 LABELS readwritesplit readconnroute)
 add_test_script(mxs585.py mxs585.py replication LABELS readwritesplit readconnroute UNSTABLE HEAVY)
-add_test_script(mxs598.py mxs598.py ssl LABELS MySQLProtocol)
+add_test_script(mxs598.py mxs598.py ssl LABELS MySQLProtocol UNSTABLE HEAVY)
 add_test_executable(mxs621_unreadable_cnf.cpp mxs621_unreadable_cnf replication LABELS maxscale)
 add_test_executable(mxs657_restart.cpp mxs657_restart replication LABELS maxscale HEAVY)
 add_test_executable(mxs657_restart_service.cpp mxs657_restart_service replication LABELS maxscale)
