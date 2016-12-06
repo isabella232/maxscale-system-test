@@ -25,7 +25,8 @@ int main(int argc, char *argv[])
     execute_query_silent(Test->conn_rwsplit, "DROP USER table_privilege");
     //execute_query(Test->conn_rwsplit, (char *) "CREATE USER table_privilege");
     Test->tprintf("Create user with only SELECT priviledge\n");
-    execute_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.t1 TO 'table_privilege'@'%%' IDENTIFIED BY 'pass'");
+    execute_query(Test->conn_rwsplit,
+                  (char *) "GRANT SELECT ON test.t1 TO 'table_privilege'@'%%' IDENTIFIED BY 'pass'");
     Test->tprintf("flush privileges\n");
     execute_query(Test->conn_rwsplit, (char *) "flush privileges"); // does it work with Maxscale?
     // should this sleep be removed?
@@ -38,13 +39,13 @@ int main(int argc, char *argv[])
     int i = 0;
     char err[512] = "";
     MYSQL *conn;
-    while( i < 10)
+    while (i < 10)
     {
-        conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test", (char *) "table_privilege", (char *) "pass", Test->ssl);
+        conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test", (char *) "table_privilege",
+                            (char *) "pass", Test->ssl);
 
         if (conn)
         {
-            mysql_close(conn);
             break;
         }
         else if (mysql_errno(conn) != 0)
@@ -59,14 +60,17 @@ int main(int argc, char *argv[])
     sleep(15);
     Test->set_timeout(20);
     Test->tprintf("Trying SELECT\n");
-    //Test->try_query(conn, (char *) "USE test");
+
     Test->try_query(conn, (char *) "SELECT * FROM t1");
+    mysql_close(conn);
+
     Test->set_timeout(20);
     Test->tprintf("DROP USER\n");
     Test->try_query(Test->conn_rwsplit, "DROP USER table_privilege");
     Test->try_query(Test->conn_rwsplit, "DROP TABLE t1");
 
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return (Test->global_result);
 }
 
