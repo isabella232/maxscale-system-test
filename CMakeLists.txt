@@ -170,7 +170,7 @@ add_test_executable(mxs657_restart_service.cpp mxs657_restart_service replicatio
 add_test_executable(mxs682_cyrillic.cpp mxs682_cyrillic replication LABELS maxscale LIGHT)
 add_test_script(mxs682_cyrillic_galera mxs682_cyrillic galera LABELS maxscale)
 add_test_executable(mxs716.cpp mxs716 replication LABELS MySQLAuth LIGHT)
-add_test_executable(mxs722.cpp mxs722 replication LABELS maxscale LIGHT)
+add_test_executable(mxs722.cpp mxs722 mxs722 LABELS maxscale LIGHT)
 add_test_executable(mxs729_maxadmin.cpp mxs729_maxadmin replication LABELS MaxAdminAuth LIGHT)
 add_test_script(mxs791.sh mxs791.sh replication LABELS UNSTABLE HEAVY)
 add_test_script(mxs791_galera.sh mxs791_galera.sh galera LABELS UNSTABLE HEAVY)
