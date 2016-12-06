@@ -1591,10 +1591,11 @@ bool TestConnections::test_bad_config(const char *config)
 {
     char src[PATH_MAX];
 
-    process_template(config, "/etc/maxscale.cnf");
+    process_template(config, "./");
 
     // Set the timeout to prevent hangs with configurations that work
     set_timeout(20);
 
-    return ssh_maxscale_sh(true, "maxscale -U maxscale -lstdout &> /dev/null && sleep 1 && pkill -9 maxscale") == 0;
+    return ssh_maxscale_sh(true, "cp maxscale.cnf /etc/maxscale.cnf; service maxscale stop; "
+                           "maxscale -U maxscale -lstdout &> /dev/null && sleep 1 && pkill -9 maxscale") == 0;
 }
