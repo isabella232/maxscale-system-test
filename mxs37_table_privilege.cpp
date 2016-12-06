@@ -34,11 +34,27 @@ int main(int argc, char *argv[])
     sleep(5);
     Test->set_timeout(20);
     Test->tprintf("Trying to connect using this user\n");
-    MYSQL * conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test", (char *) "table_privilege", (char *) "pass", Test->ssl);
-    if (mysql_errno(conn) != 0)
+
+    int i = 0;
+    char err[512] = "";
+
+    while( i < 10)
     {
-        Test->add_result(1, "%s\n", mysql_error(conn));
+        MYSQL * conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test", (char *) "table_privilege", (char *) "pass", Test->ssl);
+
+        if (conn)
+        {
+            mysql_close(conn);
+            break;
+        }
+        else if (mysql_errno(conn) != 0)
+        {
+            strcpy(err, mysql_error(conn));
+        }
     }
+
+    Test->add_result(i == 10, "Failed to connect: %s", err);
+
     Test->stop_timeout();
     sleep(15);
     Test->set_timeout(20);

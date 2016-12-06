@@ -18,6 +18,10 @@ copy_logs(true), use_snapshots(false), verbose(false)
     galera = new Mariadb_nodes((char *)"galera");
     repl   = new Mariadb_nodes((char *)"node");
 
+    // Increse the max_connecions on all nodes
+    repl->execute_query_all_nodes("SET GLOBAL max_connections=1000");
+    galera->execute_query_all_nodes("SET GLOBAL max_connections=1000");
+
     test_name = basename(argv[0]);
 
     rwsplit_port = 4006;
