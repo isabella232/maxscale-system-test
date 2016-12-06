@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
 
     int i = 0;
     char err[512] = "";
-
+    MYSQL *conn;
     while( i < 10)
     {
-        MYSQL * conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test", (char *) "table_privilege", (char *) "pass", Test->ssl);
+        conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test", (char *) "table_privilege", (char *) "pass", Test->ssl);
 
         if (conn)
         {
