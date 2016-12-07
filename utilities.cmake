@@ -13,13 +13,13 @@ endfunction()
 #
 # Example: to add simple_test.cpp with maxscale.cnf.template.simple_config to the
 # test set, the function should be called as follows:
-#     add_test_executable(simple_test.cpp simple_test simple_config)
+#     add_test_executable(simple_test.cpp simple_test simple_config LABELS some_label)
 function(add_test_executable source name template)
   file(APPEND templates "${name} ${template}\n")
   add_template(${name} ${template})
   add_executable(${name} ${source})
   target_link_libraries(${name} testcore)
-  add_test(${name} ${name})
+  add_test(${name} ${name} ${name})
 
   list(REMOVE_AT ARGV 0 1 2 3)
 
@@ -43,7 +43,7 @@ endfunction()
 function(add_test_script name script template labels)
   file(APPEND templates "${name} ${template}\n")
   add_template(${name} ${template})
-  add_test(${name} ${script})
+  add_test(${name} ${script} ${name})
 
   list(REMOVE_AT ARGV 0 1 2)
 

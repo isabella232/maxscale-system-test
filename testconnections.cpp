@@ -133,6 +133,11 @@ copy_logs(true), use_snapshots(false), verbose(false)
         }
     }
 
+    if (optind < argc)
+    {
+        test_name = argv[optind];
+    }
+
     repl->verbose = verbose;
     galera->verbose = verbose;
 
