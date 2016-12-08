@@ -160,7 +160,6 @@ int main(int argc, char *argv[])
     for (i=0; i<100; i++) {
         Test->set_timeout(20);
         Test->try_query(Test->conn_rwsplit, "select * from t1;");
-        sleep(1);
         get_global_status_allnodes(&new_selects[0], &new_inserts[0], Test->repl, silent);
         Test->add_result(check_com_select(&new_selects[0], &new_inserts[0], &selects[0], &inserts[0], Test->repl), "Wrong check_com_select result\n");
     }
