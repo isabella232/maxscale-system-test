@@ -199,7 +199,7 @@ int execute_query(MYSQL *conn, const char *format, ...)
  */
 int execute_query_from_file(MYSQL *conn, FILE *file)
 {
-    int rc = 0;
+    int rc = -1;
     char buf[4096];
 
     if (fgets(buf, sizeof(buf), file))

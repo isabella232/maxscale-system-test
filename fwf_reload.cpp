@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
             {
                 Test->set_timeout(180);
 
-                if (execute_query_from_file(Test->conn_rwsplit, file))
+                if (execute_query_from_file(Test->conn_rwsplit, file) == 1)
                 {
                     Test->tprintf("Query should succeed: %s\n", sql);
                     local_result++;
@@ -74,8 +74,10 @@ int main(int argc, char *argv[])
             {
                 Test->set_timeout(180);
 
-                if (execute_query_from_file(Test->conn_rwsplit, file) == 0 ||
-                    mysql_errno(Test->conn_rwsplit) != 1141)
+                int rc = execute_query_from_file(Test->conn_rwsplit, file);
+
+                if (rc != -1 && (rc == 0 ||
+                    mysql_errno(Test->conn_rwsplit) != 1141))
                 {
                     Test->tprintf("Query should fail: %s\n", sql);
                     local_result++;
@@ -96,8 +98,8 @@ int main(int argc, char *argv[])
     Test->tprintf("Trying rules with syntax error\n");
     copy_rules(Test, (char *) "rules_syntax_error", rules_dir);
 
-    int rc = Test->ssh_maxscale(true, "maxadmin call command dbfwfilter rules/reload \"Database Firewall\"");
-    Test->add_result(rc == 0, "Reloading rules should fail with syntax errors");
+    char *output = Test->ssh_maxscale_output(true, "maxadmin call command dbfwfilter rules/reload \"Database Firewall\"");
+    Test->add_result(strcasestr(output, "Failed") == NULL, "Reloading rules should fail with syntax errors");
 
     Test->check_maxscale_processes(1);
     Test->copy_all_logs();
