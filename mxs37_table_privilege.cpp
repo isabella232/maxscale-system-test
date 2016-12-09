@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
     // should this sleep be removed?
     Test->tprintf("Sleep\n");
     Test->stop_timeout();
+    Test->repl->sync_slaves();
     sleep(5);
     Test->set_timeout(20);
     Test->tprintf("Trying to connect using this user\n");
