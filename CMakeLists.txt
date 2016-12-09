@@ -14,6 +14,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11")
 set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-std=c++11")
 
+enable_testing()
+
 # utilities.cmake contains all helper functions and extra tools
 include(utilities.cmake)
 
@@ -262,5 +264,4 @@ add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog
 
 configure_file(templates.h.in templates.h @ONLY)
 
-enable_testing()
 include(CTest)

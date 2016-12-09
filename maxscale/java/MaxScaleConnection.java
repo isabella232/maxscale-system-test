@@ -58,7 +58,7 @@ public class MaxScaleConnection {
         conn_slave = conn;
     }
 
-    public MaxScaleConnection() throws SQLException, Exception {
+    public MaxScaleConnection(String options) throws SQLException, Exception {
         String s = System.getenv("smoke");
         smoke_test = (s != null && s.compareTo("yes") == 0);
 
@@ -78,13 +78,17 @@ public class MaxScaleConnection {
 
         Class.forName("org.mariadb.jdbc.Driver");
         conn_rw = DriverManager.getConnection(
-                "jdbc:mariadb://" + ip + ":" + READWRITESPLIT_PORT + "/test", user, password);
+                "jdbc:mariadb://" + ip + ":" + READWRITESPLIT_PORT + "/test?" + options, user, password);
 
         conn_master = DriverManager.getConnection(
-                "jdbc:mariadb://" + ip + ":" + READCONNROUTE_MASTER_PORT + "/test", user, password);
+                "jdbc:mariadb://" + ip + ":" + READCONNROUTE_MASTER_PORT + "/test?" + options, user, password);
 
         conn_slave = DriverManager.getConnection(
-                "jdbc:mariadb://" + ip + ":" + READCONNROUTE_SLAVE_PORT + "/test", user, password);
+                "jdbc:mariadb://" + ip + ":" + READCONNROUTE_SLAVE_PORT + "/test?" + options, user, password);
+    }
+
+    public MaxScaleConnection() throws SQLException, Exception {
+        this("");
     }
 
     public boolean isSmokeTest() {
