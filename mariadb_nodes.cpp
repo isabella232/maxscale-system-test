@@ -509,6 +509,16 @@ int Mariadb_nodes::check_replication(int master)
                         res1 = 1;
                     }
                 }
+
+                if (find_field(conn, (char *) "SHOW SLAVE STATUS;", (char *) "Slave_SQL_Running", str) != 0) {
+                    printf("Slave_SQL_Running is not found in SHOW SLAVE STATUS results\n"); fflush(stdout);
+                    res1 = 1;
+                } else {
+                    if (strcmp(str, "Yes") !=0 ) {
+                        printf("Slave_SQL_Running is not Yes\n"); fflush(stdout);
+                        res1 = 1;
+                    }
+                }
             }
         }
         mysql_close(conn);
