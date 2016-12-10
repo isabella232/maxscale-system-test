@@ -519,9 +519,6 @@ int Mariadb_nodes::check_replication(int master)
 int Mariadb_nodes::check_galera()
 {
     int res1 = 0;
-    char str[1024];
-    int cluster_size;
-    MYSQL *conn;
 
     if (verbose)
     {
@@ -529,27 +526,39 @@ int Mariadb_nodes::check_galera()
         fflush(stdout);
     }
 
+    if (this->nodes[0] == NULL)
+    {
+        this->connect();
+    }
+
     res1 = get_versions();
 
-    for (int i = 0; i < N; i++) {
-        conn = open_conn(port[i], IP[i], "maxskysql", "skysql", ssl);
-        if (mysql_errno(conn) != 0) {
-            printf("Error connectiong node %d with maxskysql user\n", i); fflush(stdout);
+    for (int i = 0; i < N; i++)
+    {
+        MYSQL *conn = open_conn(port[i], IP[i], user_name, password, ssl);
+        if (conn == NULL || mysql_errno(conn) != 0)
+        {
+            printf("Error connectiong node %d: %s\n", i, mysql_error(conn));
             res1 = 1;
         }
-        if (conn != NULL ) {mysql_close(conn);}
-        conn = open_conn(port[i], IP[i], user_name, password, ssl);
-        if (mysql_errno(conn) != 0) {
-            printf("Error connectiong node %d\n", i);
-            res1 = 1;
-        } else {
-            if (find_field(conn, (char *) "SHOW STATUS WHERE Variable_name='wsrep_cluster_size';", (char *) "Value", str) != 0) {
-                printf("wsrep_cluster_size is not found in SHOW STATUS LIKE 'wsrep%%' results\n"); fflush(stdout);
+        else
+        {
+            char str[1024] = "";
+
+            if (find_field(conn, (char *) "SHOW STATUS WHERE Variable_name='wsrep_cluster_size';", (char *) "Value", str) != 0)
+            {
+                printf("wsrep_cluster_size is not found in SHOW STATUS LIKE 'wsrep%%' results\n");
+                fflush(stdout);
                 res1 = 1;
-            } else {
-                sscanf(str, "%d",  &cluster_size);
-                if (cluster_size != N ) {
-                    printf("wsrep_cluster_size is not %d\n", N); fflush(stdout);
+            }
+            else
+            {
+                int cluster_size;
+                sscanf(str, "%d", &cluster_size);
+                if (cluster_size != N)
+                {
+                    printf("wsrep_cluster_size is not %d, it is %d\n", N, cluster_size);
+                    fflush(stdout);
                     res1 = 1;
                 }
             }
@@ -557,7 +566,7 @@ int Mariadb_nodes::check_galera()
         mysql_close(conn);
     }
 
-    return(res1);
+    return res1;
 }
 
 int Mariadb_nodes::wait_all_vm()
@@ -730,7 +739,10 @@ int Mariadb_nodes::get_versions()
     v51 = false;
 
     for (int i = 0; i < N; i++) {
-        local_result += find_field(nodes[i], (char *) "SELECT @@version", (char *) "@@version", version[i]);
+        if ((local_result += find_field(nodes[i], (char *) "SELECT @@version", (char *) "@@version", version[i])))
+        {
+            printf("Failed to get version: %s\n", mysql_error(nodes[i]));
+        }
         strcpy(version_number[i], version[i]);
         str = strchr(version_number[i], '-');
         if (str != NULL) {str[0] = 0;}
