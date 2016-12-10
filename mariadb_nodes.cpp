@@ -891,11 +891,11 @@ static void wait_until_pos(MYSQL *mysql, int filenum, int pos)
         {
             MYSQL_ROW row = mysql_fetch_row(res);
 
-            if (row && row[5] && row[6])
+            if (row && row[6] && row[21])
             {
                 char *file_suffix = strchr(row[5], '.') + 1;
                 slave_filenum = atoi(file_suffix);
-                slave_pos = atoi(row[6]);
+                slave_pos = atoi(row[21]);
             }
             mysql_free_result(res);
         }

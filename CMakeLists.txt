@@ -9,10 +9,10 @@ cmake_minimum_required(VERSION 2.8)
 include_directories("/usr/include/mysql/")
 set(CTEST_BUILD_NAME "${BUILDNAME}")
 
-set(CMAKE_CXX_FLAGS "-std=c++11")
-set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11")
-set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-std=c++11")
+set(CMAKE_CXX_FLAGS "-std=c++11 -ggdb")
+set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11 -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11 -ggdb")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-std=c++11 -ggdb")
 
 enable_testing()
 
