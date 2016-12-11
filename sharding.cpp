@@ -124,8 +124,16 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Unable to parse query", false);
     Test->check_log_err((char *) "query string allocation failed", false);
 
-    sleep(10);
+    /** Cleanup */
+    for (i = 0; i < Test->repl->N; i++) {
+        for (j = 0; j < Test->repl->N; j++) {
+            Test->set_timeout(30);
+            execute_query(Test->repl->nodes[i], "DROP USER 'user%d'@'%%';", j);
+            execute_query(Test->repl->nodes[i], "DROP DATABASE IF EXISTS shard_db");
+        }
 
+        execute_query(Test->repl->nodes[i], "DROP DATABASE IF EXISTS shard_db%d", i);
+    }
 
     Test->copy_all_logs(); return(Test->global_result);
 }

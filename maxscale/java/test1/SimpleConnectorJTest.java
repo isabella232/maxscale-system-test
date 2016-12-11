@@ -45,6 +45,8 @@ public class SimpleConnectorJTest {
                         + " LIMIT " + test_rows / 10);
             }
 
+            maxscale.query(maxscale.getConnMaster(), "DROP DATABASE IF EXISTS " + DATABASE_NAME);
+
         } catch (Exception ex) {
             error = true;
             System.out.println("Error: " + ex.getMessage());

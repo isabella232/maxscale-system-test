@@ -20,11 +20,11 @@ int main(int argc, char *argv[])
     Test->set_timeout(20);
 
     Test->repl->connect();
-    Test->repl->execute_query_all_nodes("DROP USER 'user'@'%%'");
     Test->connect_maxscale();
 
     Test->tprintf("Creating user 'user' \n");
 
+    execute_query_silent(Test->conn_rwsplit, "DROP USER 'user'@'%%'");
     Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%%' identified by 'pass2'");
     Test->try_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%%'");
     Test->try_query(Test->conn_rwsplit, (char *) "FLUSH PRIVILEGES;");
@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
     Test->add_result(mysql_change_user(Test->conn_slave, (char *) "user", (char *) "pass2", (char *) "test") , "changing user failed \n");
 
     Test->try_query(Test->conn_rwsplit, (char *) "DROP USER user@'%%';");
+    execute_query_silent(Test->conn_rwsplit, "DROP TABLE test.t1");
 
     Test->close_maxscale_connections();
     Test->copy_all_logs(); return(Test->global_result);
