@@ -141,9 +141,7 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, "DROP TABLE IF EXISTS t1;");
     Test->try_query(Test->conn_rwsplit, "create table t1 (x1 int);");
 
-    printf("Sleeping 5 seconds to let replcation happens\n");
-    fflush(stdout);
-    sleep(5);
+    Test->repl->sync_slaves();
 
     printf("Trying SELECT * FROM t1\n");
     fflush(stdout);
@@ -162,7 +160,7 @@ int main(int argc, char *argv[])
                      "Wrong check_com_insert result\n");
 
     Test->stop_timeout();
-    sleep(2);
+    Test->repl->sync_slaves();
 
     printf("Trying SELECT * FROM t1\n");
     fflush(stdout);
@@ -181,7 +179,7 @@ int main(int argc, char *argv[])
                      "Wrong check_com_insert result\n");
 
     Test->stop_timeout();
-    sleep(5);
+    Test->repl->sync_slaves();
     Test->tprintf("Doing 100 selects\n");
 
     get_global_status_allnodes(&selects[0], &inserts[0], Test->repl, silent);
@@ -193,7 +191,7 @@ int main(int argc, char *argv[])
     }
 
     Test->stop_timeout();
-    sleep(5);
+    Test->repl->sync_slaves();
     get_global_status_allnodes(&new_selects[0], &new_inserts[0], Test->repl, silent);
     Test->add_result(check_com_select(&new_selects[0], &new_inserts[0], &selects[0], &inserts[0], Test->repl, 100),
                      "Wrong check_com_select result\n");
@@ -211,7 +209,7 @@ int main(int argc, char *argv[])
     }
 
     Test->stop_timeout();
-    sleep(5);
+    Test->repl->sync_slaves();
     get_global_status_allnodes(&new_selects[0], &new_inserts[0], Test->repl, silent);
     Test->add_result(check_com_insert(&new_selects[0], &new_inserts[0], &selects[0], &inserts[0], Test->repl, 100),
                      "Wrong check_com_insert result\n");

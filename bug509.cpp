@@ -73,10 +73,8 @@ int main(int argc, char *argv[])
     Test->try_query(Test->galera->nodes[2], (char *) "insert into t2 (x) values (9);");
     Test->try_query(Test->galera->nodes[2], (char *) "insert into t2 (x) values (10);");
 
-    Test->tprintf("Sleeping to let replication happen\n");
     Test->stop_timeout();
-    sleep(10);
-
+    Test->repl->sync_slaves();
 
     Test->tprintf("Trying \n");
     char last_insert_id1[1024];

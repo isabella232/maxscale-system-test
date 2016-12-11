@@ -1364,36 +1364,31 @@ void *log_copy_thread( void *ptr )
 
 int TestConnections::insert_select(int N)
 {
-    int global_result = 0;
+    int result = 0;
+
     tprintf("Create t1\n");
     set_timeout(30);
     create_t1(conn_rwsplit);
+
     tprintf("Insert data into t1\n");
-    set_timeout(30);
+    set_timeout(N * 16 + 30);
     insert_into_t1(conn_rwsplit, N);
+    stop_timeout();
+    repl->sync_slaves();
 
     tprintf("SELECT: rwsplitter\n");
     set_timeout(30);
-    global_result += select_from_t1(conn_rwsplit, N);
+    result += select_from_t1(conn_rwsplit, N);
+
     tprintf("SELECT: master\n");
     set_timeout(30);
-    global_result += select_from_t1(conn_master, N);
+    result += select_from_t1(conn_master, N);
+
     tprintf("SELECT: slave\n");
     set_timeout(30);
-    global_result += select_from_t1(conn_slave, N);
-    tprintf("Sleeping to let replication happen\n");
-    stop_timeout();
-    if (smoke) {
-        sleep(30);
-    } else {
-        sleep(180);
-    }
-    for (int i=0; i<repl->N; i++) {
-        tprintf("SELECT: directly from node %d\n", i);
-        set_timeout(30);
-        global_result += select_from_t1(repl->nodes[i], N);
-    }
-    return(global_result);
+    result += select_from_t1(conn_slave, N);
+
+    return result;
 }
 
 int TestConnections::use_db(char * db)
@@ -1418,48 +1413,68 @@ int TestConnections::use_db(char * db)
 
 int TestConnections::check_t1_table(bool presence, char * db)
 {
-    char * expected;
-    char * actual;
-    set_timeout(30);
-    int gr = global_result;
-    if (presence) {
-        expected = (char *) "";
-        actual   = (char *) "NOT";
-    } else {
-        expected = (char *) "NOT";
-        actual   = (char *) "";
-    }
+    const char *expected = presence ? "" : "NOT";
+    const char *actual = presence ? "NOT" : "";
+    int start_result = global_result;
 
     add_result(use_db(db), "use db failed\n");
+    stop_timeout();
+    repl->sync_slaves();
 
     tprintf("Checking: table 't1' should %s be found in '%s' database\n", expected, db);
-    if ( ((check_if_t1_exists(conn_rwsplit) >  0) && (!presence) ) ||
-         ((check_if_t1_exists(conn_rwsplit) == 0) && (presence) ))
-    {add_result(1, "Table t1 is %s found in '%s' database using RWSplit\n", actual, db); } else {
+    set_timeout(30);
+    int exists = check_if_t1_exists(conn_rwsplit);
+
+    if (exists == presence)
+    {
         tprintf("RWSplit: ok\n");
     }
-    if ( ((check_if_t1_exists(conn_master) >  0) && (!presence) ) ||
-         ((check_if_t1_exists(conn_master) == 0) && (presence) ))
-    {add_result(1, "Table t1 is %s found in '%s' database using Readconnrouter with router option master\n", actual, db); } else {
+    else
+    {
+        add_result(1, "Table t1 is %s found in '%s' database using RWSplit\n", actual, db);
+    }
+
+    set_timeout(30);
+    exists = check_if_t1_exists(conn_master);
+
+    if (exists == presence)
+    {
         tprintf("ReadConn master: ok\n");
     }
-    if ( ((check_if_t1_exists(conn_slave) >  0) && (!presence) ) ||
-         ((check_if_t1_exists(conn_slave) == 0) && (presence) ))
-    {add_result(1, "Table t1 is %s found in '%s' database using Readconnrouter with router option slave\n", actual, db); } else {
+    else
+    {
+        add_result(1, "Table t1 is %s found in '%s' database using Readconnrouter with router option master\n", actual, db);
+    }
+
+    set_timeout(30);
+    exists = check_if_t1_exists(conn_slave);
+
+    if (exists == presence)
+    {
         tprintf("ReadConn slave: ok\n");
     }
-    tprintf("Sleeping to let replication happen\n");
-    stop_timeout();
-    sleep(60);
+    else
+    {
+        add_result(1, "Table t1 is %s found in '%s' database using Readconnrouter with router option slave\n", actual, db);
+    }
+
+
     for (int i=0; i< repl->N; i++) {
         set_timeout(30);
-        if ( ((check_if_t1_exists(repl->nodes[i]) >  0) && (!presence) ) ||
-             ((check_if_t1_exists(repl->nodes[i]) == 0) && (presence) ))
-        {add_result(1, "Table t1 is %s found in '%s' database using direct connect to node %d\n", actual, db, i); } else {
+        exists = check_if_t1_exists(repl->nodes[i]);
+        if (exists == presence)
+        {
             tprintf("Node %d: ok\n", i);
         }
+        else
+        {
+            add_result(1, "Table t1 is %s found in '%s' database using direct connect to node %d\n", actual, db, i);
+        }
     }
-    return(global_result-gr);
+
+    stop_timeout();
+
+    return global_result - start_result;
 }
 
 int TestConnections::try_query(MYSQL *conn, const char *sql)

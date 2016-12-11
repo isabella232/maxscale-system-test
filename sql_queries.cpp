@@ -58,14 +58,13 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Starting test\n");
     for (i = 0; i < iterations; i++) {
+
         Test->tprintf("Connection to backend\n");
-        Test->set_timeout(5);
         Test->repl->connect();
         Test->tprintf("Connection to Maxscale\n");
-        if (Test->connect_maxscale() !=0 ) {
-            Test->tprintf("Error connecting to MaxScale\n");
-            Test->copy_all_logs();
-            exit(1);
+        if (Test->connect_maxscale() != 0) {
+            Test->add_result(1, "Error connecting to MaxScale");
+            break;
         }
 
         Test->tprintf("Filling t1 with data\n");
@@ -75,15 +74,11 @@ int main(int argc, char *argv[])
         Test->try_query(Test->conn_rwsplit, "DROP TABLE t1");
         Test->try_query(Test->conn_rwsplit, "DROP DATABASE IF EXISTS test1;");
         Test->try_query(Test->conn_rwsplit, "CREATE DATABASE test1;");
-        Test->stop_timeout();
-        sleep(5);
 
         Test->tprintf("Testing with database 'test1'\n");
         Test->add_result(Test->use_db( (char *) "test1"), "use_db failed\n");
         Test->add_result(Test->insert_select(N), "insert-select check failed\n");
-        Test->stop_timeout();
 
-        Test->set_timeout(5);
         Test->add_result(Test->check_t1_table(false, (char *) "test"), "t1 is found in 'test'\n");
         Test->add_result(Test->check_t1_table(true, (char *) "test1"), "t1 is not found in 'test1'\n");
 
@@ -93,11 +88,10 @@ int main(int argc, char *argv[])
             execute_query(Test->routers[j], "DROP DATABASE I EXISTS test1;");
             execute_query(Test->routers[j], "CREATE TABLE ");
         }
+
         // close connections
         Test->close_maxscale_connections();
         Test->repl->close_connections();
-        Test->stop_timeout();
-
     }
 
     Test->stop_timeout();
@@ -105,8 +99,8 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Unable to parse query", false);
     Test->check_log_err((char *) "query string allocation failed", false);
 
-    Test->set_timeout(5);
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

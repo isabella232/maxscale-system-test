@@ -81,9 +81,8 @@ int main(int argc, char *argv[])
     Test->tprintf("Insert data into t1\n");
     Test->set_timeout(60);
     insert_into_t1(Test->conn_rwsplit, N);
-    Test->tprintf("Sleeping to let replication happen\n");
     Test->stop_timeout();
-    sleep(30);
+    Test->repl->sync_slaves();
     Test->set_timeout(200);
 
     sprintf(str, "%s rm -f /tmp/t*.csv; %s chmod 777 /tmp", Test->repl->access_sudo[0], Test->repl->access_sudo[0]);
@@ -112,18 +111,17 @@ int main(int argc, char *argv[])
         Test->set_timeout(100);
         Test->tprintf("Dropping t1 \n");
         Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE t1;");
-        Test->tprintf("Sleeping to let replication happen\n");
         Test->stop_timeout();
-        sleep(50);
+        Test->repl->sync_slaves();
+
         Test->set_timeout(100);
         Test->tprintf("Create t1\n");
         create_t1(Test->conn_rwsplit);
         Test->tprintf("Loading data to t1 from file\n");
         Test->try_query(srv[i], (char *) "LOAD DATA LOCAL INFILE 't1.csv' INTO TABLE t1;");
-
-        Test->tprintf("Sleeping to let replication happen\n");
         Test->stop_timeout();
-        sleep(50);
+        Test->repl->sync_slaves();
+
         Test->set_timeout(100);
         Test->tprintf("SELECT: rwsplitter\n");
         Test->add_result(select_from_t1(Test->conn_rwsplit, N), "Wrong data in 't1'");
@@ -131,7 +129,6 @@ int main(int argc, char *argv[])
         Test->add_result(select_from_t1(Test->conn_master, N), "Wrong data in 't1'");
         Test->tprintf("SELECT: slave\n");
         Test->add_result(select_from_t1(Test->conn_slave, N), "Wrong data in 't1'");
-        Test->tprintf("Sleeping to let replication happen\n");
     }
 
     Test->repl->close_connections();
