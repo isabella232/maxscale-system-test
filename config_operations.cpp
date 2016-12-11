@@ -1,7 +1,6 @@
 #include "config_operations.h"
 
 // The configuration should use these names for the services, listeners and monitors
-#define MONITOR_NAME "mysql-monitor"
 #define SERVICE_NAME1 "rwsplit-service"
 #define SERVICE_NAME2 "read-connection-router-master"
 #define SERVICE_NAME3 "read-connection-router-slave"
@@ -34,21 +33,39 @@ void Config::add_server(int num)
 {
     test_->tprintf("Adding the servers");
     test_->set_timeout(120);
-    test_->ssh_maxscale(true, "maxadmin add server server%d " MONITOR_NAME, num);
     test_->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME1, num);
     test_->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME2, num);
     test_->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME3, num);
+
+    for (auto& a: created_monitors_)
+    {
+        test_->ssh_maxscale(true, "maxadmin add server server%d %s", num, a.c_str());
+    }
+
     test_->stop_timeout();
 }
 
 void Config::remove_server(int num)
 {
     test_->set_timeout(120);
-    test_->ssh_maxscale(true, "maxadmin remove server server%d " MONITOR_NAME, num);
     test_->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME1, num);
     test_->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME2, num);
     test_->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME3, num);
+
+    for (auto& a: created_monitors_)
+    {
+        test_->ssh_maxscale(true, "maxadmin remove server server%d %s", num, a.c_str());
+    }
+
     test_->stop_timeout();
+}
+
+void Config::add_created_servers(const char *object)
+{
+    for (auto a: created_servers_)
+    {
+        test_->ssh_maxscale(true, "maxadmin add server server%d %s", a, object);
+    }
 }
 
 void Config::destroy_server(int num)
@@ -83,42 +100,45 @@ void Config::alter_server(int num, const char *key, float value)
     test_->ssh_maxscale(true, "maxadmin alter server server%d %s=%f", num, key, value);
 }
 
-void Config::create_monitor(const char *module, int interval)
+void Config::create_monitor(const char *name, const char *module, int interval)
 {
     test_->set_timeout(120);
-    test_->ssh_maxscale(true, "maxadmin create monitor " MONITOR_NAME " %s", module);
-    alter_monitor("monitor_interval", interval);
-    alter_monitor("user", test_->maxscale_user);
-    alter_monitor("password", test_->maxscale_password);
-    test_->ssh_maxscale(true, "maxadmin restart monitor " MONITOR_NAME);
+    test_->ssh_maxscale(true, "maxadmin create monitor %s %s", name, module);
+    alter_monitor(name, "monitor_interval", interval);
+    alter_monitor(name, "user", test_->maxscale_user);
+    alter_monitor(name, "password", test_->maxscale_password);
+    test_->ssh_maxscale(true, "maxadmin restart monitor %s", name);
     test_->stop_timeout();
+
+    created_monitors_.insert(std::string(name));
 }
 
-void Config::alter_monitor(const char *key, const char *value)
+void Config::alter_monitor(const char* name, const char *key, const char *value)
 {
-    test_->ssh_maxscale(true, "maxadmin alter monitor " MONITOR_NAME " %s=%s", key, value);
+    test_->ssh_maxscale(true, "maxadmin alter monitor %s %s=%s", name, key, value);
 }
 
-void Config::alter_monitor(const char *key, int value)
+void Config::alter_monitor(const char* name, const char *key, int value)
 {
-    test_->ssh_maxscale(true, "maxadmin alter monitor " MONITOR_NAME " %s=%d", key, value);
+    test_->ssh_maxscale(true, "maxadmin alter monitor %s %s=%d", name, key, value);
 }
 
-void Config::alter_monitor(const char *key, float value)
+void Config::alter_monitor(const char* name, const char *key, float value)
 {
-    test_->ssh_maxscale(true, "maxadmin alter monitor " MONITOR_NAME " %s=%f", key, value);
+    test_->ssh_maxscale(true, "maxadmin alter monitor %s %s=%f", name, key, value);
 }
 
-void Config::start_monitor()
+void Config::start_monitor(const char *name)
 {
-    test_->ssh_maxscale(true, "maxadmin restart monitor " MONITOR_NAME);
+    test_->ssh_maxscale(true, "maxadmin restart monitor %s", name);
 }
 
-void Config::destroy_monitor()
+void Config::destroy_monitor(const char *name)
 {
     test_->set_timeout(120);
-    test_->ssh_maxscale(true, "maxadmin destroy monitor " MONITOR_NAME);
+    test_->ssh_maxscale(true, "maxadmin destroy monitor %s", name);
     test_->stop_timeout();
+    created_monitors_.erase(std::string(name));
 }
 
 void Config::create_listener(Config::Service service)
