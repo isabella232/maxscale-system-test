@@ -110,14 +110,22 @@ int main(int argc, char *argv[])
         find_field(Test->conn_rwsplit, sel1, "last_insert_id()", &last_insert_id1[0]);
         find_field(Test->conn_rwsplit, str1,"id", &id_str[0]);
 
-        if (strcmp(last_insert_id1, id_str) !=0 ) {
-            Test->tprintf("replication is not happened yet, sleeping 5 seconds\n");
-            sleep(5);
+        int n = 0;
+
+        while (strcmp(last_insert_id1, id_str) != 0 && n < 5)
+        {
+            Test->tprintf("Replication is lagging");
+            sleep(1);
             find_field(Test->conn_rwsplit, str1, "id", &id_str[0]);
-            Test->add_result(strcmp(last_insert_id1, id_str), "last_insert_id is not equil to id even after waiting 5 seconds\n");
+            n++;
         }
 
-        Test->tprintf("last_insert_id is %s, id is %s\n", last_insert_id1, id_str);
+        Test->add_result(strcmp(last_insert_id1, id_str), "last_insert_id is not equal to id even after waiting 5 seconds");
+
+        if (i % 10 == 0)
+        {
+            Test->tprintf("last_insert_id is %s, id is %s", last_insert_id1, id_str);
+        }
     }
 
     Test->check_maxscale_alive();
