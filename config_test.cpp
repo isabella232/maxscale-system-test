@@ -15,11 +15,12 @@ const char *bad_configs[] =
     "bug479",
     "bug493",
     "bad_ssl",
-    "mxs710_bad_socket",
-    "mxs711_two_ports",
+// Disabled for 2.0
+//    "mxs710_bad_socket",
+//    "mxs711_two_ports",
     "mxs720_line_with_no_equal",
     "mxs720_wierd_line",
-    "mxs799",
+//    "mxs799",
     NULL
 };
 
