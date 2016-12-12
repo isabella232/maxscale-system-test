@@ -143,7 +143,11 @@ copy_logs(true), use_snapshots(false), verbose(false)
         snapshot_reverted = revert_snapshot((char *) "clean");
     }
 
-    if ((!use_snapshots) || (!snapshot_reverted))
+    if (snapshot_reverted)
+    {
+        tprintf("Using VM snapshot");
+    }
+    else
     {
         // Truncate log files
         repl->truncate_mariadb_logs();
@@ -362,7 +366,6 @@ int TestConnections::read_env()
     env = getenv("threads"); if ((env != NULL)) {sscanf(env, "%d", &threads);} else {threads = 4;}
 
     env = getenv("use_snapshots"); if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {use_snapshots = true;} else {use_snapshots = false;}
-tprintf("use_snapshots: %s\n", env);
     env = getenv("take_snapshot_command"); if (env != NULL) {sprintf(take_snapshot_command, "%s", env);} else {sprintf(take_snapshot_command, "exit 1");}
     env = getenv("revert_snapshot_command"); if (env != NULL) {sprintf(revert_snapshot_command, "%s", env);} else {sprintf(revert_snapshot_command, "exit 1");}
 }
