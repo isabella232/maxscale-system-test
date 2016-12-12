@@ -38,8 +38,6 @@ INSERT INTO t1 (x1, fl) VALUES (0, 3), (1, 3), ...(65535, 3);
  * - check if Maxscale is alive
  */
 
-
-
 #include <iostream>
 #include "testconnections.h"
 #include "sql_t1.h"
@@ -74,6 +72,7 @@ int main(int argc, char *argv[])
         Test->try_query(Test->conn_rwsplit, "DROP TABLE t1");
         Test->try_query(Test->conn_rwsplit, "DROP DATABASE IF EXISTS test1;");
         Test->try_query(Test->conn_rwsplit, "CREATE DATABASE test1;");
+        Test->repl->sync_slaves();
 
         Test->tprintf("Testing with database 'test1'\n");
         Test->add_result(Test->use_db( (char *) "test1"), "use_db failed\n");
