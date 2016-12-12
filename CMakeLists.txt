@@ -189,7 +189,7 @@ add_test_executable(mxs922_bad_server.cpp mxs922_bad_server mxs922 LABELS maxsca
 add_test_executable(mxs922_monitor.cpp mxs922_monitor mxs922_base LABELS maxscale)
 add_test_executable(mxs922_double_listener.cpp mxs922_double_listener mxs922_base LABELS maxscale)
 add_test_executable(mxs922_restart.cpp mxs922_restart mxs922 LABELS maxscale)
-add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_scaling LABELS maxscale)
+add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_base LABELS maxscale)
 add_test_executable(mxs951_utfmb4_galera.cpp mxs951_utfmb4_galera galera LABELS galeramon)
 add_test_executable(mxs957.cpp mxs957 replication LABELS readwritesplit)
 add_test_executable(mxs1045.cpp mxs1045 mxs1045 LABELS maxscale)

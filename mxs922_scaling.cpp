@@ -33,6 +33,9 @@ int main(int argc, char *argv[])
     TestConnections *test = new TestConnections(argc, argv);
     Config config(test);
 
+    config.create_all_listeners();
+    config.create_monitor("mysql-monitor", "mysqlmon", 500);
+
     int num_threads = 5;
     int iterations = test->smoke ? 5 : 25;
     pthread_t threads[num_threads];
@@ -80,7 +83,7 @@ int main(int argc, char *argv[])
         config.add_server(i);
     }
 
-    sleep(5);
+    sleep(1);
 
     test->check_maxscale_alive();
     test->check_log_err("Fatal", false);
