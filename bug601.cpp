@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     Test->repl->execute_query_all_nodes((char *) "set global max_connections=1000;");
 
     Test->connect_maxscale();
-    Test->tprintf("Creating one user 'user@%'");
+    Test->tprintf("Creating one user 'user@%%'");
     execute_query_silent(Test->conn_rwsplit, (char *) "DROP USER user@'%'");
     Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%%' identified by 'pass2'");
     Test->try_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%%';");

@@ -80,6 +80,8 @@ int main(int argc, char *argv[])
         config.add_server(i);
     }
 
+    sleep(5);
+
     test->check_maxscale_alive();
     test->check_log_err("Fatal", false);
     test->copy_all_logs();
