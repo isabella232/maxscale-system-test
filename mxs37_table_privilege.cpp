@@ -33,14 +33,41 @@ int main(int argc, char *argv[])
     Test->tprintf("Trying to connect using this user\n");
     Test->set_timeout(20);
 
-    MYSQL *conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test",
-                               (char *) "table_privilege", (char *) "pass", Test->ssl);
-    Test->add_result(mysql_errno(conn) != 0, "Failed to connect: %s", mysql_error(conn));
+    bool error = true;
 
-    Test->set_timeout(20);
-    Test->tprintf("Trying SELECT\n");
-    Test->try_query(conn, (char *) "SELECT * FROM t1");
-    mysql_close(conn);
+    /**
+     * Since this test is executed on both Galera and Master-Slave clusters, we
+     * need to try to connect multiple times as Galera user creation doesn't
+     * seem to apply instantly on all nodes. For Master-Slave clusters, the
+     * first connection should be OK and if it's not, it's highly likely that
+     * others will also fail.
+     */
+    for (int i = 0; i < 5; i++)
+    {
+        MYSQL *conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test",
+                                   (char *) "table_privilege", (char *) "pass", Test->ssl);
+        if (mysql_errno(conn) != 0)
+        {
+            Test->tprintf("Failed to connect: %s", mysql_error(conn));
+        }
+        else
+        {
+            Test->set_timeout(20);
+            Test->tprintf("Trying SELECT\n");
+            if (execute_query(conn, (char *) "SELECT * FROM t1") == 0)
+            {
+                error = false;
+                break;
+            }
+        }
+        mysql_close(conn);
+        sleep(1);
+    }
+
+    if (error)
+    {
+        Test->add_result(1, "Failed to connect.");
+    }
 
     Test->set_timeout(20);
     execute_query_silent(Test->conn_rwsplit, "DROP USER 'table_privilege'@'%'");

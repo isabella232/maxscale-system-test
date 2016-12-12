@@ -82,9 +82,8 @@ int main(int argc, char *argv[])
     Test->tprintf("Doing INSERTs\n");  fflush(stdout);
     Test->try_query(Test->conn_rwsplit, (char *) "insert into t2 (x) values (1);");
 
-    Test->tprintf("Sleeping to let replication happen\n");
     Test->stop_timeout();
-    sleep(10);
+    Test->repl->sync_slaves();
 
     Test->set_timeout(20);
     Test->tprintf("Trying \n");
