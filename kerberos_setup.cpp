@@ -42,20 +42,25 @@ int main(int argc, char *argv[])
     Test->repl->ssh_node(0, (char *) "iptables -I INPUT -p tcp --dport 749 -j ACCEPT", true);
     Test->repl->ssh_node(0, (char *) "iptables -I INPUT -p tcp --dport 88 -j ACCEPT", true);
 
+    Test->tprintf("Starting Kerberos\n");
     Test->repl->ssh_node(0, (char *) "service krb5kdc start", true);
     Test->repl->ssh_node(0, (char *) "service kadmin start", true);
 
+    Test->tprintf("Creating principals\n");
     Test->repl->ssh_node(0, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey mariadb/maxscale.test\"", true);
     Test->repl->ssh_node(0, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey usr1\"", true);
 
-    Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd mariadb/maxscale.test\"", true);
-    Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd usr1\"", true);
+    Test->tprintf("Creating keytab file\n");
+    Test->repl->ssh_node(0, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd mariadb/maxscale.test\"", true);
+    Test->repl->ssh_node(0, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd usr1\"", true);
 
+    Test->tprintf("Making keytab file readable for all\n");
     Test->repl->ssh_node(0, (char *) "chmod a+r /etc/krb5.keytab;", true);
-
+//Test->repl->verbose=true;
+    Test->tprintf("Coping keytab file from node_000\n");
     Test->repl->copy_from_node((char *) "/etc/krb5.keytab", (char *) ".", 0);
 
-
+    Test->tprintf("Coping keytab and .cnf files to all nodes and executing knit for all nodes\n");
     for (i = 0; i < Test->repl->N; i++)
     {
 //        Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey mariadb/maxscale.test\"", true);
@@ -69,12 +74,20 @@ int main(int argc, char *argv[])
         
         Test->repl->copy_to_node((char *) "krb5.keytab", (char *) "~/", i);
         Test->repl->ssh_node(i, (char *) "cp ~/krb5.keytab /etc/", true);
+
+        Test->repl->ssh_node(i, (char *) "kinit mariadb/maxscale.test@MAXSCALE.TEST -k -t /etc/krb5.keytab", false);
     }
 
+    Test->tprintf("Installing gssapi plugin to all nodes\n");
     Test->repl->connect();
     Test->repl->execute_query_all_nodes((char *) "INSTALL SONAME 'auth_gssapi'");
     Test->repl->close_connections();
 
+    Test->tprintf("Creating usr1 user\n");
+    Test->repl->connect();
+    Test->try_query(Test->repl->nodes[0], (char *) "CREATE USER usr1 IDENTIFIED VIA gssapi AS 'mariadb/maxscale.test@MAXSCALE.TEST'");
+    Test->try_query(Test->repl->nodes[0], (char *) "grant all privileges on  *.* to 'usr1'");
+    Test->repl->close_connections();
 
     Test->copy_all_logs(); return(Test->global_result);
 }
