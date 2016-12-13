@@ -1280,6 +1280,9 @@ int TestConnections::tprintf(const char *format, ...)
     {
         printf("\n");
     }
+
+    fflush(stdout);
+    fflush(stderr);
 }
 
 void *timeout_thread( void *ptr )
