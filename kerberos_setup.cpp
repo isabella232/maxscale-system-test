@@ -19,9 +19,9 @@ int main(int argc, char *argv[])
     f = fopen("hosts", "wt");
     for (i = 0; i < Test->repl->N; i++)
     {
-        fprintf(f, "%s node_%03d.maxscale.test\" /etc/hosts", Test->repl->IP[i], i);
+        fprintf(f, "%s node_%03d.maxscale.test\n", Test->repl->IP[i], i);
     }
-    fprintf(f, "%s maxscale.maxscale.test\" /etc/hosts", Test->maxscale_IP);
+    fprintf(f, "%s maxscale.maxscale.test\n", Test->maxscale_IP);
     fclose(f);
 
     Test->tprintf("Copying 'hosts' and krb5.conf files to all nodes, installing kerberos client and MariaDB plugins\n");
