@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
     Test->connect_maxscale();
     Test->tprintf("Preparing test");
-    Test->set_timeout(120);
+    Test->set_timeout(180);
     execute_query(Test->conn_rwsplit, "DROP DATABASE IF EXISTS db1");
     execute_query(Test->conn_rwsplit, "DROP DATABASE IF EXISTS db2");
     execute_query(Test->conn_rwsplit, "DROP DATABASE IF EXISTS db3");
@@ -56,12 +56,12 @@ int main(int argc, char *argv[])
     execute_query(Test->conn_rwsplit, "INSERT INTO db2.t1  VALUES (1)");
     execute_query(Test->conn_rwsplit, "INSERT INTO db3.t1  VALUES (1)");
     execute_query(Test->conn_rwsplit, "INSERT INTO db4.t1  VALUES (1)");
-    Test->repl->sync_slaves();
-    Test->repl->execute_query_all_nodes("CREATE USER 'table_privilege'@'%%' IDENTIFIED BY 'pass'");
-    Test->repl->execute_query_all_nodes("GRANT SELECT ON db1.* TO 'table_privilege'@'%%'");
-    Test->repl->execute_query_all_nodes("GRANT SELECT ON db2.* TO 'table_privilege'@'%%'");
-    Test->repl->execute_query_all_nodes("GRANT SELECT ON db3.t1 TO 'table_privilege'@'%%'");
-    Test->repl->execute_query_all_nodes("GRANT SELECT ON db4.t1 TO 'table_privilege'@'%%'");
+    execute_query(Test->conn_rwsplit, "CREATE USER 'table_privilege'@'%%' IDENTIFIED BY 'pass'");
+    execute_query(Test->conn_rwsplit, "GRANT SELECT ON db1.* TO 'table_privilege'@'%%'");
+    execute_query(Test->conn_rwsplit, "GRANT SELECT ON db2.* TO 'table_privilege'@'%%'");
+    execute_query(Test->conn_rwsplit, "GRANT SELECT ON db3.t1 TO 'table_privilege'@'%%'");
+    execute_query(Test->conn_rwsplit, "GRANT SELECT ON db4.t1 TO 'table_privilege'@'%%'");
+
     Test->repl->sync_slaves();
 
     run_test(Test, "db1");
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     execute_query(Test->conn_rwsplit, "DROP DATABASE db2");
     execute_query(Test->conn_rwsplit, "DROP DATABASE db3");
     execute_query(Test->conn_rwsplit, "DROP DATABASE db4");
-    Test->repl->execute_query_all_nodes("DROP USER 'table_privilege'@'%%'");
+    execute_query(Test->conn_rwsplit, "DROP USER 'table_privilege'@'%%'");
 
     Test->copy_all_logs();
     return Test->global_result;

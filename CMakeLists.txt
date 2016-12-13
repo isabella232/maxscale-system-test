@@ -9,10 +9,12 @@ cmake_minimum_required(VERSION 2.8)
 include_directories("/usr/include/mysql/")
 set(CTEST_BUILD_NAME "${BUILDNAME}")
 
-set(CMAKE_CXX_FLAGS "-std=c++11")
-set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11")
-set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-std=c++11")
+set(CMAKE_CXX_FLAGS "-std=c++11 -ggdb")
+set(CMAKE_CXX_FLAGS_DEBUG "-std=c++11 -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11 -ggdb")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-std=c++11 -ggdb")
+
+enable_testing()
 
 # utilities.cmake contains all helper functions and extra tools
 include(utilities.cmake)
@@ -185,8 +187,9 @@ set_tests_properties(mxs827_write_timeout PROPERTIES WILL_FAIL TRUE)
 add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery mxs874 LABELS readwritesplit)
 add_test_executable(mxs922_bad_server.cpp mxs922_bad_server mxs922 LABELS maxscale)
 add_test_executable(mxs922_monitor.cpp mxs922_monitor mxs922_base LABELS maxscale)
+add_test_executable(mxs922_double_listener.cpp mxs922_double_listener mxs922_base LABELS maxscale)
 add_test_executable(mxs922_restart.cpp mxs922_restart mxs922 LABELS maxscale)
-add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_scaling LABELS maxscale)
+add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_base LABELS maxscale)
 add_test_executable(mxs951_utfmb4_galera.cpp mxs951_utfmb4_galera galera LABELS galeramon)
 add_test_executable(mxs957.cpp mxs957 replication LABELS readwritesplit)
 add_test_executable(mxs1045.cpp mxs1045 mxs1045 LABELS maxscale)
@@ -264,5 +267,4 @@ add_test_executable_notest(kerberos_setup.cpp kerberos_setup replication LABELS 
 
 configure_file(templates.h.in templates.h @ONLY)
 
-enable_testing()
 include(CTest)

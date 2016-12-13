@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 
     printf("sleeping 20 seconds to let replication happen\n");  fflush(stdout);
     Test->set_timeout(50);
-    sleep(20);
+    Test->repl->sync_slaves();
 
     Test->set_timeout(5);
     MYSQL * conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, (char *) "user", (char *) "pass1", Test->ssl);

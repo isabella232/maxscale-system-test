@@ -18,10 +18,6 @@ copy_logs(true), use_snapshots(false), verbose(false)
     galera = new Mariadb_nodes((char *)"galera");
     repl   = new Mariadb_nodes((char *)"node");
 
-    // Increse the max_connecions on all nodes
-    repl->execute_query_all_nodes("SET GLOBAL max_connections=1000");
-    galera->execute_query_all_nodes("SET GLOBAL max_connections=1000");
-
     test_name = basename(argv[0]);
 
     rwsplit_port = 4006;
@@ -147,7 +143,11 @@ copy_logs(true), use_snapshots(false), verbose(false)
         snapshot_reverted = revert_snapshot((char *) "clean");
     }
 
-    if ((!use_snapshots) || (!snapshot_reverted))
+    if (snapshot_reverted)
+    {
+        tprintf("Using VM snapshot");
+    }
+    else
     {
         // Truncate log files
         repl->truncate_mariadb_logs();
@@ -157,12 +157,18 @@ copy_logs(true), use_snapshots(false), verbose(false)
         repl->flush_hosts();
         galera->flush_hosts();
 
+        // Close any open connections
+        repl->close_active_connections();
+        galera->close_active_connections();
+
         if (!no_nodes_check)
         {
             if (repl->check_replication(0) || galera->check_galera())
             {
+                stop_maxscale();
                 repl->unblock_all_nodes();
                 galera->unblock_all_nodes();
+
                 // Make sure the VMs are OK
                 if (repl->check_and_restart_nodes_vm() ||
                     galera->check_and_restart_nodes_vm())
@@ -177,10 +183,19 @@ copy_logs(true), use_snapshots(false), verbose(false)
 
                 while (attempts > 0)
                 {
+                    repl->close_connections();
+                    galera->close_connections();
+
                     int err = 0;
                     if (repl->check_replication(0))
                     {
                         tprintf("Backend broken! Restarting replication nodes\n");
+
+                        if (attempts != 2)
+                        {
+                            repl->stop_nodes();
+                        }
+
                         repl->start_replication();
                         err++;
                     }
@@ -188,6 +203,12 @@ copy_logs(true), use_snapshots(false), verbose(false)
                     if (galera->check_galera())
                     {
                         tprintf("Backend broken! Restarting Galera nodes\n");
+
+                        if (attempts != 2)
+                        {
+                            galera->stop_nodes();
+                        }
+
                         galera->start_galera();
                         err++;
                     }
@@ -205,6 +226,10 @@ copy_logs(true), use_snapshots(false), verbose(false)
                     tprintf("****** BACKEND IS STILL BROKEN! Exiting\n *****");
                     exit(200);
                 }
+
+                // Flush hosts
+                repl->flush_hosts();
+                galera->flush_hosts();
             }
         }
     }
@@ -341,7 +366,6 @@ int TestConnections::read_env()
     env = getenv("threads"); if ((env != NULL)) {sscanf(env, "%d", &threads);} else {threads = 4;}
 
     env = getenv("use_snapshots"); if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {use_snapshots = true;} else {use_snapshots = false;}
-tprintf("use_snapshots: %s\n", env);
     env = getenv("take_snapshot_command"); if (env != NULL) {sprintf(take_snapshot_command, "%s", env);} else {sprintf(take_snapshot_command, "exit 1");}
     env = getenv("revert_snapshot_command"); if (env != NULL) {sprintf(revert_snapshot_command, "%s", env);} else {sprintf(revert_snapshot_command, "exit 1");}
 }
@@ -1123,53 +1147,71 @@ int TestConnections::create_connections(int conn_N, bool rwsplit_flag, bool mast
     tprintf("Opening %d connections to each router\n", conn_N);
     for (i = 0; i < conn_N; i++) {
         set_timeout(20);
-        tprintf("opening %d-connection: ", i+1);
+
+        if (verbose)
+            tprintf("opening %d-connection: ", i+1);
+
         if (rwsplit_flag)
         {
-            printf("RWSplit \t");
+            if (verbose)
+                printf("RWSplit \t");
+
             rwsplit_conn[i] = open_rwsplit_connection();
             if (!rwsplit_conn[i]) { local_result++; tprintf("RWSplit connection failed\n");}
         }
         if (master_flag)
         {
-            printf("ReadConn master \t");
+            if (verbose)
+                printf("ReadConn master \t");
+
             master_conn[i] = open_readconn_master_connection();
             if ( mysql_errno(master_conn[i]) != 0 ) { local_result++; tprintf("ReadConn master connection failed, error: %s\n", mysql_error(master_conn[i]) );}
         }
         if (slave_flag)
         {
-            printf("ReadConn slave \t");
+            if (verbose)
+                printf("ReadConn slave \t");
+
             slave_conn[i] = open_readconn_slave_connection();
             if ( mysql_errno(slave_conn[i]) != 0 )  { local_result++; tprintf("ReadConn slave connection failed, error: %s\n", mysql_error(slave_conn[i]) );}
         }
         if (galera_flag)
         {
-            printf("galera \n");
+            if (verbose)
+                printf("Galera \n");
+
             galera_conn[i] = open_conn(4016, maxscale_IP, maxscale_user, maxscale_password, ssl);
             if ( mysql_errno(galera_conn[i]) != 0)  { local_result++; tprintf("Galera connection failed, error: %s\n", mysql_error(galera_conn[i]));}
         }
     }
     for (i = 0; i < conn_N; i++) {
         set_timeout(20);
-        tprintf("Trying query against %d-connection: ", i+1);
+
+        if (verbose)
+            tprintf("Trying query against %d-connection: ", i+1);
+
         if (rwsplit_flag)
         {
-            tprintf("RWSplit \t");
+            if (verbose)
+                tprintf("RWSplit \t");
             local_result += execute_query(rwsplit_conn[i], "select 1;");
         }
         if (master_flag)
         {
-            tprintf("ReadConn master \t");
+            if (verbose)
+                tprintf("ReadConn master \t");
             local_result += execute_query(master_conn[i], "select 1;");
         }
         if (slave_flag)
         {
-            tprintf("ReadConn slave \t");
+            if (verbose)
+                tprintf("ReadConn slave \t");
             local_result += execute_query(slave_conn[i], "select 1;");
         }
         if (galera_flag)
         {
-            tprintf("galera \n");
+            if (verbose)
+                tprintf("Galera \n");
             local_result += execute_query(galera_conn[i], "select 1;");
         }
     }
@@ -1178,13 +1220,17 @@ int TestConnections::create_connections(int conn_N, bool rwsplit_flag, bool mast
     tprintf("Closing all connections\n");
     for (i=0; i<conn_N; i++) {
         set_timeout(20);
-        if (rwsplit_flag) {mysql_close(rwsplit_conn[i]);}
-        if (master_flag)  {mysql_close(master_conn[i]);}
-        if (slave_flag)   {mysql_close(slave_conn[i]);}
-        if (galera_flag)  {mysql_close(galera_conn[i]);}
+        if (rwsplit_flag)
+            mysql_close(rwsplit_conn[i]);
+        if (master_flag)
+            mysql_close(master_conn[i]);
+        if (slave_flag)
+            mysql_close(slave_conn[i]);
+        if (galera_flag)
+            mysql_close(galera_conn[i]);
     }
     stop_timeout();
-    //sleep(5);
+
     return(local_result);
 }
 
@@ -1321,36 +1367,31 @@ void *log_copy_thread( void *ptr )
 
 int TestConnections::insert_select(int N)
 {
-    int global_result = 0;
+    int result = 0;
+
     tprintf("Create t1\n");
     set_timeout(30);
     create_t1(conn_rwsplit);
+
     tprintf("Insert data into t1\n");
-    set_timeout(30);
+    set_timeout(N * 16 + 30);
     insert_into_t1(conn_rwsplit, N);
+    stop_timeout();
+    repl->sync_slaves();
 
     tprintf("SELECT: rwsplitter\n");
     set_timeout(30);
-    global_result += select_from_t1(conn_rwsplit, N);
+    result += select_from_t1(conn_rwsplit, N);
+
     tprintf("SELECT: master\n");
     set_timeout(30);
-    global_result += select_from_t1(conn_master, N);
+    result += select_from_t1(conn_master, N);
+
     tprintf("SELECT: slave\n");
     set_timeout(30);
-    global_result += select_from_t1(conn_slave, N);
-    tprintf("Sleeping to let replication happen\n");
-    stop_timeout();
-    if (smoke) {
-        sleep(30);
-    } else {
-        sleep(180);
-    }
-    for (int i=0; i<repl->N; i++) {
-        tprintf("SELECT: directly from node %d\n", i);
-        set_timeout(30);
-        global_result += select_from_t1(repl->nodes[i], N);
-    }
-    return(global_result);
+    result += select_from_t1(conn_slave, N);
+
+    return result;
 }
 
 int TestConnections::use_db(char * db)
@@ -1375,48 +1416,68 @@ int TestConnections::use_db(char * db)
 
 int TestConnections::check_t1_table(bool presence, char * db)
 {
-    char * expected;
-    char * actual;
-    set_timeout(30);
-    int gr = global_result;
-    if (presence) {
-        expected = (char *) "";
-        actual   = (char *) "NOT";
-    } else {
-        expected = (char *) "NOT";
-        actual   = (char *) "";
-    }
+    const char *expected = presence ? "" : "NOT";
+    const char *actual = presence ? "NOT" : "";
+    int start_result = global_result;
 
     add_result(use_db(db), "use db failed\n");
+    stop_timeout();
+    repl->sync_slaves();
 
     tprintf("Checking: table 't1' should %s be found in '%s' database\n", expected, db);
-    if ( ((check_if_t1_exists(conn_rwsplit) >  0) && (!presence) ) ||
-         ((check_if_t1_exists(conn_rwsplit) == 0) && (presence) ))
-    {add_result(1, "Table t1 is %s found in '%s' database using RWSplit\n", actual, db); } else {
+    set_timeout(30);
+    int exists = check_if_t1_exists(conn_rwsplit);
+
+    if (exists == presence)
+    {
         tprintf("RWSplit: ok\n");
     }
-    if ( ((check_if_t1_exists(conn_master) >  0) && (!presence) ) ||
-         ((check_if_t1_exists(conn_master) == 0) && (presence) ))
-    {add_result(1, "Table t1 is %s found in '%s' database using Readconnrouter with router option master\n", actual, db); } else {
+    else
+    {
+        add_result(1, "Table t1 is %s found in '%s' database using RWSplit\n", actual, db);
+    }
+
+    set_timeout(30);
+    exists = check_if_t1_exists(conn_master);
+
+    if (exists == presence)
+    {
         tprintf("ReadConn master: ok\n");
     }
-    if ( ((check_if_t1_exists(conn_slave) >  0) && (!presence) ) ||
-         ((check_if_t1_exists(conn_slave) == 0) && (presence) ))
-    {add_result(1, "Table t1 is %s found in '%s' database using Readconnrouter with router option slave\n", actual, db); } else {
+    else
+    {
+        add_result(1, "Table t1 is %s found in '%s' database using Readconnrouter with router option master\n", actual, db);
+    }
+
+    set_timeout(30);
+    exists = check_if_t1_exists(conn_slave);
+
+    if (exists == presence)
+    {
         tprintf("ReadConn slave: ok\n");
     }
-    tprintf("Sleeping to let replication happen\n");
-    stop_timeout();
-    sleep(60);
+    else
+    {
+        add_result(1, "Table t1 is %s found in '%s' database using Readconnrouter with router option slave\n", actual, db);
+    }
+
+
     for (int i=0; i< repl->N; i++) {
         set_timeout(30);
-        if ( ((check_if_t1_exists(repl->nodes[i]) >  0) && (!presence) ) ||
-             ((check_if_t1_exists(repl->nodes[i]) == 0) && (presence) ))
-        {add_result(1, "Table t1 is %s found in '%s' database using direct connect to node %d\n", actual, db, i); } else {
+        exists = check_if_t1_exists(repl->nodes[i]);
+        if (exists == presence)
+        {
             tprintf("Node %d: ok\n", i);
         }
+        else
+        {
+            add_result(1, "Table t1 is %s found in '%s' database using direct connect to node %d\n", actual, db, i);
+        }
     }
-    return(global_result-gr);
+
+    stop_timeout();
+
+    return global_result - start_result;
 }
 
 int TestConnections::try_query(MYSQL *conn, const char *sql)

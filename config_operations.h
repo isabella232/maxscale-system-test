@@ -1,6 +1,7 @@
 #pragma once
 
 #include "testconnections.h"
+#include <string>
 #include <set>
 
 class Config
@@ -25,6 +26,13 @@ class Config
      * @param num Backend number
      */
     void add_server(int num);
+
+    /**
+     * Add all created servers to an object
+     *
+     * @param object Object to add servers to
+     */
+    void add_created_servers(const char *object);
 
     /**
      * Remove a server
@@ -62,26 +70,26 @@ class Config
      * @param type The name of the monitor module to use
      * @param interval Monitoring interval
      */
-    void create_monitor(const char *module, int interval = 1000);
+    void create_monitor(const char *name, const char *module, int interval = 1000);
 
     /**
      * Start the created monitor
      */
-    void start_monitor();
+    void start_monitor(const char *name);
 
     /**
      * Alter a monitor
      * @param key Key to alter
      * @oaram value Value for @c key, empty string for no value
      */
-    void alter_monitor(const char *key, const char *value);
-    void alter_monitor(const char *key, int value);
-    void alter_monitor(const char *key, float value);
+    void alter_monitor(const char *name, const char *key, const char *value);
+    void alter_monitor(const char *name, const char *key, int value);
+    void alter_monitor(const char *name, const char *key, float value);
 
     /**
      * Destroy the monitor
      */
-    void destroy_monitor();
+    void destroy_monitor(const char *name);
 
     /**
      * Create a listener
@@ -110,4 +118,5 @@ class Config
     private:
     TestConnections *test_;
     std::set<int> created_servers_;
+    std::set<std::string> created_monitors_;
 };

@@ -73,9 +73,8 @@ int main(int argc, char *argv[])
     Test->try_query(Test->galera->nodes[2], (char *) "insert into t2 (x) values (9);");
     Test->try_query(Test->galera->nodes[2], (char *) "insert into t2 (x) values (10);");
 
-    Test->tprintf("Sleeping to let replication happen\n");
-    sleep(10);
-
+    Test->stop_timeout();
+    Test->repl->sync_slaves();
 
     Test->tprintf("Trying \n");
     char last_insert_id1[1024];
@@ -100,36 +99,37 @@ int main(int argc, char *argv[])
 
     char id_str[1024];
     char str1[1024];
-    int iterations = 500;
-    if (Test->smoke) {iterations = 200;}
+    int iterations = 150;
 
     for (int i = 100; i < iterations; i++) {
         Test->set_timeout(50);
-        sprintf(str1, "insert into t2 (x) values (%d);", i);
-        Test->try_query(Test->conn_rwsplit, str1);
+        Test->add_result(execute_query(Test->conn_rwsplit, "insert into t2 (x) values (%d);", i), "Query failed");
+
         sprintf(str1, "select * from t2 where x=%d;", i);
-        find_field(
-                    Test->conn_rwsplit, sel1,
-                    "last_insert_id()", &last_insert_id1[0]);
-        find_field(
-                    Test->conn_rwsplit, str1,
-                    "id", &id_str[0]);
-        Test->tprintf("last_insert_id is %s, id is %s\n", last_insert_id1, id_str);
-        if (strcmp(last_insert_id1, id_str) !=0 ) {
-            Test->tprintf("replication is not happened yet, sleeping 5 seconds\n");
-            sleep(5);
-            find_field(
-                        Test->conn_rwsplit, str1,
-                        "id", &id_str[0]);
-            Test->tprintf("id after 5 seconds sleep is %s\n", id_str);
-            Test->add_result(strcmp(last_insert_id1, id_str), "last_insert_id is not equil to id even after waiting 5 seconds\n");
+
+        find_field(Test->conn_rwsplit, sel1, "last_insert_id()", &last_insert_id1[0]);
+        find_field(Test->conn_rwsplit, str1,"id", &id_str[0]);
+
+        int n = 0;
+
+        while (strcmp(last_insert_id1, id_str) != 0 && n < 5)
+        {
+            Test->tprintf("Replication is lagging");
+            sleep(1);
+            find_field(Test->conn_rwsplit, str1, "id", &id_str[0]);
+            n++;
+        }
+
+        Test->add_result(strcmp(last_insert_id1, id_str), "last_insert_id is not equal to id even after waiting 5 seconds");
+
+        if (i % 10 == 0)
+        {
+            Test->tprintf("last_insert_id is %s, id is %s", last_insert_id1, id_str);
         }
     }
 
-    Test->close_maxscale_connections();
-    Test->galera->close_connections();
-
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

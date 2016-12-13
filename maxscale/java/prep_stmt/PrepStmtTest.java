@@ -17,9 +17,9 @@ public class PrepStmtTest {
     public static final String DATABASE_NAME = "test";
     public static final String TABLE_NAME = "t1";
 
-    public static final int THREADS = 10;
-    public static final int ITERATIONS_NORMAL = 1000;
-    public static final int ITERATIONS_SMOKE = 100;
+    public static final int THREADS = 5;
+    public static final int ITERATIONS_NORMAL = 100;
+    public static final int ITERATIONS_SMOKE = 50;
     public static int test_iter = ITERATIONS_NORMAL;
 
     public static final String INSERT_SQL = "INSERT INTO " + DATABASE_NAME + "." + TABLE_NAME + " VALUES (NULL, ?)";
@@ -36,9 +36,7 @@ public class PrepStmtTest {
             MaxScaleConfiguration config = new MaxScaleConfiguration("java_prep_stmt");
             MaxScaleConnection maxscale = new MaxScaleConnection();
 
-            if (maxscale.isSmokeTest()) {
-                test_iter = ITERATIONS_SMOKE;
-            }
+            test_iter = ITERATIONS_SMOKE;
 
             // Prepare test database
             System.out.println("Creating databases and tables..");
