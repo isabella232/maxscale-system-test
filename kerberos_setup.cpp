@@ -46,18 +46,29 @@ int main(int argc, char *argv[])
     Test->repl->ssh_node(0, (char *) "service kadmin start", true);
 
     Test->repl->ssh_node(0, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey mariadb/maxscale.test\"", true);
+    Test->repl->ssh_node(0, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey usr1\"", true);
+
+    Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd mariadb/maxscale.test\"", true);
+    Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd usr1\"", true);
+
+    Test->repl->ssh_node(0, (char *) "chmod a+r /etc/krb5.keytab;", true);
+
+    Test->repl->copy_from_node((char *) "/etc/krb5.keytab", (char *) ".", 0);
 
 
     for (i = 0; i < Test->repl->N; i++)
     {
 //        Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey mariadb/maxscale.test\"", true);
-        Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd mariadb/maxscale.test\"", true);
+//        Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd mariadb/maxscale.test\"", true);
 
-        Test->repl->ssh_node(i, (char *) "chmod a+r /etc/krb5.keytab;", true);
+//        Test->repl->ssh_node(i, (char *) "chmod a+r /etc/krb5.keytab;", true);
 
         sprintf(str, "%s/kerb.cnf", Test->test_dir);
         Test->repl->copy_to_node(str, (char *) "~/", i);
         Test->repl->ssh_node(i, (char *) "cp ~/kerb.cnf /etc/my.cnf.d/", true);
+        
+        Test->repl->copy_to_node((char *) "krb5.keytab", (char *) "~/", i);
+        Test->repl->ssh_node(i, (char *) "cp ~/krb5.keytab /etc/", true);
     }
 
     Test->repl->connect();
