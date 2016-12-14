@@ -57,8 +57,13 @@ char * cdc_com(TestConnections * Test)
     remote->sin_port = htons(4001);
 
     if(connect(sock, (struct sockaddr *)remote, sizeof(struct sockaddr)) < 0){
-        Test->add_result(1, "Could not connect\n");
-        return NULL;
+        /** Try again in 5 seconds */
+        sleep(5);
+
+        if(connect(sock, (struct sockaddr *)remote, sizeof(struct sockaddr)) < 0){
+            Test->add_result(1, "Could not connect\n");
+            return NULL;
+        }
     }
 
     get = cdc_auth_srt((char *) "skysql", (char *) "skysql");
