@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
     Test->ssh_maxscale(true, (char *) "chmod a+r /etc/krb5.keytab;");
 
     Test->ssh_maxscale(false, (char *) "kinit mariadb/maxscale.test@MAXSCALE.TEST -k -t /etc/krb5.keytab");
+    Test->ssh_maxscale(true, (char *) "su maxscale --login -s /bin/sh -c \"kinit mariadb/maxscale.test@MAXSCALE.TEST -k -t /etc/krb5.keytab\"");
 
     Test->tprintf("Coping keytab file from Maxscale node\n");
     Test->copy_from_maxscale((char *) "/etc/krb5.keytab", (char *) ".");

@@ -389,7 +389,7 @@ const char * get_template_name(char * test_name)
 printf("test name is %s\n", test_name);
     while (cnf_templates[i].test_name && strcmp(cnf_templates[i].test_name, test_name) != 0)
     {
-//printf("%s\n", cnf_templates[i].test_name) ;
+printf("%s\n", cnf_templates[i].test_name) ;
         i++;
     }
 
