@@ -247,6 +247,8 @@ add_test_executable(setup_binlog.cpp setup_binlog setup_binlog LABELS binlogrout
 add_test_executable(setup_binlog_crc_32.cpp setup_binlog_crc_32 setup_binlog LABELS binlogrouter)
 add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog LABELS binlogrouter LIGHT)
 
+add_test_executable_notest(delete_rds.cpp delete_rds replication LABELS EXTERN)
+
 # enable after fixing MXS-419
 # add_test_executable(mxs419_lots_of_connections.cpp mxs419_lots_of_connections replication)
 
