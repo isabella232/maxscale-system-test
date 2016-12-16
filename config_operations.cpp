@@ -182,3 +182,16 @@ void Config::reset()
         }
     }
 }
+
+bool Config::check_server_count(int expected)
+{
+    bool rval = true;
+
+    if (test_->ssh_maxscale_sh(true, "test \"`maxadmin list servers|grep 'server[0-9]'|wc -l`\" == \"%d\"", expected))
+    {
+        test_->add_result(1, "Number of servers is not %d.", expected);
+        rval = false;
+    }
+
+    return rval;
+}

@@ -186,6 +186,7 @@ set_tests_properties(mxs827_write_timeout PROPERTIES WILL_FAIL TRUE)
 
 add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery mxs874 LABELS readwritesplit)
 add_test_executable(mxs922_bad_server.cpp mxs922_bad_server mxs922 LABELS maxscale)
+add_test_executable(mxs922_server.cpp mxs922_server mxs922_base LABELS maxscale)
 add_test_executable(mxs922_monitor.cpp mxs922_monitor mxs922_base LABELS maxscale)
 add_test_executable(mxs922_double_listener.cpp mxs922_double_listener mxs922_base LABELS maxscale)
 add_test_executable(mxs922_restart.cpp mxs922_restart mxs922 LABELS maxscale)

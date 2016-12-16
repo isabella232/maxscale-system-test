@@ -66,6 +66,13 @@ class Config
     void destroy_server(int num);
 
     /**
+     * Test that server count is at the expected amount
+     * @param expected How many servers are expected to exist
+     * @return True if the number of servers is @c expected
+     */
+    bool check_server_count(int expected);
+
+    /**
      * Create the monitor
      * @param type The name of the monitor module to use
      * @param interval Monitoring interval
