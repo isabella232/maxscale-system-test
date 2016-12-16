@@ -40,7 +40,7 @@ find_library(MYSQL_CLIENT mariadbclient mysqlclient PATH_SUFFIXES mysql mariadb)
 add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
-  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp)
+  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp rds_vpc_func.cpp)
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 
@@ -248,6 +248,7 @@ add_test_executable(setup_binlog_crc_32.cpp setup_binlog_crc_32 setup_binlog LAB
 add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog LABELS binlogrouter LIGHT)
 
 add_test_executable_notest(delete_rds.cpp delete_rds replication LABELS EXTERN)
+add_test_executable_notest(create_rds.cpp create_rds replication LABELS EXTERN)
 
 # enable after fixing MXS-419
 # add_test_executable(mxs419_lots_of_connections.cpp mxs419_lots_of_connections replication)
