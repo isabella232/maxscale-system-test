@@ -42,6 +42,12 @@ int main(int argc, char *argv[])
     config.alter_server(1, "address", test->repl->IP[1]);
     sleep(1);
     test->check_maxscale_alive();
+    config.alter_server(1, "address", "This-is-not-the-address-you-are-looking-for");
+    config.alter_server(1, "port", 12345);
+    test->connect_maxscale();
+    test->add_result(execute_query_silent(test->conn_rwsplit, "SELECT 1") == 0,
+                     "Query with bad address should fail");
+
     config.remove_server(1);
     config.destroy_server(1);
 
