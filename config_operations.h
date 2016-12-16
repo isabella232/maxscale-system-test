@@ -99,6 +99,11 @@ class Config
     void destroy_monitor(const char *name);
 
     /**
+     * Restart all created monitors
+     */
+    void restart_monitors();
+
+    /**
      * Create a listener
      *
      * @param service Service where listener is created

@@ -141,6 +141,15 @@ void Config::destroy_monitor(const char *name)
     created_monitors_.erase(std::string(name));
 }
 
+void Config::restart_monitors()
+{
+    for (auto& a: created_monitors_)
+    {
+        test_->ssh_maxscale(true, "maxadmin shutdown monitor \"%s\"", a.c_str());
+        test_->ssh_maxscale(true, "maxadmin restart monitor \"%s\"", a.c_str());
+    }
+}
+
 void Config::create_listener(Config::Service service)
 {
     int i = static_cast<int>(service);
