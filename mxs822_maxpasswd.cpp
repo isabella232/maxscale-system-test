@@ -19,57 +19,32 @@ using namespace std;
 
 void try_password(TestConnections* Test, char * pass)
 {
-    char sql[256];
-    sprintf(sql, "grant all privileges on *.* to skysql@'%%%%' identified by '%s';", pass);
-    Test->tprintf("Changing password: %s\n", sql);
 
+    /**
+     * Create the user
+     */
     Test->connect_maxscale();
-    Test->try_query(Test->conn_rwsplit,  sql);
-
-    sprintf(sql, "grant all privileges on *.* to maxskysql@'%%%%' identified by '%s';", pass);
-    Test->tprintf("Changing password: %s\n", sql);
-    Test->try_query(Test->conn_rwsplit,  sql);
-
+    execute_query_silent(Test->conn_rwsplit, "DROP USER 'test'@'%'");
+    execute_query(Test->conn_rwsplit, "CREATE USER 'test'@'%%' IDENTIFIED BY '%s'", pass);
+    execute_query(Test->conn_rwsplit, "GRANT ALL ON *.* TO 'test'@'%%'");
     Test->close_maxscale_connections();
 
-    Test->tprintf("Executing 'maxkeys'\n");
-    Test->ssh_maxscale(true, "maxkeys");
-
-    Test->ssh_maxscale(true, "sudo chown maxscale:maxscale /var/lib/maxscale/.secrets");
-
-    Test->tprintf("Encrypting password '%s'\n", pass);
-
+    /**
+     * Encrypt and change the password
+     */
+    Test->tprintf("Encrypting password: %s", pass);
     Test->set_timeout(30);
+    int rc = Test->ssh_maxscale_sh(true, "maxpasswd '%s' | tr -dc '[:xdigit:]' > /tmp/pw.txt && "
+                                   "sed -i 's/user=.*/user=test/' /etc/maxscale.cnf && "
+                                   "sed -i \"s/passwd=.*/passwd=$(cat /tmp/pw.txt)/\" /etc/maxscale.cnf && "
+                                   "service maxscale restart && "
+                                   "sleep 3 && "
+                                   "sed -i 's/user=.*/user=maxskysql/' /etc/maxscale.cnf && "
+                                   "sed -i 's/passwd=.*/passwd=skysql/' /etc/maxscale.cnf && "
+                                   "service maxscale restart", pass);
 
-    char * enc_pass = Test->ssh_maxscale_output(true, "maxpasswd '\"'\"'%s'\"'\"' | tr -cd \"[:print:]\" ", pass);
-
-    Test->tprintf("Encripted password: %s\n", enc_pass);
-
-    Test->set_timeout(30);
-    Test->ssh_maxscale(true, "sed -i \"s/passwd=skysql/passwd=%s/\" /etc/maxscale.cnf", enc_pass);
-
-    Test->tprintf("sed \"s/passwd=skysql/passwd=%s/\" ", enc_pass);
-
-    Test->set_timeout(30);
-    Test->restart_maxscale();
-
-    MYSQL * conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, Test->maxscale_user, pass, Test->ssl);
-
-    sprintf(sql, "grant all privileges on *.* to skysql@'%%%%' identified by '%s';", Test->maxscale_password);
-    Test->tprintf("Changing password: %s\n", sql);
-
-    Test->try_query(conn,  sql);
-
-    sprintf(sql, "grant all privileges on *.* to maxskysql@'%%%%' identified by '%s';", Test->maxscale_password);
-    Test->tprintf("Changing password: %s\n", sql);
-    Test->try_query(conn,  sql);
-
-    mysql_close(conn);
-
-    Test->tprintf("Restoring password: %s\n", sql);
-    Test->ssh_maxscale(true, "sed -i \"s/passwd=%s/passwd=skysql/\" /etc/maxscale.cnf", enc_pass);
-
-    Test->restart_maxscale();
+    Test->add_result(rc, "Failed to encrypt password '%s'", pass);
+    sleep(3);
 }
 
 int main(int argc, char *argv[])
@@ -77,16 +52,14 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(30);
 
+    Test->ssh_maxscale(true, "maxkeys");
+    Test->ssh_maxscale(true, "sudo chown maxscale:maxscale /var/lib/maxscale/.secrets");
+
     try_password(Test, (char *) "aaa$aaa");
     try_password(Test, (char *) "#¤&");
     try_password(Test, (char *) "пароль");
 
-    /*
-    try_password(Test, (char *) "p1");
-    try_password(Test, (char *) "p2");
-    try_password(Test, (char *) "p3");
-    */
-
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
