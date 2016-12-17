@@ -91,9 +91,9 @@ int main(int argc, char *argv[])
     int flushes = Test->smoke ? 2 : 5;
     for (j = 0; j < flushes; j++)
     {
-        sleep(45);
         Test->tprintf("Flush logs on master\n");
         execute_query(Test->repl->nodes[0], (char *) "flush logs");
+        sleep(15);
     }
 
     sleep(15);
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     Test->repl->block_node(0);
     Test->stop_timeout();
 
-    sleep(Test->smoke ? 60 : 180);
+    sleep(30);
 
     Test->tprintf("Done! Waiting for thread\n");
     exit_flag = 1;
@@ -114,8 +114,8 @@ int main(int argc, char *argv[])
     char rep[256];
     int rep_d;
 
-    Test->tprintf("Sleeping to let replicatio happens\n");
-    sleep(60);
+    Test->tprintf("Sleeping to let replication happen\n");
+    sleep(30);
 
     Test->repl->connect();
 
