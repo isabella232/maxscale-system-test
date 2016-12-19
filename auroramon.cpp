@@ -47,6 +47,8 @@ int set_endspoints()
     setenv("node_password", "skysqlrds", 1);
     setenv("maxscale_user", "skysql", 1);
     setenv("maxscale_password", "skysqlrds", 1);
+    setenv("no_nodes_check", "yes", 1);
+    setenv("no_backend_log_copy", "yes", 1);
     //system("env");
 
 }
@@ -106,6 +108,10 @@ void compare_masters(TestConnections* Test)
 
 int main(int argc, char *argv[])
 {
+
+    create_rds_cluster(4);
+    wait_for_nodes(4);
+
     set_endspoints();
 
     TestConnections * Test = new TestConnections(argc, argv);
@@ -144,7 +150,11 @@ int main(int argc, char *argv[])
     compare_masters(Test);
 
     //Test->check_maxscale_alive();
-    //Test->copy_all_logs();
+    Test->copy_all_logs();
+
+    Test->stop_timeout();
+    delete_rds_cluster();
+
     return Test->global_result;
 
 }

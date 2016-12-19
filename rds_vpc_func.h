@@ -41,9 +41,15 @@ int create_gw(const char * vpc, const char **gw_id);
 
 int configure_route_table(const char * vpc, const char *gw, const char **rt);
 
-int create_cluster(size_t N);
+int create_rds_cluster(size_t N);
 
 int get_writer(const char **writer_name);
+
+int create_rds_cluster(int N);
+
+int delete_rds_cluster();
+
+int wait_for_nodes(size_t N);
 
 
 

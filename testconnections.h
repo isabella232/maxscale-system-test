@@ -236,6 +236,11 @@ public:
     bool no_nodes_check;
 
     /**
+     * @brief no_backend_log_copy if true logs from backends are not copied (needed if case of Aurora RDS backend or similar)
+     */
+    bool no_backend_log_copy;
+
+    /**
      * @brief verbose if true more printing activated
      */
     bool verbose;

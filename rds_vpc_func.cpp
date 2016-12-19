@@ -366,3 +366,159 @@ int get_writer(const char ** writer_name)
 
     return(0);
 }
+
+int create_rds_cluster(int N)
+{
+    char cmd[1024];
+
+    const char * vpc;
+    const char * subnet1;
+    const char * subnet2;
+    const char * gw;
+    const char * rt;
+
+    printf("Create VPC\n");
+    create_vpc(&vpc);
+    printf("vpc id: %s\n", vpc);
+
+    printf("Create subnets\n");
+    create_subnet(vpc, "eu-west-1b", "172.30.0.0/24", &subnet1);
+    create_subnet(vpc, "eu-west-1a", "172.30.1.0/24", &subnet2);
+
+    printf("Create subnets group\n");
+    sprintf(cmd, "%s %s", subnet1, subnet2);
+    create_subnet_group(cmd);
+
+    printf("Create internet gateway\n");
+    create_gw(vpc, &gw);
+    printf("Gateway: %s\n", gw);
+
+    printf("Configure route table\n");
+    configure_route_table(vpc, gw, &rt);
+    printf("Route table: %s\n", rt);
+
+    printf("Create RDS cluster\n");
+    return(create_cluster(N));
+}
+
+int delete_rds_cluster()
+{
+    char * result;
+    char * j = NULL;
+    char cmd[1024];
+
+    printf("Get cluster description\n");
+    int i = execute_cmd((char *) "aws rds describe-db-clusters --db-cluster-identifier=auroratest", &result);
+
+    json_t * cluster = get_cluster_descr(result);
+
+    json_t * nodes = get_cluster_nodes(cluster);
+    if (nodes == NULL)
+    {
+        printf("NULL!!\n");
+        exit(0);
+    }
+
+
+    size_t alive_nodes = json_array_size(nodes);
+
+    printf("Destroy nodes\n");
+    destroy_nodes(nodes);
+
+    do
+    {
+        printf("Waiting for nodes to be deleted, now %lu nodes are still alive\n", alive_nodes);
+        sleep(5);
+        execute_cmd((char *) "aws rds describe-db-clusters --db-cluster-identifier=auroratest", &result);
+        cluster = get_cluster_descr(result);
+        nodes = get_cluster_nodes(cluster);
+        alive_nodes = json_array_size(nodes);
+
+
+    } while ( alive_nodes > 0);
+
+    printf("Destroy cluster\n");
+    execute_cmd((char *) "aws rds delete-db-cluster --db-cluster-identifier=auroratest --skip-final-snapshot", &result);
+
+    do
+    {
+        printf("Waiting for cluster to be deleted\n");
+        sleep(5);
+        execute_cmd((char *) "aws rds describe-db-clusters --db-cluster-identifier=auroratest", &result);
+
+    } while (get_cluster_descr(result) != NULL);
+
+    printf("Get subnets\n");
+    sprintf(cmd, "aws rds describe-db-subnet-groups --db-subnet-group-name %s", get_subnetgroup(cluster));
+    execute_cmd(cmd, &result);
+
+    json_t * subnet_group = get_subnet_descr(result);
+
+    const char * vpc = json_string_value(json_object_get(subnet_group, "VpcId"));
+    printf("VpcId: %s\n", vpc);
+
+    json_t * subnets = get_subnets(subnet_group);
+    printf("Destroy subnets\n");
+    destroy_subnets(subnets);
+
+    printf("Destroy subnet group\n");
+    sprintf(cmd, "aws rds delete-db-subnet-group --db-subnet-group-name %s", get_subnetgroup(cluster));
+    execute_cmd(cmd, &result);
+
+    printf("Get Internet Gateways\n");
+    sprintf(cmd, "aws ec2 describe-internet-gateways --filters Name=attachment.vpc-id,Values=%s", vpc);
+    execute_cmd(cmd, &result);
+    detach_and_destroy_gw(result, vpc);
+
+
+    printf("Get route tables\n");
+    execute_cmd((char *) "aws ec2 describe-route-tables", &result);
+    //printf("Destroy route tables\n");
+    //destroy_route_tables(vpc, result);
+    printf("Destroy vpc\n");
+    sprintf(cmd, "aws ec2 delete-vpc --vpc-id=%s", vpc);
+    return(system(cmd));
+}
+
+int wait_for_nodes(size_t N)
+{
+    char * result;
+    size_t active_nodes = 0;
+    size_t i = 0;
+    json_t * node;
+    char cmd[1024];
+    json_t * cluster;
+    json_t * nodes;
+    json_t * instances;
+    json_t * instance;
+    json_error_t error;
+
+    do
+    {
+        printf("Waiting for nodes to be active, now %lu are active\n", active_nodes);
+        sleep(5);
+        execute_cmd((char *) "aws rds describe-db-clusters --db-cluster-identifier=auroratest", &result);
+        cluster = get_cluster_descr(result);
+        nodes = get_cluster_nodes(cluster);
+
+        active_nodes = 0;
+        json_array_foreach(nodes, i, node)
+        {
+            sprintf(cmd, "aws rds describe-db-instances --db-instance-identifier=%s", json_string_value(node));
+            execute_cmd(cmd, &result);
+            instances = json_loads( result, 0, &error );
+            if ( !instances )
+            {
+                fprintf( stderr, "error: on line %d: %s\n", error.line, error.text );
+                return -1;
+            }
+            instance = json_array_get(json_object_get(instances, "DBInstances"), 0);
+            //puts(json_dumps(instance, JSON_INDENT(4)));
+            if (strcmp(json_string_value(json_object_get(instance, "DBInstanceStatus")), "available") == 0)
+            {
+                active_nodes++;
+            }
+        }
+    } while ( active_nodes != N);
+
+}
