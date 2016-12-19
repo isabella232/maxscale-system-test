@@ -261,7 +261,7 @@ add_test_executable_notest(create_rds.cpp create_rds replication LABELS EXTERN)
 #add_test_executable(bad_pers.cpp bad_pers bad_pers)
 
 # Disabled until test system supports RDS backends
-# add_test_executable(auroramon.cpp auroramon auroramon)
+add_test_executable(auroramon.cpp auroramon auroramon LABELS EXTERNAL_OBJECT)
 
 # Disabled for the time being
 # add_test_executable(gatekeeper.cpp gatekeeper gatekeeper LABELS gatekeeper)

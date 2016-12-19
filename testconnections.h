@@ -120,7 +120,7 @@ public:
     /**
      * @brief Maxscale_IP   Maxscale machine IP address
      */
-    char maxscale_IP[16];
+    char maxscale_IP[1024];
 
     /**
      * @brief maxscale_hostname  Maxscale machine 'hostname' value

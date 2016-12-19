@@ -43,6 +43,8 @@ int configure_route_table(const char * vpc, const char *gw, const char **rt);
 
 int create_cluster(size_t N);
 
+int get_writer(const char **writer_name);
+
 
 
 #endif // RDS_VPC_FUNC_H

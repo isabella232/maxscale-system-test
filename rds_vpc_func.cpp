@@ -341,3 +341,28 @@ int create_cluster(size_t N)
     }
     return(0);
 }
+
+int get_writer(const char ** writer_name)
+{
+    char * json;
+    execute_cmd((char *) "aws rds describe-db-clusters --db-cluster-identifier=auroratest", &json);
+    json_t * cluster = get_cluster_descr(json);
+    json_t * nodes = json_object_get(cluster, "DBClusterMembers");
+
+    //char * s = json_dumps(nodes, JSON_INDENT(4));
+    //puts(s);
+
+    bool writer;
+    json_t * node;
+    size_t i = 0;
+
+    do
+    {
+        node = json_array_get(nodes, i);
+        writer = json_is_true(json_object_get(node, "IsClusterWriter"));
+        i++;
+    } while (!writer);
+    * writer_name = json_string_value(json_object_get(node, "DBInstanceIdentifier"));
+
+    return(0);
+}

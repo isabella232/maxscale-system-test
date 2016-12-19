@@ -45,11 +45,11 @@ public:
     /**
      * @brief  IP address strings for every backend node
      */
-    char IP[256][16];
+    char IP[256][1024];
     /**
      * @brief  private IP address strings for every backend node (for AWS)
      */
-    char IP_private[256][16];
+    char IP_private[256][1024];
     /**
      * @brief  MariaDB port for every backend node
      */
