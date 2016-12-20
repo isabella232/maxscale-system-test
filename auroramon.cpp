@@ -5,8 +5,9 @@
 
 #include "testconnections.h"
 #include "rds_vpc_func.h"
+#include "rds_vpc.h"
 
-int set_endspoints()
+int set_endspoints(RDS * cluster)
 {
     char cmd[1024];
     char * result;
@@ -53,17 +54,17 @@ int set_endspoints()
 
 }
 
-int do_failover(TestConnections* Test)
+int do_failover(TestConnections* Test, RDS * cluster)
 {
     char * result;
     const char * writer;
     const char * new_writer;
-    get_writer(&writer);
+    cluster->get_writer(&writer);
     Test->tprintf("writer: %s\nDoing failover\n", writer);
     execute_cmd((char *) "aws rds failover-db-cluster --db-cluster-identifier=auroratest", &result);
     do
     {
-        get_writer(&new_writer);
+        cluster->get_writer(&new_writer);
         Test->tprintf("writer: %s\n", new_writer);
         sleep(5);
     } while (strcmp(writer, new_writer) == 0);
@@ -72,10 +73,10 @@ int do_failover(TestConnections* Test)
 }
 
 
-void compare_masters(TestConnections* Test)
+void compare_masters(TestConnections* Test, RDS * cluster)
 {
     const char * aurora_master;
-    get_writer(&aurora_master);
+    cluster->get_writer(&aurora_master);
     Test->tprintf("Aurora writer node: %s\n", aurora_master);
     char maxadmin_status[1024];
     int i;
@@ -108,16 +109,21 @@ void compare_masters(TestConnections* Test)
 
 int main(int argc, char *argv[])
 {
+    RDS * cluster = new RDS((char *) "auroratest");
 
-    create_rds_cluster(4);
-    wait_for_nodes(4);
+    if (cluster->create_rds_db(4) != 0)
+    {
+        printf("Error RDS creation\n");
+        return 1;
+    }
+    cluster->wait_for_nodes(4);
 
-    set_endspoints();
+    set_endspoints(cluster);
 
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(30);
 
-    compare_masters(Test);
+    compare_masters(Test, cluster);
 
 
     Test->set_timeout(30);
@@ -133,7 +139,7 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
     Test->tprintf("Performing cluster failover");
 
-    do_failover(Test);
+    do_failover(Test, cluster);
 
     // Do the failover here and wait until it is over
     //sleep(10);
@@ -147,15 +153,14 @@ int main(int argc, char *argv[])
     Test->close_rwsplit();
     Test->tprintf("server_id after failover: %s\n", server_id);
 
-    compare_masters(Test);
+    compare_masters(Test, cluster);
+
 
     //Test->check_maxscale_alive();
     Test->copy_all_logs();
 
     Test->stop_timeout();
-    delete_rds_cluster();
+    cluster->delete_rds_cluster();
 
     return Test->global_result;
-
 }
-

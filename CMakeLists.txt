@@ -40,7 +40,7 @@ find_library(MYSQL_CLIENT mariadbclient mysqlclient PATH_SUFFIXES mysql mariadb)
 add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
-  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp rds_vpc_func.cpp)
+  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp rds_vpc.cpp rds_vpc_func.cpp)
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 

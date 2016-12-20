@@ -3,9 +3,11 @@
 #include "testconnections.h"
 #include <jansson.h>
 #include "rds_vpc_func.h"
+#include "rds_vpc.h"
 
 
 int main(int argc, char *argv[])
 {
-    delete_rds_cluster();
+    RDS * cluster = new RDS((char *) "auroratest");
+    cluster->delete_rds_cluster();
 }
