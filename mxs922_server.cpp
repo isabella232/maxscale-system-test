@@ -6,6 +6,23 @@
 #include "testconnections.h"
 #include "config_operations.h"
 
+int check_server_id(TestConnections *test, int idx)
+{
+    test->close_maxscale_connections();
+    test->connect_maxscale();
+
+    int a = test->repl->get_server_id(idx);
+    int b = -1;
+    char str[1024];
+
+    if (find_field(test->conn_rwsplit, "SELECT @@server_id", "@@server_id", str) == 0)
+    {
+        b = atoi(str);
+    }
+
+    return a - b;
+}
+
 int main(int argc, char *argv[])
 {
     TestConnections *test = new TestConnections(argc, argv);
@@ -50,6 +67,28 @@ int main(int argc, char *argv[])
 
     config.remove_server(1);
     config.destroy_server(1);
+
+
+    test->tprintf("Testing server weights");
+
+    config.reset();
+    sleep(1);
+    test->repl->connect();
+
+    config.alter_server(1, "weight", 1);
+    config.alter_server(2, "weight", 1);
+    config.alter_server(3, "weight", 1000);
+    test->add_result(check_server_id(test, 3), "The server_id values don't match");
+
+    config.alter_server(1, "weight", 1);
+    config.alter_server(2, "weight", 1000);
+    config.alter_server(3, "weight", 1);
+    test->add_result(check_server_id(test, 2), "The server_id values don't match");
+
+    config.alter_server(1, "weight", 1000);
+    config.alter_server(2, "weight", 1);
+    config.alter_server(3, "weight", 1);
+    test->add_result(check_server_id(test, 1), "The server_id values don't match");
 
     config.reset();
     sleep(1);

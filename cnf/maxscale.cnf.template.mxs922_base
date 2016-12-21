@@ -3,7 +3,8 @@ threads=###threads###
 
 [rwsplit-service]
 type=service
-router= readwritesplit
+router=readwritesplit
+weightby=weight
 user=maxskysql
 passwd=skysql
 
