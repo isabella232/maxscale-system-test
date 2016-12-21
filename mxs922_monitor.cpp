@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
     /** Try to alter the monitor user */
     test->connect_maxscale();
-    execute_query_silent(test->conn_rwsplit, "DROP USER 'test'@'%%'");
+    execute_query(test->conn_rwsplit, "DROP USER 'test'@'%%'");
     execute_query(test->conn_rwsplit, "CREATE USER 'test'@'%%' IDENTIFIED BY 'test'");
     execute_query(test->conn_rwsplit, "GRANT ALL ON *.* TO 'test'@'%%'");
     test->close_maxscale_connections();
