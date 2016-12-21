@@ -1,8 +1,9 @@
 #include <iostream>
 #include <unistd.h>
-#include "testconnections.h"
-#include <jansson.h>
-#include "rds_vpc_func.h"
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include "execute_cmd.h"
 
 using namespace std;
 
@@ -31,4 +32,5 @@ int execute_cmd(char * cmd, char ** res)
 
     return(pclose(output)/256);
 }
+
 

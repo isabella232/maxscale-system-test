@@ -1,4 +1,4 @@
-#include "rds_vpc_func.h"
+#include "execute_cmd.h"
 #include "rds_vpc.h"
 
 RDS::RDS(char * cluster)
@@ -50,17 +50,7 @@ json_t * RDS::get_subnets_group_descr(char * json)
 
 json_t * RDS::get_cluster_nodes()
 {
-    json_t * members = json_object_get(cluster_intern, "DBClusterMembers");
-    size_t members_N = json_array_size(members);
-    json_t * member;
-    json_t * node_names = json_array();
-
-    for (size_t i = 0; i < members_N; i++)
-    {
-        member = json_array_get(members, i);
-        json_array_append(node_names, json_string(get_instance_name(member)));
-    }
-    return(node_names);
+    return(get_cluster_nodes(cluster_intern));
 }
 
 json_t * RDS::get_cluster_nodes(json_t *cluster)
@@ -717,3 +707,70 @@ int RDS::wait_for_nodes(size_t N)
     return 0;
 }
 
+int RDS::do_failover()
+{
+    char * result;
+    const char * writer;
+    const char * new_writer;
+    char cmd[1024];
+    if (get_writer(&writer) != 0)
+    {
+        return -1;
+    }
+
+    sprintf(cmd, "aws rds failover-db-cluster --db-cluster-identifier=%s", cluster_name_intern);
+    if (execute_cmd(cmd, &result) != 0) {
+        return -1;
+    }
+    do
+    {
+        if (get_writer(&new_writer) != 0) {
+            return -1;
+        }
+        printf("writer: %s\n", new_writer);
+        sleep(5);
+    } while (strcmp(writer, new_writer) == 0);
+    return(0);
+}
+
+json_t * RDS::get_endpoints()
+{
+    char cmd[1024];
+    char * result;
+
+    json_t *root;
+    json_error_t error;
+
+    json_t * node;
+    json_t * node_json;
+    json_t *endpoint;
+
+    json_t * endpoints;
+
+    endpoints = json_array();
+
+    cluster_intern = get_cluster();
+    json_t * nodes = get_cluster_nodes();
+    //puts(json_dumps(nodes, JSON_INDENT(4)));
+
+    size_t i;
+    json_array_foreach(nodes, i, node)
+    {
+        sprintf(cmd, "aws rds describe-db-instances --db-instance-identifier=%s", json_string_value(node));
+        if (execute_cmd(cmd, &result) != 0)
+        {
+            fprintf( stderr, "error: executing aws rds describe-db-instances\n");
+            return NULL;
+        }
+        root = json_loads( result, 0, &error );
+        if ( !root )
+        {
+            fprintf( stderr, "error: on line %d: %s\n", error.line, error.text );
+            return NULL;
+        }
+        node_json = json_array_get(json_object_get(root, "DBInstances"), 0);
+        endpoint = json_object_get(node_json, "Endpoint");
+        json_array_append(endpoints, endpoint);
+    }
+    return(endpoints);
+}

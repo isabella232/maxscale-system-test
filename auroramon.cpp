@@ -1,46 +1,41 @@
 /**
- * Test auroramon monitor
+ * @file auroramon.cpp test of Aurora RDS monitor
+ * - create RDS cluster
+ * - find 'writer' node and uses 'maxadmin' to check that this node is "Master, Running"
+ * - do forced failover
+ * - find 'writer' again and repeat check
+ * - destroy RDS cluster
  */
 
 
 #include "testconnections.h"
-#include "rds_vpc_func.h"
+#include "execute_cmd.h"
 #include "rds_vpc.h"
 
 int set_endspoints(RDS * cluster)
 {
-    char cmd[1024];
-    char * result;
 
-    json_t *root;
-    json_error_t error;
-
-    json_t * node;
     json_t *endpoint;
     long long int port;
     const char * IP;
     char p[64];
+    size_t i;
+    char cmd[1024];
 
-
-
-    for (int i = 0; i < 4; i++)
+    json_t * endpoints = cluster->get_endpoints();
+    if (endpoints == NULL)
     {
-        sprintf(cmd, "aws rds describe-db-instances --db-instance-identifier=node%03d", i);
-        execute_cmd(cmd, &result);
-        root = json_loads( result, 0, &error );
-        if ( !root )
-        {
-            fprintf( stderr, "error: on line %d: %s\n", error.line, error.text );
-            return -1;
-        }
-        node = json_array_get(json_object_get(root, "DBInstances"), 0);
-        endpoint = json_object_get(node, "Endpoint");
+        return -1;
+    }
+
+    json_array_foreach(endpoints, i, endpoint)
+    {
         port = json_integer_value(json_object_get(endpoint, "Port"));
         IP = json_string_value(json_object_get(endpoint, "Address"));
         printf("host: %s \t port: %lld\n", IP, port);
-        sprintf(cmd, "node_%03d_network", i);
+        sprintf(cmd, "node_%03d_network", (int) i);
         setenv(cmd, IP, 1);
-        sprintf(cmd, "node_%03d_port", i);
+        sprintf(cmd, "node_%03d_port", (int) i);
         sprintf(p, "%lld", port);
         setenv(cmd, p, 1);
     }
@@ -50,26 +45,7 @@ int set_endspoints(RDS * cluster)
     setenv("maxscale_password", "skysqlrds", 1);
     setenv("no_nodes_check", "yes", 1);
     setenv("no_backend_log_copy", "yes", 1);
-    //system("env");
-
-}
-
-int do_failover(TestConnections* Test, RDS * cluster)
-{
-    char * result;
-    const char * writer;
-    const char * new_writer;
-    cluster->get_writer(&writer);
-    Test->tprintf("writer: %s\nDoing failover\n", writer);
-    execute_cmd((char *) "aws rds failover-db-cluster --db-cluster-identifier=auroratest", &result);
-    do
-    {
-        cluster->get_writer(&new_writer);
-        Test->tprintf("writer: %s\n", new_writer);
-        sleep(5);
-    } while (strcmp(writer, new_writer) == 0);
-    Test->tprintf("failover done\n");
-    return(0);
+    return 0;
 }
 
 
@@ -111,6 +87,7 @@ int main(int argc, char *argv[])
 {
     RDS * cluster = new RDS((char *) "auroratest");
 
+
     if (cluster->create_rds_db(4) != 0)
     {
         printf("Error RDS creation\n");
@@ -118,13 +95,18 @@ int main(int argc, char *argv[])
     }
     cluster->wait_for_nodes(4);
 
-    set_endspoints(cluster);
+
+    if (set_endspoints(cluster) != 0)
+    {
+        printf("Error getting RDS endpoints\n");
+        return 1;
+    }
+
 
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(30);
 
     compare_masters(Test, cluster);
-
 
     Test->set_timeout(30);
     Test->tprintf("Executing a query through readwritesplit before failover");
@@ -137,9 +119,11 @@ int main(int argc, char *argv[])
     Test->tprintf("server_id before failover: %s\n", server_id);
 
     Test->stop_timeout();
-    Test->tprintf("Performing cluster failover");
+    Test->tprintf("Performing cluster failover\n");
 
-    do_failover(Test, cluster);
+    Test->add_result(cluster->do_failover(), "Failover failed\n");
+
+    Test->tprintf("Failover done\n");
 
     // Do the failover here and wait until it is over
     //sleep(10);
