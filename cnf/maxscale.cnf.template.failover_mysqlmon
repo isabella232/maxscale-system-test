@@ -9,6 +9,7 @@ user=maxskysql
 passwd= skysql
 monitor_interval=1000
 failover=true
+failcount=2
 
 [RW Split Router]
 type=service
