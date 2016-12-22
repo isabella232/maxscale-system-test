@@ -1,5 +1,8 @@
 /**
- * @file kerberos_setup.cpp Attempt to configure KDC and node_000
+ * @file kerberos_setup.cpp Attempt to configure KDC and try to use passwordless authentification
+ * - configure KDC on Maxscale machine and Kerberos workstation on all other nodes
+ * - create MariaDB user which is authentificated via GSSAPI
+ * - try to login to Maxscale as this GSSAPI user and execute simple query
  */
 
 
@@ -113,6 +116,20 @@ int main(int argc, char *argv[])
     Test->try_query(Test->repl->nodes[0], (char *) "grant all privileges on  *.* to 'usr1'");
     Test->repl->close_connections();
 
+    Test->tprintf("Trying use usr1 to execute query: RW Split\n");
+    Test->add_result(
+                Test->repl->ssh_node(1, "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4006",false),
+                "Error executing query against RW Split\n");
+    Test->tprintf("Trying use usr1 to execute query: Read Connection Master\n");
+    Test->add_result(
+                Test->repl->ssh_node(1, "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4008", false),
+                "Error executing query against Read Connection Master\n");
+    Test->tprintf("Trying use usr1 to execute query: Read Connection Slave\n");
+    Test->add_result(
+                Test->repl->ssh_node(1, "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4009", false),
+                "Error executing query against Read Connection Slave\n");
+
+    printf("\n\n%d\n\n", Test->global_result);
     Test->copy_all_logs(); return(Test->global_result);
 }
 

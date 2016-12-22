@@ -1,4 +1,3 @@
-
 /**
  * @file mariadb_nodes.cpp - backend nodes routines
  *
@@ -692,7 +691,10 @@ int Mariadb_nodes::ssh_node(int node, const char *ssh, bool sudo)
 {
     char sys[strlen(ssh) + 1024];
     generate_ssh_cmd(sys, node, ssh, sudo);
-    return(system(sys));
+//printf("%s", sys);
+    int e = system(sys) / 256;
+//printf("\nexit code %d\n", e);
+    return(e);
 }
 
 int Mariadb_nodes::flush_hosts()

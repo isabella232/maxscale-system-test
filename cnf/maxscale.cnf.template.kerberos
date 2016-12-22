@@ -43,18 +43,27 @@ service=RW Split Router
 protocol=MySQLClient
 port=4006
 #socket=/tmp/rwsplit.sock
+authenticator=GSSAPIAuth
+authenticator_options=principal_name=mariadb/maxscale.test@MAXSCALE.TEST
+
 
 [Read Connection Listener Slave]
 type=listener
 service=Read Connection Router Slave
 protocol=MySQLClient
 port=4009
+authenticator=GSSAPIAuth
+authenticator_options=principal_name=mariadb/maxscale.test@MAXSCALE.TEST
+
 
 [Read Connection Listener Master]
 type=listener
 service=Read Connection Router Master
 protocol=MySQLClient
 port=4008
+authenticator=GSSAPIAuth
+authenticator_options=principal_name=mariadb/maxscale.test@MAXSCALE.TEST
+
 
 [CLI]
 type=service
