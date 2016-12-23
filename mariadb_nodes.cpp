@@ -14,13 +14,18 @@
 #include "sql_const.h"
 #include <string>
 
-Mariadb_nodes::Mariadb_nodes(char * pref)
+Mariadb_nodes::Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose)
 {
     strcpy(prefix, pref);
     memset(this->nodes, 0, sizeof(this->nodes));
     memset(blocked, 0, sizeof(blocked));
     no_set_pos = false;
-    verbose = true;
+    this->verbose = verbose;
+    strcpy(test_dir, test_cwd);
+    read_env();
+    truncate_mariadb_logs();
+    flush_hosts();
+    close_active_connections();
 }
 
 Mariadb_nodes::~Mariadb_nodes()
@@ -292,7 +297,7 @@ int Mariadb_nodes::start_replication()
     return local_result;
 }
 
-int Mariadb_nodes::start_galera()
+int Galera_nodes::start_galera()
 {
     char sys1[4096];
     char str[1024];
@@ -430,8 +435,9 @@ int Mariadb_nodes::check_and_restart_node_vm(int node)
     if (check_node_vm(node) != 0) {return(restart_node_vm(node));} else {return(0);}
 }
 
-int Mariadb_nodes::check_replication(int master)
+int Mariadb_nodes::check_replication()
 {
+    int master = 0;
     int res1 = 0;
     char str[1024];
     MYSQL *conn;
@@ -515,7 +521,46 @@ int Mariadb_nodes::check_replication(int master)
     return(res1);
 }
 
-int Mariadb_nodes::check_galera()
+bool Mariadb_nodes::fix_replication()
+{
+    if (check_replication())
+    {
+        unblock_all_nodes();
+
+        if (check_and_restart_nodes_vm())
+        {
+            printf("****** VMS ARE BROKEN! Exiting *****\n");
+            return false;
+        }
+
+        int attempts = 2;
+
+        while (check_replication() && attempts > 0)
+        {
+            if (attempts != 2)
+            {
+                stop_nodes();
+            }
+
+            start_replication();
+            close_connections();
+
+            attempts--;
+        }
+
+        if (attempts == 0 && check_replication())
+        {
+            printf("****** BACKEND IS STILL BROKEN! Exiting *****\n");
+            return false;
+        }
+
+        flush_hosts();
+    }
+
+    return true;
+}
+
+int Galera_nodes::check_galera()
 {
     int res1 = 0;
 
@@ -789,6 +834,8 @@ int Mariadb_nodes::configure_ssl(bool require)
 {
     int local_result = 0;
     char str[1024];
+
+    this->ssl = 1;
 
     for (int i = 0; i < N; i++)
     {

@@ -10,6 +10,8 @@ servers= server1, server2
 user=maxskysql
 passwd= skysql
 monitor_interval=1000
+backend_connect_timeout=1
+backend_read_timeout=1
 
 [RW Split Router]
 type=service

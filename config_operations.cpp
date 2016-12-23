@@ -141,6 +141,15 @@ void Config::destroy_monitor(const char *name)
     created_monitors_.erase(std::string(name));
 }
 
+void Config::restart_monitors()
+{
+    for (auto& a: created_monitors_)
+    {
+        test_->ssh_maxscale(true, "maxadmin shutdown monitor \"%s\"", a.c_str());
+        test_->ssh_maxscale(true, "maxadmin restart monitor \"%s\"", a.c_str());
+    }
+}
+
 void Config::create_listener(Config::Service service)
 {
     int i = static_cast<int>(service);
@@ -181,4 +190,17 @@ void Config::reset()
             add_server(i);
         }
     }
+}
+
+bool Config::check_server_count(int expected)
+{
+    bool rval = true;
+
+    if (test_->ssh_maxscale_sh(true, "test \"`maxadmin list servers|grep 'server[0-9]'|wc -l`\" == \"%d\"", expected))
+    {
+        test_->add_result(1, "Number of servers is not %d.", expected);
+        rval = false;
+    }
+
+    return rval;
 }

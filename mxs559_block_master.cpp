@@ -13,7 +13,6 @@
 
 #include "testconnections.h"
 #include "sql_t1.h"
-//#include "get_com_select_insert.h"
 
 typedef struct  {
     int exit_flag;
@@ -97,8 +96,6 @@ int main(int argc, char *argv[])
             Test->stop_timeout();
             sleep(tt[j]);
             Test->set_timeout(30+tt[j]*10);
-            //Test->tprintf("flush hosts\n");
-            //Test->repl->flush_hosts();
         }
     }
 
@@ -116,10 +113,7 @@ int main(int argc, char *argv[])
     Test->tprintf("flush hosts\n");
     Test->repl->flush_hosts();
     Test->repl->check_and_restart_nodes_vm();
-    if (Test->repl->check_replication(0))
-    {
-        Test->repl->start_replication();
-    }
+    Test->repl->fix_replication();
     sleep(5);
     Test->tprintf("Drop t1\n");
     Test->connect_maxscale();

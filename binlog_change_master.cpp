@@ -27,6 +27,9 @@ int master = 0;
 int i_trans = 0;
 int failed_transaction_num = 0;
 
+/** The amount of rows each transaction inserts */
+const int N_INSERTS = 100;
+
 int transaction(MYSQL * conn, int N)
 {
     int local_result = 0;
@@ -39,7 +42,7 @@ int transaction(MYSQL * conn, int N)
     local_result += execute_query(conn, (char *) "SET autocommit = 0");
     if (local_result != 0) {Test->tprintf("SET Failed\n");return(local_result);}
 
-    create_insert_string(sql, 50000, N);
+    create_insert_string(sql, N_INSERTS, N);
     Test->tprintf("INSERT\n");
     local_result += execute_query(conn, sql);
     if (local_result != 0) {Test->tprintf("Insert Failed\n");return(local_result);}
@@ -88,9 +91,9 @@ int main(int argc, char *argv[])
     int flushes = Test->smoke ? 2 : 5;
     for (j = 0; j < flushes; j++)
     {
-        sleep(45);
         Test->tprintf("Flush logs on master\n");
         execute_query(Test->repl->nodes[0], (char *) "flush logs");
+        sleep(15);
     }
 
     sleep(15);
@@ -99,7 +102,7 @@ int main(int argc, char *argv[])
     Test->repl->block_node(0);
     Test->stop_timeout();
 
-    sleep(Test->smoke ? 60 : 180);
+    sleep(30);
 
     Test->tprintf("Done! Waiting for thread\n");
     exit_flag = 1;
@@ -111,8 +114,8 @@ int main(int argc, char *argv[])
     char rep[256];
     int rep_d;
 
-    Test->tprintf("Sleeping to let replicatio happens\n");
-    sleep(60);
+    Test->tprintf("Sleeping to let replication happen\n");
+    sleep(30);
 
     Test->repl->connect();
 
@@ -124,11 +127,11 @@ int main(int argc, char *argv[])
             find_field(Test->repl->nodes[i_n], sql, (char *) "count(*)", rep);
             Test->tprintf("Transaction %d put %s rows\n", j, rep);
             sscanf(rep, "%d", &rep_d);
-            if ((rep_d != 50000) && (j != (failed_transaction_num - 1)))
+            if ((rep_d != N_INSERTS) && (j != (failed_transaction_num - 1)))
             {
                 Test->add_result(1, "Transaction %d did not put data into slave\n", j);
             }
-            if ((j == (failed_transaction_num - 1)) && (rep_d != 0) && (rep_d != 50000))
+            if ((j == (failed_transaction_num - 1)) && (rep_d != 0) && (rep_d != N_INSERTS))
             {
                 Test->add_result(1, "Incomplete transaction detected - %d\n", j);
             }

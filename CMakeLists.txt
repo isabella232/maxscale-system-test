@@ -40,7 +40,7 @@ find_library(MYSQL_CLIENT mariadbclient mysqlclient PATH_SUFFIXES mysql mariadb)
 add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
-  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp)
+  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp rds_vpc.cpp execute_cmd.cpp)
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 
@@ -96,15 +96,15 @@ add_test_executable(bug634.cpp bug634 replication LABELS readwritesplit)
 add_test_executable(bug645.cpp bug645 bug645 LABELS tee)
 add_test_executable(bug645_1.cpp bug645_1 bug645_1 LABELS tee)
 add_test_script(bug648 sql_queries bug648 LABELS tee UNSTABLE HEAVY)
-add_test_executable(bug649.cpp bug649 bug645 LABELS tee UNSTABLE HEAVY)
+add_test_executable(bug649.cpp bug649 bug645 LABELS tee)
 add_test_executable(bug650.cpp bug650 bug650 LABELS tee)
 add_test_executable(bug653.cpp bug653 replication LABELS MySQLAuth MySQLProtocol)
 add_test_executable(bug654.cpp bug654 replication LABELS maxscale)
-add_test_executable(bug657.cpp bug657 bug657 LABELS tee UNSTABLE HEAVY)
+add_test_executable(bug657.cpp bug657 bug657 LABELS tee)
 add_test_executable(bug658.cpp bug658 replication LABELS readwritesplit readconnroute maxscale)
 add_test_executable(bug662.cpp bug662 replication LABELS readwritesplit readconnroute maxscale)
 add_test_executable(bug664.cpp bug664 bug664 LABELS MySQLAuth MySQLProtocol)
-add_test_executable(bug670.cpp bug670 bug670 LABELS tee UNSTABLE HEAVY)
+add_test_executable(bug670.cpp bug670 bug670 LABELS tee)
 add_test_executable(bug673.cpp bug673 bug673 LABELS MySQLAuth)
 add_test_executable(bug676.cpp bug676 galera.bug676 LABELS galeramon)
 add_test_executable(bug694.cpp bug694 bug694 LABELS readwritesplit)
@@ -186,6 +186,7 @@ set_tests_properties(mxs827_write_timeout PROPERTIES WILL_FAIL TRUE)
 
 add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery mxs874 LABELS readwritesplit)
 add_test_executable(mxs922_bad_server.cpp mxs922_bad_server mxs922 LABELS maxscale)
+add_test_executable(mxs922_server.cpp mxs922_server mxs922_base LABELS maxscale)
 add_test_executable(mxs922_monitor.cpp mxs922_monitor mxs922_base LABELS maxscale)
 add_test_executable(mxs922_double_listener.cpp mxs922_double_listener mxs922_base LABELS maxscale)
 add_test_executable(mxs922_restart.cpp mxs922_restart mxs922 LABELS maxscale)
@@ -239,6 +240,10 @@ add_test_executable(binlog_semisync.cpp binlog_semisync setup_binlog_semisync LA
 add_test_script(binlog_semisync_txs0_ss0 binlog_semisync setup_binlog_semisync_txs0_ss0 LABELS binlogrouter HEAVY)
 add_test_script(binlog_semisync_txs0_ss1 binlog_semisync setup_binlog_semisync_txs0_ss1 LABELS binlogrouter HEAVY)
 add_test_script(binlog_semisync_txs1_ss0 binlog_semisync setup_binlog_semisync_txs1_ss0 LABELS binlogrouter HEAVY)
+set_tests_properties(binlog_semisync PROPERTIES TIMEOUT 3600)
+set_tests_properties(binlog_semisync_txs0_ss0 PROPERTIES TIMEOUT 3600)
+set_tests_properties(binlog_semisync_txs0_ss1 PROPERTIES TIMEOUT 3600)
+set_tests_properties(binlog_semisync_txs1_ss0 PROPERTIES TIMEOUT 3600)
 add_test_executable(cdc_client.cpp cdc_client avro LABELS avrorouter binlogrouter)
 add_test_executable(different_size_binlog.cpp different_size_binlog setup_binlog LABELS binlogrouter HEAVY)
 add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd setup_binlog LABELS binlogrouter)
@@ -247,7 +252,11 @@ add_test_executable(setup_binlog.cpp setup_binlog setup_binlog LABELS binlogrout
 add_test_executable(setup_binlog_crc_32.cpp setup_binlog_crc_32 setup_binlog LABELS binlogrouter)
 add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog LABELS binlogrouter LIGHT)
 
+# Creates KDC and tries authrization via GSSAPI
 add_test_executable(kerberos_setup.cpp kerberos_setup kerberos LABELS HEAVY gssapi)
+
+add_test_executable_notest(delete_rds.cpp delete_rds replication LABELS EXTERN_BACKEND)
+add_test_executable_notest(create_rds.cpp create_rds replication LABELS EXTERN_BACKEND)
 
 # enable after fixing MXS-419
 # add_test_executable(mxs419_lots_of_connections.cpp mxs419_lots_of_connections replication)
@@ -259,8 +268,8 @@ add_test_executable(kerberos_setup.cpp kerberos_setup kerberos LABELS HEAVY gssa
 # 'persistpoolmax' without any warning
 #add_test_executable(bad_pers.cpp bad_pers bad_pers)
 
-# Disabled until test system supports RDS backends
-# add_test_executable(auroramon.cpp auroramon auroramon)
+# Test Aurora RDS monitor
+add_test_executable(auroramon.cpp auroramon auroramon LABELS HEAVY EXTERNAL_BACKEND)
 
 # Disabled for the time being
 # add_test_executable(gatekeeper.cpp gatekeeper gatekeeper LABELS gatekeeper)

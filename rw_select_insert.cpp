@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
     int silent = 1;
     int i;
     TestConnections * Test = new TestConnections(argc, argv);
-    Test->set_timeout(20);
+    Test->set_timeout(120);
     Test->repl->connect();
 
     Test->tprintf("Connecting to RWSplit %s\n", Test->maxscale_IP);

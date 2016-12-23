@@ -64,4 +64,5 @@ System level tests for MaxScale
 |use_snapshots|if TRUE every test is trying to revert snapshot before running the test|
 |take_snapshot_command|revert_snapshot_command|
 |revert_snapshot_command|Command line to revert a snapshot of all VMs|
-
+|no_nodes_check|if yes backend checks are not executed (needed in case of RDS or similar backend)|
+|no_backend_log_copy|if yes logs from backend nodes are not copied (needed in case of RDS or similar backend)|

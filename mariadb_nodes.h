@@ -34,7 +34,7 @@ public:
      * @brief Constructor
      * @param pref  name of backend setup (like 'repl' or 'galera')
      */
-    Mariadb_nodes(char * pref);
+    Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose);
 
     ~Mariadb_nodes();
 
@@ -45,11 +45,11 @@ public:
     /**
      * @brief  IP address strings for every backend node
      */
-    char IP[256][16];
+    char IP[256][1024];
     /**
      * @brief  private IP address strings for every backend node (for AWS)
      */
-    char IP_private[256][16];
+    char IP_private[256][1024];
     /**
      * @brief  MariaDB port for every backend node
      */
@@ -236,13 +236,7 @@ public:
      * @brief configures nodes and starts Master/Slave replication
      * @return  0 in case of success
      */
-    int start_replication();
-
-    /**
-     * @brief configures nodes and starts Galera cluster
-     * @return  0 in case of success
-     */
-    int start_galera();
+    virtual int start_replication();
 
     /**
      * @brif BlockNode setup firewall on a backend node to block MariaDB port
@@ -319,13 +313,7 @@ public:
      * @param master Index of master node
      * @return 0 if everything is ok
      */
-    int check_replication(int master);
-
-    /**
-     * @brief Check if all nodes report wsrep_cluster_size equal to N
-     * @return 0 if everything is ok
-     */
-    int check_galera();
+    virtual int check_replication();
 
     /**
      * @brief executes 'CHANGE MASTER TO ..' and 'START SLAVE'
@@ -447,6 +435,33 @@ public:
      * This will kill all connections that have been created to this node.
      */
     void close_active_connections();
+
+    /**
+     * @brief Check and fix replication
+     */
+    bool fix_replication();
+};
+
+class Galera_nodes : public Mariadb_nodes
+{
+public:
+
+    Galera_nodes(const char *pref, const char *test_cwd, bool verbose) :
+    Mariadb_nodes(pref, test_cwd, verbose) { }
+
+    int start_galera();
+
+    virtual int start_replication()
+    {
+        return start_galera();
+    }
+
+    int check_galera();
+
+    virtual int check_replication()
+    {
+        return check_galera();
+    }
 };
 
 #endif // MARIADB_NODES_H

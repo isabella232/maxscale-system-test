@@ -11,44 +11,21 @@
 #include <pthread.h>
 
 TestConnections::TestConnections(int argc, char *argv[]):
-copy_logs(true), use_snapshots(false), verbose(false)
+copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
+    readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
+    global_result(0)
 {
     //char str[1024];
     gettimeofday(&start_time, NULL);
-    galera = new Mariadb_nodes((char *)"galera");
-    repl   = new Mariadb_nodes((char *)"node");
-
-    test_name = basename(argv[0]);
-
-    rwsplit_port = 4006;
-    readconn_master_port = 4008;
-    readconn_slave_port = 4009;
     ports[0] = rwsplit_port;
     ports[1] = readconn_master_port;
     ports[2] = readconn_slave_port;
 
-    binlog_port = 5306;
-
-    global_result = 0;
-
     read_env();
 
-    char short_path[1024];
-    strcpy(short_path, dirname(argv[0]));
-    realpath(short_path, test_dir);
-    printf("test_dir is %s\n", test_dir);
-    setenv("test_dir", test_dir, 1);
-    strcpy(repl->test_dir, test_dir);
-    strcpy(galera->test_dir, test_dir);
-    sprintf(get_logs_command, "%s/get_logs.sh", test_dir);
-
-    sprintf(ssl_options, "--ssl-cert=%s/ssl-cert/client-cert.pem --ssl-key=%s/ssl-cert/client-key.pem",
-            test_dir, test_dir);
-    setenv("ssl_options", ssl_options, 1);
-
-    no_maxscale_stop = false;
-    no_maxscale_start = false;
-    //no_nodes_check = false;
+    bool no_maxscale_stop = false;
+    bool no_maxscale_start = false;
+    no_nodes_check = false;
 
     int c;
     bool run_flag = true;
@@ -121,7 +98,7 @@ copy_logs(true), use_snapshots(false), verbose(false)
         case 'g':
             printf ("Restarting Galera setup");
             galera->stop_nodes();
-            galera->start_galera();
+            galera->start_replication();
             break;
 
         default:
@@ -133,104 +110,37 @@ copy_logs(true), use_snapshots(false), verbose(false)
     {
         test_name = argv[optind];
     }
+    else
+    {
+        test_name = basename(argv[0]);
+    }
 
-    repl->verbose = verbose;
-    galera->verbose = verbose;
+    char short_path[1024];
+    strcpy(short_path, dirname(argv[0]));
+    realpath(short_path, test_dir);
+    printf("test_dir is %s\n", test_dir);
+    setenv("test_dir", test_dir, 1);
+    sprintf(get_logs_command, "%s/get_logs.sh", test_dir);
+
+    sprintf(ssl_options, "--ssl-cert=%s/ssl-cert/client-cert.pem --ssl-key=%s/ssl-cert/client-key.pem",
+            test_dir, test_dir);
+    setenv("ssl_options", ssl_options, 1);
+
+    repl = new Mariadb_nodes("node", test_dir, verbose);
+    galera = new Galera_nodes("galera", test_dir, verbose);
 
     bool snapshot_reverted = false;
+
     if (use_snapshots)
     {
         snapshot_reverted = revert_snapshot((char *) "clean");
     }
 
-    if (snapshot_reverted)
+    if (!snapshot_reverted && !no_nodes_check)
     {
-        tprintf("Using VM snapshot");
-    }
-    else
-    {
-        // Truncate log files
-        repl->truncate_mariadb_logs();
-        galera->truncate_mariadb_logs();
-
-        // Flush hosts
-        repl->flush_hosts();
-        galera->flush_hosts();
-
-        // Close any open connections
-        repl->close_active_connections();
-        galera->close_active_connections();
-
-        if (!no_nodes_check)
+        if (!repl->fix_replication() || !galera->fix_replication())
         {
-            if (repl->check_replication(0) || galera->check_galera())
-            {
-                stop_maxscale();
-                repl->unblock_all_nodes();
-                galera->unblock_all_nodes();
-
-                // Make sure the VMs are OK
-                if (repl->check_and_restart_nodes_vm() ||
-                    galera->check_and_restart_nodes_vm())
-                {
-                    tprintf("****** VMS ARE BROKEN! Exiting\n *****");
-                    exit(200);
-                }
-
-                //  checking all nodes and restart if needed
-                tprintf("Checking Master/Slave\n");
-                int attempts = 2;
-
-                while (attempts > 0)
-                {
-                    repl->close_connections();
-                    galera->close_connections();
-
-                    int err = 0;
-                    if (repl->check_replication(0))
-                    {
-                        tprintf("Backend broken! Restarting replication nodes\n");
-
-                        if (attempts != 2)
-                        {
-                            repl->stop_nodes();
-                        }
-
-                        repl->start_replication();
-                        err++;
-                    }
-
-                    if (galera->check_galera())
-                    {
-                        tprintf("Backend broken! Restarting Galera nodes\n");
-
-                        if (attempts != 2)
-                        {
-                            galera->stop_nodes();
-                        }
-
-                        galera->start_galera();
-                        err++;
-                    }
-
-                    if (err == 0)
-                    {
-                        break;
-                    }
-
-                    attempts--;
-                }
-
-                if (attempts == 0)
-                {
-                    tprintf("****** BACKEND IS STILL BROKEN! Exiting\n *****");
-                    exit(200);
-                }
-
-                // Flush hosts
-                repl->flush_hosts();
-                galera->flush_hosts();
-            }
+            exit(200);
         }
     }
 
@@ -243,11 +153,9 @@ copy_logs(true), use_snapshots(false), verbose(false)
     {
         tprintf("Configuring backends for ssl \n");
         repl->configure_ssl(true);
-        ssl = true;
-        repl->ssl = true;
         galera->configure_ssl(false);
-        galera->ssl = true;
-        galera->start_galera();
+        galera->start_replication();
+        repl->ssl = true;
     }
 
     timeout = 999999999;
@@ -273,29 +181,6 @@ TestConnections::~TestConnections()
 
     delete repl;
     delete galera;
-}
-
-TestConnections::TestConnections()
-{
-    galera = new Mariadb_nodes((char *)"galera");
-    repl   = new Mariadb_nodes((char *)"repl");
-
-    global_result = 0;
-
-    rwsplit_port = 4006;
-    readconn_master_port = 4008;
-    readconn_slave_port = 4009;
-    ports[0] = rwsplit_port;
-    ports[1] = readconn_master_port;
-    ports[2] = readconn_slave_port;
-
-    read_env();
-
-    timeout = 999999999;
-    set_log_copy_interval(999999999);
-    pthread_create( &timeout_thread_p, NULL, timeout_thread, this);
-    pthread_create( &log_copy_thread_p, NULL, log_copy_thread, this);
-    gettimeofday(&start_time, NULL);
 }
 
 void TestConnections::add_result(int result, const char *format, ...)
@@ -325,11 +210,12 @@ void TestConnections::add_result(int result, const char *format, ...)
 int TestConnections::read_env()
 {
 
-    char * env;
-    int i;
-    printf("Reading test setup configuration from environmental variables\n");
-    galera->read_env();
-    repl->read_env();
+    char *env;
+
+    if (verbose)
+    {
+        printf("Reading test setup configuration from environmental variables\n");
+    }
 
     env = getenv("maxscale_IP"); if (env != NULL) {sprintf(maxscale_IP, "%s", env);}
     env = getenv("maxscale_user"); if (env != NULL) {sprintf(maxscale_user, "%s", env); } else {sprintf(maxscale_user, "skysql");}
@@ -351,6 +237,9 @@ int TestConnections::read_env()
     ssl = false;
     env = getenv("ssl"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {ssl = true;}
     env = getenv("mysql51_only"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_nodes_check = true;}
+
+    env = getenv("no_nodes_check"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_nodes_check = true;}
+    env = getenv("no_backend_log_copy"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_backend_log_copy = true;}
 
     env = getenv("maxscale_hostname"); if (env != NULL) {sprintf(maxscale_hostname, "%s", env);} else {sprintf(maxscale_hostname, "%s", maxscale_IP);}
 
@@ -576,8 +465,11 @@ int TestConnections::copy_all_logs()
     char str[4096];
     set_timeout(300);
 
-    copy_mariadb_logs(repl, (char *) "node");
-    copy_mariadb_logs(galera, (char *) "galera");
+    if (!no_backend_log_copy)
+    {
+        copy_mariadb_logs(repl, (char *) "node");
+        copy_mariadb_logs(galera, (char *) "galera");
+    }
 
     sprintf(str, "%s/copy_logs.sh %s", test_dir, test_name);
     tprintf("Executing %s\n", str);
