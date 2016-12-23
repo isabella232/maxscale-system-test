@@ -17,7 +17,7 @@
 int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
-    Test->set_timeout(20);
+    Test->set_timeout(60);
 
     Test->repl->connect();
     Test->connect_maxscale();
