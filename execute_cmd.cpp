@@ -30,7 +30,15 @@ int execute_cmd(char * cmd, char ** res)
 
     * res = result;
 
-    return(pclose(output)/256);
+    int return_code = pclose(output);
+    if (WIFEXITED(return_code))
+    {
+      return WEXITSTATUS(return_code);
+    }
+    else
+    {
+      return -1;
+    }
 }
 
 
