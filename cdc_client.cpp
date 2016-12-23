@@ -199,7 +199,14 @@ int main(int argc, char *argv[])
     Test->repl->close_connections();
 
     Test->stop_timeout();
-    sleep(10);
+    Test->tprintf("Waiting 60 seconds for binlogs to be processed.\n"
+                  "\n"
+                  "+------------------------------------------------------------+\n"
+                  "!                                                            !\n"
+                  "! This is not OK as we should be able to connect immediately !\n"
+                  "!                                                            !\n"
+                  "+------------------------------------------------------------+\n");
+    sleep(60);
 
     Test->set_timeout(120);
 
