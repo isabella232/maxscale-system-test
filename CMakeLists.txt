@@ -252,6 +252,9 @@ add_test_executable(setup_binlog.cpp setup_binlog setup_binlog LABELS binlogrout
 add_test_executable(setup_binlog_crc_32.cpp setup_binlog_crc_32 setup_binlog LABELS binlogrouter)
 add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog LABELS binlogrouter LIGHT)
 
+# Creates KDC and tries authrization via GSSAPI
+add_test_executable(kerberos_setup.cpp kerberos_setup kerberos LABELS HEAVY gssapi)
+
 add_test_executable_notest(delete_rds.cpp delete_rds replication LABELS EXTERN_BACKEND)
 add_test_executable_notest(create_rds.cpp create_rds replication LABELS EXTERN_BACKEND)
 
