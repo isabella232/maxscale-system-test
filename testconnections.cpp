@@ -238,6 +238,9 @@ int TestConnections::read_env()
     env = getenv("ssl"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {ssl = true;}
     env = getenv("mysql51_only"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_nodes_check = true;}
 
+    env = getenv("no_nodes_check"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_nodes_check = true;}
+    env = getenv("no_backend_log_copy"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_backend_log_copy = true;}
+
     env = getenv("maxscale_hostname"); if (env != NULL) {sprintf(maxscale_hostname, "%s", env);} else {sprintf(maxscale_hostname, "%s", maxscale_IP);}
 
     env = getenv("backend_ssl"); if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {backend_ssl = true;} else {backend_ssl = false;}
@@ -464,8 +467,11 @@ int TestConnections::copy_all_logs()
     char str[4096];
     set_timeout(300);
 
-    copy_mariadb_logs(repl, (char *) "node");
-    copy_mariadb_logs(galera, (char *) "galera");
+    if (!no_backend_log_copy)
+    {
+        copy_mariadb_logs(repl, (char *) "node");
+        copy_mariadb_logs(galera, (char *) "galera");
+    }
 
     sprintf(str, "%s/copy_logs.sh %s", test_dir, test_name);
     tprintf("Executing %s\n", str);

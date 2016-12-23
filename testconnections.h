@@ -115,7 +115,7 @@ public:
     /**
      * @brief Maxscale_IP   Maxscale machine IP address
      */
-    char maxscale_IP[16];
+    char maxscale_IP[1024];
 
     /**
      * @brief maxscale_hostname  Maxscale machine 'hostname' value
@@ -219,6 +219,11 @@ public:
      * @brief no_nodes_check if true nodes are not checked before test and are not restarted
      */
     bool no_nodes_check;
+
+    /**
+     * @brief no_backend_log_copy if true logs from backends are not copied (needed if case of Aurora RDS backend or similar)
+     */
+    bool no_backend_log_copy;
 
     /**
      * @brief verbose if true more printing activated

@@ -40,7 +40,7 @@ find_library(MYSQL_CLIENT mariadbclient mysqlclient PATH_SUFFIXES mysql mariadb)
 add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
-  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp)
+  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp rds_vpc.cpp execute_cmd.cpp)
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 
@@ -252,6 +252,9 @@ add_test_executable(setup_binlog.cpp setup_binlog setup_binlog LABELS binlogrout
 add_test_executable(setup_binlog_crc_32.cpp setup_binlog_crc_32 setup_binlog LABELS binlogrouter)
 add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog LABELS binlogrouter LIGHT)
 
+add_test_executable_notest(delete_rds.cpp delete_rds replication LABELS EXTERN_BACKEND)
+add_test_executable_notest(create_rds.cpp create_rds replication LABELS EXTERN_BACKEND)
+
 # enable after fixing MXS-419
 # add_test_executable(mxs419_lots_of_connections.cpp mxs419_lots_of_connections replication)
 
@@ -262,8 +265,8 @@ add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog
 # 'persistpoolmax' without any warning
 #add_test_executable(bad_pers.cpp bad_pers bad_pers)
 
-# Disabled until test system supports RDS backends
-# add_test_executable(auroramon.cpp auroramon auroramon)
+# Test Aurora RDS monitor
+add_test_executable(auroramon.cpp auroramon auroramon LABELS HEAVY EXTERNAL_BACKEND)
 
 # Disabled for the time being
 # add_test_executable(gatekeeper.cpp gatekeeper gatekeeper LABELS gatekeeper)

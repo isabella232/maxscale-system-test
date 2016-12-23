@@ -8,8 +8,8 @@ log_warning=1
 type=monitor
 module=auroramon
 servers=server1,server2,server3,server4
-user=maxskysql
-passwd=skysql
+user=skysql
+passwd=skysqlrds
 monitor_interval=1000
 
 # Services
@@ -18,8 +18,8 @@ monitor_interval=1000
 type=service
 router=readwritesplit
 servers=server1,server2,server3,server4
-user=maxskysql
-passwd=skysql
+user=skysql
+passwd=skysqlrds
 
 [CLI]
 type=service
