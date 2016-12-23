@@ -123,7 +123,6 @@ int main(int argc, char *argv[])
                 Test->repl->ssh_node(1, "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4009", false),
                 "Error executing query against Read Connection Slave\n");
 
-    printf("\n\n%d\n\n", Test->global_result);
     Test->copy_all_logs(); return(Test->global_result);
 }
 
