@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 
     int i;
 
+    // To be moved to MDBCI
     Test->tprintf("Creating 'hosts' file\n");
     FILE * f;
     f = fopen("hosts", "wt");
@@ -72,11 +73,9 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating principal\n");
     Test->ssh_maxscale(true, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey mariadb/maxscale.test\"");
-    //Test->ssh_maxscale(true, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey usr1\"");
 
     Test->tprintf("Creating keytab file\n");
     Test->ssh_maxscale(true, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd mariadb/maxscale.test\"");
-    //Test->ssh_maxscale(true, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd usr1\"");
 
     Test->tprintf("Making keytab file readable for all\n");
     Test->ssh_maxscale(true, (char *) "chmod a+r /etc/krb5.keytab;");
@@ -90,11 +89,6 @@ int main(int argc, char *argv[])
     Test->tprintf("Coping keytab and .cnf files to all nodes and executing knit for all nodes\n");
     for (i = 0; i < Test->repl->N; i++)
     {
-//        Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey mariadb/maxscale.test\"", true);
-//        Test->repl->ssh_node(i, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd mariadb/maxscale.test\"", true);
-
-//        Test->repl->ssh_node(i, (char *) "chmod a+r /etc/krb5.keytab;", true);
-
         sprintf(str, "%s/kerb.cnf", Test->test_dir);
         Test->repl->copy_to_node(str, (char *) "~/", i);
         Test->repl->ssh_node(i, (char *) "cp ~/kerb.cnf /etc/my.cnf.d/", true);

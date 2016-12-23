@@ -386,10 +386,8 @@ int TestConnections::print_env()
 const char * get_template_name(char * test_name)
 {
     int i = 0;
-printf("test name is %s\n", test_name);
     while (cnf_templates[i].test_name && strcmp(cnf_templates[i].test_name, test_name) != 0)
     {
-printf("%s\n", cnf_templates[i].test_name) ;
         i++;
     }
 
