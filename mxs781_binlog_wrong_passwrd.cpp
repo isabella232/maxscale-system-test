@@ -23,6 +23,7 @@ const char * setup_binlog_wrong_passwrd =
 
 int main(int argc, char *argv[])
 {
+    setenv("no_maxscale_start", "yes", 1);
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(30);
     char str[1024];

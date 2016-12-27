@@ -14,6 +14,7 @@
 
 int main(int argc, char *argv[])
 {
+    setenv("no_maxscale_start", "yes", 1);
     TestConnections * Test = new TestConnections(argc, argv);
     Test->tprintf("Test object initialized\n");
     Test->set_timeout(3000);

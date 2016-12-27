@@ -221,6 +221,11 @@ public:
     bool no_nodes_check;
 
     /**
+     * @brief no_maxscale_start Do not start Maxscale automaticaly when TestConnections created
+     */
+    bool no_maxscale_start;
+
+    /**
      * @brief no_backend_log_copy if true logs from backends are not copied (needed if case of Aurora RDS backend or similar)
      */
     bool no_backend_log_copy;
