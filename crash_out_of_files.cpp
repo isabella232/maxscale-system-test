@@ -1,3 +1,9 @@
+/**
+ * @file crash_ot_of_files.cpp Tries to open to many connections, expect no crash
+ * - set global max_connections = 20
+ * - create load on RWSplit using big number of threads (e.g. 100)
+ * - check that no backends are disconnected with error ""refresh rate limit exceeded"
+ */
 
 #include "testconnections.h"
 #include "sql_t1.h"

@@ -242,34 +242,65 @@ add_test_executable(different_size_rwsplit.cpp different_size_rwsplit replicatio
 add_test_executable(encrypted_passwords.cpp encrypted_passwords replication LABELS maxscale LIGHT REPL_BACKEND)
 
 # MySQL Monitor Failover Test
-add_test_executable(failover_mysqlmon.cpp failover_mysqlmon failover_mysqlmon LABELS mysqlmon)
+add_test_executable(failover_mysqlmon.cpp failover_mysqlmon failover_mysqlmon LABELS mysqlmon REPL_BACKEND)
 
 # A set of tests for Firewall filter
-add_test_executable(fwf.cpp fwf fwf LABELS dbfwfilter)
-add_test_executable(fwf2.cpp fwf2 fwf LABELS dbfwfilter)
-add_test_executable(fwf_actions.cpp fwf_actions fwf_action LABELS dbfwfilter)
-add_test_executable(fwf_logging.cpp fwf_logging fwf_logging LABELS dbfwfilter)
-add_test_executable(fwf_reload.cpp fwf_reload fwf LABELS dbfwfilter)
-add_test_executable(fwf_syntax.cpp fwf_syntax fwf_syntax LABELS dbfwfilter)
+add_test_executable(fwf.cpp fwf fwf LABELS dbfwfilter REPL_BACKEND)
+add_test_executable(fwf2.cpp fwf2 fwf LABELS dbfwfilter REPL_BACKEND)
+add_test_executable(fwf_actions.cpp fwf_actions fwf_action LABELS dbfwfilter REPL_BACKEND)
+add_test_executable(fwf_logging.cpp fwf_logging fwf_logging LABELS dbfwfilter REPL_BACKEND)
+add_test_executable(fwf_reload.cpp fwf_reload fwf LABELS dbfwfilter REPL_BACKEND)
+add_test_executable(fwf_syntax.cpp fwf_syntax fwf_syntax LABELS dbfwfilter REPL_BACKEND)
 
-#
-add_test_executable(galera_priority.cpp galera_priority galera_priority LABELS galeramon LIGHT)
-add_test_executable(kill_master.cpp kill_master replication LABELS readwritesplit LIGHT)
-add_test_executable(load_balancing.cpp load_balancing load LABELS readwritesplit LIGHT)
-add_test_executable(load_balancing_galera.cpp load_balancing_galera load_galera LABELS readwritesplit)
-add_test_script(load_balancing_galera_pers1 load_balancing_galera load_galera_pers1 LABELS readwritesplit HEAVY)
-add_test_script(load_balancing_galera_pers10 load_balancing_galera load_galera_pers10 LABELS readwritesplit HEAVY)
-add_test_script(load_balancing_pers1 load_balancing load_pers1 LABELS readwritesplit HEAVY)
-add_test_script(load_balancing_pers10 load_balancing load_pers10 LABELS readwritesplit HEAVY)
-add_test_executable_notest(long_sysbench.cpp long_sysbench replication LABELS readwritesplit)
-add_test_executable(longblob.cpp longblob longblob LABELS readwritesplit readconnroute UNSTABLE HEAVY)
-add_test_executable(lots_of_rows.cpp lots_of_rows galera LABELS readwritesplit HEAVY)
-add_test_script(mariadb_tests_hartmut.sh mariadb_tests_hartmut.sh replication LABELS readwritesplit)
-add_test_script(mariadb_tests_hartmut_galera.sh mariadb_tests_hartmut_galera.sh replication LABELS readwritesplit)
-add_test_executable(max_connections.cpp max_connections replication LABELS MySQLAuth MySQLProtocol UNSTABLE HEAVY HEAVY)
-add_test_executable(maxinfo.cpp maxinfocpp maxinfo LABELS maxinfo UNSTABLE HEAVY)
-add_test_script(maxinfo.py maxinfo.py maxinfo LABELS maxinfo LIGHT)
-add_test_executable(maxscale_process_user.cpp maxscale_process_user replication LABELS maxscale LIGHT)
+# Galera node priority test
+add_test_executable(galera_priority.cpp galera_priority galera_priority LABELS galeramon LIGHT GALERA_BACKEND)
+
+# Block and unblock Master and check that Maxscale survived
+add_test_executable(kill_master.cpp kill_master replication LABELS readwritesplit LIGHT REPL_BACKEND)
+
+# Checks load balancing parameters
+add_test_executable(load_balancing.cpp load_balancing load LABELS readwritesplit LIGHT REPL_BACKEND)
+
+# Checks load balancing parameters with Galera backend
+add_test_executable(load_balancing_galera.cpp load_balancing_galera load_galera LABELS readwritesplit GALERA_BACKEND)
+
+# Checks load balancing parameters with Galera backend and 1 persistent connection
+add_test_script(load_balancing_galera_pers1 load_balancing_galera load_galera_pers1 LABELS readwritesplit HEAVY GALERA_BACKEND)
+
+# Checks load balancing parameters with Galera backend and 10 persistent connections
+add_test_script(load_balancing_galera_pers10 load_balancing_galera load_galera_pers10 LABELS readwritesplit HEAVY GALERA_BACKEND)
+
+# Checks load balancing parameters with 1 persistent connection
+add_test_script(load_balancing_pers1 load_balancing load_pers1 LABELS readwritesplit HEAVY REPL_BACKEND)
+
+# Checks load balancing parameters with 10 persistent connections
+add_test_script(load_balancing_pers10 load_balancing load_pers10 LABELS readwritesplit HEAVY REPL_BACKEND)
+
+# Test with extremely bin blob inserting
+add_test_executable(longblob.cpp longblob longblob LABELS readwritesplit readconnroute UNSTABLE HEAVY REPL_BACKEND)
+
+# INSERT extremelly big number of rows
+add_test_executable(lots_of_rows.cpp lots_of_rows galera LABELS readwritesplit HEAVY GALERA_BACKEND)
+
+# A set of MariaDB server tests executed against Maxscale RWSplit
+add_test_script(mariadb_tests_hartmut.sh mariadb_tests_hartmut.sh replication LABELS readwritesplit REPL_BACKEND)
+
+# A set of MariaDB server tests executed against Maxscale RWSplit (Galera backend)
+add_test_script(mariadb_tests_hartmut_galera.sh mariadb_tests_hartmut_galera.sh replication LABELS readwritesplit GALERA_BACKEND)
+
+# Creates a number of connections > max_connections setting
+add_test_executable(max_connections.cpp max_connections replication LABELS MySQLAuth MySQLProtocol UNSTABLE HEAVY REPL_BACKEND)
+
+# Test of Maxinfo interface (http)
+add_test_executable(maxinfo.cpp maxinfocpp maxinfo LABELS maxinfo UNSTABLE HEAVY REPL_BACKEND)
+
+# Test of Maxinfo interface (http), python impelemntation
+add_test_script(maxinfo.py maxinfo.py maxinfo LABELS maxinfo LIGHT REPL_BACKEND)
+
+# Checks tha Maxscale processis running as 'maxscale' user
+add_test_executable(maxscale_process_user.cpp maxscale_process_user replication LABELS maxscale LIGHT REPL_BACKEND)
+
+
 add_test_executable(mm.cpp mm mm LABELS mmmon)
 add_test_executable(mm_mysqlmon.cpp mm_mysqlmon mm_mysqlmon LABELS mysqlmon)
 add_test_executable(mxs118.cpp mxs118 mxs118 LABELS maxscale LIGHT)
@@ -384,6 +415,8 @@ add_test_executable(kerberos_setup.cpp kerberos_setup kerberos LABELS HEAVY gssa
 
 add_test_executable_notest(delete_rds.cpp delete_rds replication LABELS EXTERN_BACKEND)
 add_test_executable_notest(create_rds.cpp create_rds replication LABELS EXTERN_BACKEND)
+
+add_test_executable_notest(long_sysbench.cpp long_sysbench replication LABELS readwritesplit)
 
 # enable after fixing MXS-419
 # add_test_executable(mxs419_lots_of_connections.cpp mxs419_lots_of_connections replication)

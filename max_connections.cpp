@@ -1,3 +1,11 @@
+/**
+ * @file max_connections.cpp Creates a number of connections > max_connections setting
+ * - set global max_connections = 20
+ * - create 20 connections, find on which iteration query start to fail
+ * - when limit is found close last 2 connections
+ * - in the loop: open two connections, expect first to succeed, second to fail, close them both and repeat
+ * - close all connections
+ */
 
 #include "testconnections.h"
 

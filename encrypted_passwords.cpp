@@ -1,5 +1,6 @@
 /**
  * @file encrypted_passwords.cpp - Test maxkeys and maxpasswd interaction with MaxScale
+ * - put encrypted password into maxscale.cnf and try to use Maxscale
  */
 
 #include <iostream>

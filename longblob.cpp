@@ -1,5 +1,6 @@
 /**
  * @file longblob.cpp - trying to use LONGBLOB
+ * - try to insert large BLOB, MEDIUMBLOB and LONGBLOB via RWSplit, ReadConn Master and directly to backend
  */
 
 
