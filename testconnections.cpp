@@ -23,8 +23,8 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
 
     read_env();
 
+    bool no_maxscale_init = false;
     bool no_maxscale_stop = false;
-    bool no_maxscale_start = false;
     no_nodes_check = false;
 
     int c;
@@ -75,14 +75,19 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
                     "-v, --verbose\n"
                     "-q, --silent\n"
                     "-s, --no-maxscale-start\n"
+                    "-i, --no-maxscale-init\n"
                     "-d, --no-maxscale-stop\n"
                     "-g, --restart-galera\n");
             exit(0);
             break;
 
         case 's':
-            printf ("Maxscale won't be started and Maxscale.cnf won't be uploaded\n");
+            printf ("Maxscale won't be started\n");
             no_maxscale_start = true;
+            break;
+        case 'i':
+            printf ("Maxscale won't be started and Maxscale.cnf won't be uploaded\n");
+            no_maxscale_init = true;
             break;
 
         case 'd':
@@ -144,7 +149,7 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
         }
     }
 
-    if (!no_maxscale_start)
+    if (!no_maxscale_init)
     {
         init_maxscale();
     }
@@ -257,6 +262,8 @@ int TestConnections::read_env()
     env = getenv("use_snapshots"); if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {use_snapshots = true;} else {use_snapshots = false;}
     env = getenv("take_snapshot_command"); if (env != NULL) {sprintf(take_snapshot_command, "%s", env);} else {sprintf(take_snapshot_command, "exit 1");}
     env = getenv("revert_snapshot_command"); if (env != NULL) {sprintf(revert_snapshot_command, "%s", env);} else {sprintf(revert_snapshot_command, "exit 1");}
+
+    env = getenv("no_maxscale_start"); if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_maxscale_start = true;} else {no_maxscale_start = false;}
 }
 
 int TestConnections::print_env()
@@ -363,15 +370,29 @@ int TestConnections::init_maxscale()
     sprintf(str, "cp %s/ssl-cert/* .", test_dir);
     system(str);
 
-    ssh_maxscale_sh(true, "chown maxscale:maxscale -R %s/certs;"
-                    "chmod 664 %s/certs/*.pem;"
-                    " chmod a+x %s;"
-                    "killall -9 maxscale;"
-                    "rm -f %s/maxscale.log %s/maxscale1.log;"
-                    "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;"
-                    "service maxscale restart",
-                    maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
-                    maxscale_log_dir, maxscale_log_dir);
+    if (no_maxscale_start)
+    {
+        ssh_maxscale_sh(true, "chown maxscale:maxscale -R %s/certs;"
+                        "chmod 664 %s/certs/*.pem;"
+                        " chmod a+x %s;"
+                        "killall -9 maxscale;"
+                        "rm -f %s/maxscale.log %s/maxscale1.log;"
+                        "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;",
+                        maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
+                        maxscale_log_dir, maxscale_log_dir);
+    }
+    else
+    {
+        ssh_maxscale_sh(true, "chown maxscale:maxscale -R %s/certs;"
+                        "chmod 664 %s/certs/*.pem;"
+                        " chmod a+x %s;"
+                        "killall -9 maxscale;"
+                        "rm -f %s/maxscale.log %s/maxscale1.log;"
+                        "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;"
+                        "service maxscale restart",
+                        maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
+                        maxscale_log_dir, maxscale_log_dir);
+    }
 
     fflush(stdout);
 
