@@ -1,5 +1,5 @@
 /**
- * @file bug673.cpp  regression case for bug673 ("MaxScale crashes if "Users table data" is empty and "show dbusers" is executed in maxadmin")
+ * @file bug673.cpp regression case for bug673 ("MaxScale crashes if "Users table data" is empty and "show dbusers" is executed in maxadmin")
  *
  * - configure wrong IP for all backends
  * - execute maxadmin command show dbusers "RW Split Router"

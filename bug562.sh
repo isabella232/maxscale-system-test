@@ -1,5 +1,10 @@
 #!/bin/bash
 
+###
+## @file bug562.sh Regression case for the bug "Wrong error message for Access denied error"
+## - try to connect with bad credestials directly to MariaDB server and via Maxscale
+## - compare error messages 
+
 rp=`realpath $0`
 export test_dir=`dirname $rp`
 export test_name=`basename $rp`

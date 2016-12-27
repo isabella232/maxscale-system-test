@@ -1,7 +1,7 @@
 /**
  * @file bug699.cpp regression case for bug 699 ( "rw-split sensitive to order of terms in field list of SELECT (round 2)" )
  *
- * - campare @@hostname from "select  @@wsrep_node_name, @@hostname" and "select  @@hostname, @@wsrep_node_name"
+ * - compare @@hostname from "select  @@wsrep_node_name, @@hostname" and "select  @@hostname, @@wsrep_node_name"
  * - comapre @@server_id from "select  @@wsrep_node_name, @@server_id" and "select  @@server_id, @@wsrep_node_name"
  */
 

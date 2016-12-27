@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void CreateDropBadUser(MYSQL * conn, TestConnections * Test)
+void create_drop_bad_user(MYSQL * conn, TestConnections * Test)
 {
 
     Test->try_query(conn, (char *) "GRANT ALL PRIVILEGES ON *.* TO  'foo'@'*.foo.notexists' IDENTIFIED BY 'foo';");
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     Test->connect_maxscale();
 
     Test->tprintf("Trying GRANT for with bad IP: RWSplit\n");
-    CreateDropBadUser(Test->conn_rwsplit, Test);
+    create_drop_bad_user(Test->conn_rwsplit, Test);
 
     Test->tprintf("Trying SELECT to check if Maxscale hangs\n");
     Test->try_query(Test->conn_rwsplit, (char *) "select * from mysql.user");

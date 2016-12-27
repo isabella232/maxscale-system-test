@@ -1,5 +1,12 @@
 /**
- * MySQL Monitor Failover Test
+ * @file failover_mysqlmon.cpp MySQL Monitor Failover Test
+ * - block all nodes, but one
+ * - wait for minitor (monitor_interval)
+ * - check maxadmin output
+ * - check that queries work
+ * - unblock backend nodes
+ * - wait for monitor
+ * - check that we are still using the last node to which we failed over to and that the old nodes are in maintenance mode
  */
 
 

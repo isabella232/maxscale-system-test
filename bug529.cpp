@@ -1,5 +1,5 @@
 /**
- * @file bug529.cpp regression case for bug 529 ( "Current no. of conns not going down" )
+ * @file bug529.cpp regression case for bug 529 ( "'Current no. of conns' not going down" )
  *
  * - create table, opens 50 connections for every router, fill table with data using these connections.
  * - check number of connections to Master - failure if there are more then 100 connections to master.

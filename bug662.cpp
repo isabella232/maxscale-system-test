@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Connecting to Maxscale %s\n", Test->maxscale_IP);
 
-    Test->tprintf("Connecting to Maxscale %s to check its behaviour in case of blocking all bacxkends\n", Test->maxscale_IP);
+    Test->tprintf("Connecting to Maxscale %s to check its behaviour in case of blocking all backends\n", Test->maxscale_IP);
     Test->connect_maxscale();
 
     for (i = 0; i < Test->repl->N; i++) {

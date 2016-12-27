@@ -1,5 +1,5 @@
 /**
- * @file bug676.cpp  reproducing attempt for bug676 ("Memory corruption when users with long hostnames that can no the resolved are loaded into MaxScale")
+ * @file bug676.cpp  reproducing attempt for bug676
  * - Configuration
  * @verbatim
 [MySQL Monitor]
@@ -246,7 +246,6 @@ int main(int argc, char *argv[])
     Test->set_timeout(20);
 
     int i;
-    char sys1[4096];
 
     MYSQL * conn = open_conn_no_db(Test->rwsplit_port, Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, Test->ssl);
 

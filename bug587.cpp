@@ -1,5 +1,5 @@
 /**
- * @file bug587.cpp  regression case for bug 587 ( "  Hint filter don't work if listed before regex filter in configuration file" )
+ * @file bug587.cpp  regression case for the bug 587 ( "Hint filter don't work if listed before regex filter in configuration file" )
  *
  * - Maxscale.cnf
  * @verbatim

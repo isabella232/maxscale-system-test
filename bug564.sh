@@ -1,5 +1,10 @@
 #!/bin/bash
 
+###
+## @file bug564.sh Regression case for the bug "Wrong charset settings"
+## - call MariaDB client with different --default-character-set= settings
+## - check output of SHOW VARIABLES LIKE 'char%'  
+
 rp=`realpath $0`
 export test_dir=`dirname $rp`
 export test_name=`basename $rp`

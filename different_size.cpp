@@ -1,9 +1,3 @@
-/**
- * @file
- * - check if Maxscale is still alive
- */
-
-
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"
