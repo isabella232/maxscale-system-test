@@ -1,9 +1,10 @@
 /**
- * @file mxs716.cpp Test for MXS-716
+ * @file mxs716.cpp Test for MXS-716 ("Access Denied: User without global privileges on a schema
+ * but with grants only on some tables can't connect if the default schema is specified
+ * in the connection string")
  *
- * Connect using different default databases with database and table level grants.
+ * - Connect using different default databases with database and table level grants.
  */
-
 
 
 #include <iostream>

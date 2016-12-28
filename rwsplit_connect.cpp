@@ -1,3 +1,8 @@
+/**
+ * @file rwsplit_connect.cpp Check that there is one connection to Master and one connection to one of slaves
+ * - connecto to RWSplit
+ * - check number of connections on every backend, expect one active Slave and one connection to Master
+ */
 
 #include "testconnections.h"
 

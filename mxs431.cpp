@@ -1,5 +1,5 @@
 /**
- * @file mxs431.cpp Bug regression test case for MXS-431: https://mariadb.atlassian.net/browse/MXS-431
+ * @file mxs431.cpp Bug regression test case for MXS-431: ("Backend authentication fails with schemarouter")
  *
  * - Create database 'testdb' on one node
  * - Connect repeatedly to MaxScale with 'testdb' as the default database and execute SELECT 1

@@ -1,10 +1,9 @@
 /**
- * @file local_infile.cpp Load data with LOAD DATA LOCAL INFILE
+ * @file mxs365.cpp Load data with LOAD DATA LOCAL INFILE
  *
  * 1. Create a 50Mb test file
  * 2. Load and read it through MaxScale
  */
-
 
 
 #include "testconnections.h"

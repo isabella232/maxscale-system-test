@@ -1,6 +1,8 @@
-// some relations to bug#425
-// connect to no-existing DB
+/**
+  * @file connect_to_nonexisting_db.cpp Tries to connect to non existing DB, expects no crash
+  */
 
+// some relations to bug#425
 
 #include <iostream>
 #include "testconnections.h"

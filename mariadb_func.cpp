@@ -34,18 +34,6 @@ int set_ssl(MYSQL * conn)
     return(mysql_ssl_set(conn, client_key, client_cert, ca, NULL, NULL));
 }
 
-/**
- * Opens connection to DB: wropper over mysql_real_connect
- *
- * @param port	DB server port
- * @param ip	DB server IP address
- * @param db    name of DB to connect
- * @param User  User name
- * @param Password  Password
- * @param flag  Connections flags
- * @param ssl   true if ssl should be used
- * @return MYSQL struct or NULL in case of error
- */
 MYSQL * open_conn_db_flags(int port, const char* ip, const char* db, const char* User, const char* Password, unsigned long flag, bool ssl)
 {
     MYSQL * conn = mysql_init(NULL);
@@ -75,18 +63,6 @@ MYSQL * open_conn_db_flags(int port, const char* ip, const char* db, const char*
     return(conn);
 }
 
-/**
- * Opens connection to DB: wropper over mysql_real_connect
- *
- * @param port	DB server port
- * @param ip	DB server IP address
- * @param db    name of DB to connect
- * @param User  User name
- * @param Password  Password
- * @param timeout  timeout on seconds
- * @param ssl   true if ssl should be used
- * @return MYSQL struct or NULL in case of error
- */
 MYSQL * open_conn_db_timeout(int port, const char* ip, const char* db, const char* User, const char* Password, unsigned long timeout, bool ssl)
 {
     MYSQL * conn = mysql_init(NULL);
@@ -123,60 +99,21 @@ MYSQL * open_conn_db_timeout(int port, const char* ip, const char* db, const cha
     return(conn);
 }
 
-/**
- * Opens connection to DB with default flags
- *
- * @param port	DB server port
- * @param ip	DB server IP address
- * @param db    name of DB to connect
- * @param User  User name
- * @param Password  Password
- * @param ssl   true if ssl should be used
- * @return MYSQL struct or NULL in case of error
- */
 MYSQL * open_conn_db(int port, const char* ip, const char* db, const char* User, const char* Password, bool ssl)
 {
     return(open_conn_db_flags(port, ip, db, User, Password, CLIENT_MULTI_STATEMENTS, ssl));
 }
 
-/**
- * Opens connection to 'test' with default flags
- *
- * @param port	DB server port
- * @param ip	DB server IP address
- * @param User  User name
- * @param Password  Password
- * @param ssl   true if ssl should be used
- * @return MYSQL struct or NULL in case of error
- */
 MYSQL * open_conn(int port, const char* ip, const char* User, const char* Password, bool ssl)
 {
     return(open_conn_db(port, ip, "test", User, Password, ssl));
 }
 
-/**
- * Opens connection to with default flags without defning DB name (just conecto server)
- *
- * @param port	DB server port
- * @param ip	DB server IP address
- * @param User  User name
- * @param Password  Password
- * @param ssl   true if ssl should be used
- * @return MYSQL struct or NULL in case of error
- */
 MYSQL * open_conn_no_db(int port, const char* ip, const char*User, const char*Password, bool ssl)
 {
     return(open_conn_db_flags(port, ip, NULL, User, Password, CLIENT_MULTI_STATEMENTS, ssl));
 }
 
-/**
- * Executes SQL query. Function also executes mysql_store_result() and mysql_free_result() to clea up returns
- *
- * @param conn      MYSQL connection
- * @param format    SQL string with printf style formatting
- * @param ...       Parameters for @c format
- * @return 0 in case of success
- */
 int execute_query(MYSQL *conn, const char *format, ...)
 {
     va_list valist;
@@ -194,9 +131,6 @@ int execute_query(MYSQL *conn, const char *format, ...)
     return(execute_query1(conn, sql, false));
 }
 
-/**
- * Read a line from a file, trim leading and trailing whitespace and execute it.
- */
 int execute_query_from_file(MYSQL *conn, FILE *file)
 {
     int rc = -1;
@@ -233,26 +167,11 @@ int execute_query_from_file(MYSQL *conn, FILE *file)
     return rc;
 }
 
-/**
- * Executes SQL query. Function also executes mysql_store_result() and mysql_free_result() to clea up returns; function do not produce any printing
- *
- * @param MYSQL	connection struct
- * @param sql	SQL string
- * @return 0 in case of success
- */
 int execute_query_silent(MYSQL *conn, const char *sql)
 {
     return(execute_query1(conn, sql, true));
 }
 
-/**
- * Executes SQL query. Function also executes mysql_store_result() and mysql_free_result() to clea up returns; function do not produce any printing
- *
- * @param MYSQL	connection struct
- * @param sql	SQL string
- * @param silent if true function do not produce any printing
- * @return 0 in case of success
- */
 int execute_query1(MYSQL *conn, const char *sql, bool silent)
 {
     MYSQL_RES *res;
@@ -347,16 +266,6 @@ int execute_query_check_one(MYSQL *conn, const char *sql, const char *expected)
     return r;
 }
 
-
-
-/**
- * Executes SQL query and store 'affected rows' number in affectet_rows parameter
- *
- * @param MYSQL	connection struct
- * @param sql	SQL string
- * @param affected_rows pointer to variabe to store number of affected rows
- * @return 0 in case of success
- */
 int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * affected_rows)
 {
     MYSQL_RES *res;
@@ -379,14 +288,6 @@ int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * aff
     }
 }
 
-/**
- * Executes 'show processlist' and calculates number of connections from definec host to defined DB
- *
- * @param MYSQL	connection struct
- * @param ip	connections from this IP address are counted
- * @param db    name of DB to which connections are counted
- * @return number of connections
- */
 int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
 {
     MYSQL_RES *res;
@@ -423,15 +324,6 @@ int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
     return(conn_num);
 }
 
-/**
- * Find given filed in the SQL query reply
- *
- * @param MYSQL	connection struct
- * @param sql	SQL query to execute
- * @param filed_name    name of field to find
- * @param value pointer to variable to store value of found field
- * @return 0 in case of success
- */
 int find_field(MYSQL *conn, const char *sql, const char *field_name, char * value)
 {
     MYSQL_RES *res;
@@ -473,12 +365,6 @@ int find_field(MYSQL *conn, const char *sql, const char *field_name, char * valu
     return(ret);
 }
 
-/**
- * Return the value of SECONDS_BEHIND_MASTER
- *
- * @param MYSQL	connection struct
- * @return value of SECONDS_BEHIND_MASTER
- */
 unsigned int get_seconds_behind_master(MYSQL *conn)
 {
     char SBM_str[16];
@@ -492,14 +378,6 @@ unsigned int get_seconds_behind_master(MYSQL *conn)
     return(SBM);
 }
 
-
-/**
- * Reads MaxScale log file
- *
- * @param name  Name of log file (full path)
- * @param err_log_content   pointer to the buffer to store log file content
- * @return 0 in case of success, 1 in case of error
- */
 int read_log(char * name, char ** err_log_content_p)
 {
     FILE *f;

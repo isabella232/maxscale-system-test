@@ -1,6 +1,7 @@
 /**
  * @file mm test of multi master monitor
  *
+ * - us 'mmmon' module as a monitor
  * - reset master, stop slaves, stop all nodes
  * - start 2 nodes
  * - execute SET MASTER TO on node0 to point to node1 and on node1 to point to node0
@@ -60,6 +61,7 @@ int check_conf(TestConnections* Test, int blocked_node)
 
 int main(int argc, char *argv[])
 {
+    setenv("no_maxscale_start", "yes", 1);
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(120);
     char maxadmin_result[1024];

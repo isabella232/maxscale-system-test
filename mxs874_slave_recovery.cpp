@@ -1,12 +1,12 @@
 /**
- * @file
- * Start MaxScale with 1 master and 2 slaves
- * Connect to MaxScale with Readwritesplit
- * Execute SET @a=1
- * Block first slave
- * Wait until monitor detects it
- * Unblock first slave and block the second slave
- * First slave is not recovered
+ * @file mxs874_slave_recovery.cpp Block and unblock first and second slaves and check that they are recovered
+ * - Start MaxScale with 1 master and 2 slaves
+ * - Connect to MaxScale with Readwritesplit
+ * - Execute SET @a=1
+ * - Block first slave
+ * - Wait until monitor detects it
+ * - Unblock first slave and block the second slave
+ * - Check that first slave is recovered
  */
 
 

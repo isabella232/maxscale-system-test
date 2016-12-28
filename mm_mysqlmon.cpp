@@ -1,5 +1,16 @@
 /**
- * MySQL Monitor Multi-master Test
+ * @file mm_mysqlmon.cpp MySQL Monitor Multi-master Test
+ * - Configure all servers into a multi-master ring with one slave
+ * - check status using Maxadmin 'show servers' and 'show monitor "MySQL Monitor"'
+ * - Set nodes 0 and 1 into read-only mode
+ * - repeat status check
+ * - Configure nodes 1 and 2 (server2 and server3) into a master-master pair, make node 0 a slave of node 1 and node 3 a slave of node 2
+ * - repeat status check
+ * - Set node 1 into read-only mode
+ * - repeat status check
+ * - Create two distinct groups (server1 and server2 are masters for eache others and same for server3 and server4)
+ * - repeat status check
+ * - Set nodes 1 and 3 (server2 and server4) into read-only mode
  */
 
 

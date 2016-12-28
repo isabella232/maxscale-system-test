@@ -39,11 +39,11 @@ int main(int argc, char *argv[])
 
     sleep(1);
 
-    Test->tprintf("Trying query to RWSplit, expecting failure, but not a crash\n"); fflush(stdout);
+    Test->tprintf("Trying query to RWSplit, expecting failure, but not a crash\n");
     execute_query(Test->conn_rwsplit, (char *) "show processlist;");fflush(stdout);
-    Test->tprintf("Trying query to ReadConn master, expecting failure, but not a crash\n"); fflush(stdout);
+    Test->tprintf("Trying query to ReadConn master, expecting failure, but not a crash\n");
     execute_query(Test->conn_master, (char *) "show processlist;");fflush(stdout);
-    Test->tprintf("Trying query to ReadConn slave, expecting failure, but not a crash\n"); fflush(stdout);
+    Test->tprintf("Trying query to ReadConn slave, expecting failure, but not a crash\n");
     execute_query(Test->conn_slave, (char *) "show processlist;");fflush(stdout);
 
     sleep(1);

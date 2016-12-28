@@ -1,5 +1,5 @@
 /**
- * MXS-922: Double creation of listeners
+ * @file mxs922_double_listener.cpp MXS-922: Double creation of listeners
  *
  * Check that MaxScale doesn't crash when the same listeners are created twice.
  */

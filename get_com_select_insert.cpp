@@ -72,10 +72,10 @@ int get_global_status_allnodes(long int *selects, long int *inserts, Mariadb_nod
 /**
 Prints difference in COM_SELECT and COM_INSERT 
 */
-int print_delta(long int *new_selects, long int *new_inserts, long int *selects, long int *inserts, int NodesNum)
+int print_delta(long int *new_selects, long int *new_inserts, long int *selects, long int *inserts, int nodes_num)
 {
     int i;
-    for (i=0; i<NodesNum; i++) {
+    for (i=0; i<nodes_num; i++) {
         printf("COM_SELECT increase on node %d is %ld\n", i, new_selects[i]-selects[i]);
         printf("COM_INSERT increase on node %d is %ld\n", i, new_inserts[i]-inserts[i]);
     }

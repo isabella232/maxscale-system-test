@@ -1,5 +1,5 @@
 /**
- * @file bug670.cpp bug670 regression case ( Executing '\s' doesn't always produce complete result set)
+ * @file bug670.cpp bug670 regression case
  * configuration
  * @verbatim
 [MySQL Monitor]

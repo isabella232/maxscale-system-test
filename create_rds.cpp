@@ -1,3 +1,9 @@
+/**
+ * @file create_rds.cpp Creates RDS Aurora cluster with 4 instances
+ * Creates VPC, subnets, subnets group, internet gateway, routing table, routes, configure security group
+ * In case of any error tries to remove all created stuff
+ */
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

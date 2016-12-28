@@ -40,8 +40,6 @@ filters=QLA
  * try USE test command against all routers
  */
 
-
-
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

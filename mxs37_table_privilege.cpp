@@ -1,8 +1,8 @@
 /**
  * @file mxs37_table_privilege.cpp mxs37 (bug719) regression case ("mandatory SELECT privilege on db level?")
- *
+ * - create user with only 'SELECT' priveledge
+ * - try to connecto to MAxscle with this user
  */
-
 
 
 #include <iostream>

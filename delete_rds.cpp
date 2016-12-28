@@ -1,3 +1,8 @@
+/**
+ * @file delete_rds.cpp Destroys RDS Aurora cluster
+ * Creates VPC, subnets, subnets group, internet gateway, routing table, routes, DB instances
+ */
+
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

@@ -1,5 +1,5 @@
 /**
- * @file bug634.cpp  regression case for bug 634 ("SHOW SLAVE STATUS in RW SPLITTER is send to master")
+ * @file bug634.cpp regression case for bug 634 ("SHOW SLAVE STATUS in RW SPLITTER is send to master")
  *
  * - execute SHOW SLAVE STATUS and check resut
  */

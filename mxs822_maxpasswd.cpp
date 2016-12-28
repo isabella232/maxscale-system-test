@@ -8,9 +8,6 @@
  * - repeate for several other password with special characters
  */
 
-
-
-
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

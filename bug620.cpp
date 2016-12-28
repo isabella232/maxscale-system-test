@@ -3,7 +3,7 @@
  *
  * - Maxscale.cnf contains RWSplit router definition with enable_root_user=true
  * - GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'skysqlroot';
- * - try to coinnect using 'root' user and execute some query
+ * - try to connect using 'root' user and execute some query
  * - errors are not expected in the log. All Maxscale services should be alive.
  */
 

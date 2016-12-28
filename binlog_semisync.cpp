@@ -1,6 +1,5 @@
 /**
  * @file binlog_semisync.cpp Same test as setup_binlog, but with semisync enabled
-
  */
 
 

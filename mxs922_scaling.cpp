@@ -1,5 +1,5 @@
 /**
- * MXS-922: Server scaling test
+ * @file mxs922_scaling.cpp MXS-922: Server scaling test
  *
  */
 

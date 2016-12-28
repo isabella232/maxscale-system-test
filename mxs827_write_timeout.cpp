@@ -1,12 +1,9 @@
-
 /**
  * @file mxs827_write_timeout "ReadWriteSplit only keeps used connection alive, query crashes after unused connection times out"
  * - SET wait_timeout=20
  * - do only SELECT during 30 seconds
  * - try INSERT
  */
-
-
 
 #include <iostream>
 #include <unistd.h>

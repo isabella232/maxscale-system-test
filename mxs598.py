@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+
+###
+## @file mxs598.py Regression case for MXS-598 "SSL RW Router / JDBC Exception"
+## - use SSL for Maxscale client connection
+## - simple transactions in the loop
+
 import maxpython
 
 test1 = maxpython.MaxScaleTest("mxs598.py")

@@ -1,6 +1,6 @@
 /**
  * @file maxinfo.cpp maxinfo JSON listener test
- * sends 1000 'status' request to the listener
+ * - sends 1000 'status' request to the listener
  */
 
 

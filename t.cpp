@@ -1,5 +1,3 @@
-
-
 #include <iostream>
 #include <ctime>
 #include "testconnections.h"

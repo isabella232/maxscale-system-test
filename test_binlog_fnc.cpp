@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "testconnections.h"
 #include "maxadmin_operations.h"

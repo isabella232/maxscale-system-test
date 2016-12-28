@@ -1,9 +1,7 @@
 /**
- * @file mxs657_restart.cpp
- *
-
+ * @file mxs657_restart.cpp Regression case for MXS-657 ("Debug assertion when service is shut down and restarted repeatedly")
+ * - playing with 'restart service' and restart Maxscale under load
  */
-
 
 
 #include "testconnections.h"

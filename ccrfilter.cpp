@@ -1,11 +1,29 @@
+/**
+ * @file ccrfilter.cpp Tests for the CCRFilter module
+ * - configure Maxscale to use Consistent Critical Read Filter
+ * - configure CCR filter with parameter 'time=10'
+ * - Execute INSERT
+ * - check that SELECT goes to Master
+ * - wait 11 seconds
+ * - chat that SELECT goes to slave
+ * - configure CCR filter with parameter 'count=3'
+ * - execute INSERT
+ * - execute 5 SELECTs, check that first 3 go to Master, 2 last - to slave
+ * - configure CCR filter with parameter 'match=t2'
+ * - execute INSERT INTO  t1
+ * - check SELECTs go to SLAVE
+ * - execute INSERT INTO  t2
+ * - check SELECTs go to Master
+ * - configure CCR filter with parameter 'ignore=t1' and remove parameter 'match=t2'
+ * - execute INSERT INTO  t1
+ * - check SELECTs go to SLAVE
+ * - execute INSERT INTO  t2
+ * - check SELECTs go to Master
+ */
 
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"
-
-/**
- * Tests for the CCRFilter module
- */
 
 static int master_id;
 
