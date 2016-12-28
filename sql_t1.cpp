@@ -6,9 +6,6 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static char** sql = NULL;
 static size_t sql_size = 0;
 
-/**
-Executes SQL query 'sql' using 'conn' connection and print results
-*/
 int execute_select_query_and_check(MYSQL *conn, char *sql, unsigned long long int rows)
 {
     MYSQL_RES *res;
@@ -97,7 +94,7 @@ int create_insert_string(char* sql, int N, int fl)
     }
     wptr = strrchr(wptr, ',');
     sprintf(wptr, ";");
-
+    return 0;
 }
 
 char* allocate_insert_string(int fl, int N)
@@ -130,7 +127,6 @@ char* allocate_insert_string(int fl, int N)
     pthread_mutex_unlock(&mutex);
 
     return rval;
-
 }
 
 int insert_into_t1(MYSQL *conn, int N)

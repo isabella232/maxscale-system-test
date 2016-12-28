@@ -70,6 +70,9 @@ public:
      * @brief   Password to access backend nodes
      */
     char password[256];
+    /**
+     * @brief master index of node which was last configured to be Master
+     */
     int master;
     /**
      * @brief     name of backend setup (like 'repl' or 'galera')
@@ -84,11 +87,6 @@ public:
      */
     char start_vm_command[256][4096];
     /**
-    * @brief  Opens connctions to all backend nodes (to 'test' DB)
-    * @return 0 in case of success
-    */
-
-    /**
      * @brief start_db_command Command to start DB server
      */
     char start_db_command[256][4096];
@@ -99,10 +97,13 @@ public:
     char stop_db_command[256][4096];
 
     /**
-     * @brief ssl if true ssl  will be used
+     * @brief ssl if true ssl will be used
      */
     int ssl;
 
+    /**
+     * @brief access_user Unix users name to access nodes via ssh
+     */
     char access_user[256][256];
 
     /**
@@ -147,7 +148,7 @@ public:
      */
 
     /**
-    * @brief v51 true indicates that ione backed is 5.1
+    * @brief v51 true indicates that one backed is 5.1
     */
     bool v51;
 
@@ -160,13 +161,12 @@ public:
     /**
      * @brief List of blocked nodes
      */
-
     bool blocked[256];
 
     /**
-     * @brief connect Open MariaDB connections to all nodes
-     * @return 0 if success
-     */
+    * @brief  Open connctions to all backend nodes (to 'test' DB)
+    * @return 0 in case of success
+    */
     int connect();
 
     /**
@@ -187,6 +187,10 @@ public:
      */
     int print_env();
 
+    /**
+     * @brief find_master Tries to find Master node
+     * @return Index of Master node
+     */
     int find_master();
     /**
      * @brief change_master set a new master node for Master/Slave setup

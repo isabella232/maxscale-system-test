@@ -1,5 +1,5 @@
 /**
- * Repeatedly connect to maxscale while the backends reject all connections
+ * @backend_auth_fail.cpp Repeatedly connect to maxscale while the backends reject all connections
  *
  * MaxScale should not crash
  */

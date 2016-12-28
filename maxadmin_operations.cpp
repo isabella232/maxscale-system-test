@@ -18,13 +18,6 @@
 
 #include "maxadmin_operations.h"
 
-/**
- * Connect to the MaxScale server
- *
- * @param hostname	The hostname to connect to
- * @param port		The port to use for the connection
- * @return		The connected socket or -1 on error
- */
 int
 connectMaxScale(char *hostname, char *port)
 {
@@ -57,13 +50,6 @@ int			keepalive = 1;
 }
 
 
-/**
- * Set IP address in socket structure in_addr
- *
- * @param a	Pointer to a struct in_addr into which the address is written
- * @param p	The hostname to lookup
- * @return	1 on success, 0 on failure
- */
 int
 setipaddress(struct in_addr *a, char *p)
 {
@@ -111,14 +97,6 @@ setipaddress(struct in_addr *a, char *p)
 	return 0;
 }
 
-/**
- * Perform authentication using the maxscaled protocol conventions
- *
- * @param so		The socket connected to MaxScale
- * @param user		The username to authenticate
- * @param password	The password to authenticate with
- * @return		Non-zero of succesful authentication
- */
 int
 authMaxScale(int so, char *user, char *password)
 {
@@ -136,16 +114,6 @@ char	buf[20];
 	return strncmp(buf, "FAILED", 6);
 }
 
-/**
- * Send a comamnd using the MaxScaled protocol, display the return data
- * on standard output.
- *
- * Input terminates with a lien containing just the text OK
- *
- * @param so	The socket connect to MaxScale
- * @param cmd	The command to send
- * @return	0 if the connection was closed
- */
 int
 sendCommand(int so, char *cmd, char *buf)
 {
@@ -188,19 +156,6 @@ int k=0;
 	return 1;
 }
 
-/**
- * Send a comamnd using the MaxScaled protocol, search for certain
- * numeric parameter in MaxScaled output.
- *
- * Input terminates with a lien containing just the text OK
- *
- * @param user		The username to authenticate
- * @param password	The password to authenticate with
- * @param cmd       The command to send
- * @param param     Parameter to find
- * @param result    Value of found parameter
- * @return	0 if parameter is found
- */
 int
 get_maxadmin_param_tcp(char * hostname, char *user, char *password, char * cmd, char *param, char *result)
 {
@@ -240,16 +195,6 @@ get_maxadmin_param_tcp(char * hostname, char *user, char *password, char * cmd, 
     return(0);
 }
 
-/**
- * Send a comamnd using the MaxScaled protocol
- *
- * Input terminates with a lien containing just the text OK
- *
- * @param user		The username to authenticate
- * @param password	The password to authenticate with
- * @param cmd       The command to send
- * @return	0 if parameter is found
- */
 int
 execute_maxadmin_command_tcp(char * hostname, char *user, char *password, char * cmd)
 {

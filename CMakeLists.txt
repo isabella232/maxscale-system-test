@@ -599,14 +599,14 @@ add_test_executable(kerberos_setup.cpp kerberos_setup kerberos LABELS HEAVY gssa
 
 
 # enable after fixing MXS-419
-# add_test_executable(mxs419_lots_of_connections.cpp mxs419_lots_of_connections replication)
+# add_test_executable(mxs419_lots_of_connections.cpp mxs419_lots_of_connections replication LABELS REPL_BACKEND)
 
 # TODO: Alter the user_cache test
-# add_test_executable(user_cache.cpp user_cache user_cache)
+# add_test_executable(user_cache.cpp user_cache user_cache LABELS REPL_BACKEND)
 
 # https://mariadb.atlassian.net/browse/MXS-576 - it is possible to set negative value for
 # 'persistpoolmax' without any warning
-#add_test_executable(bad_pers.cpp bad_pers bad_pers)
+#add_test_executable(bad_pers.cpp bad_pers bad_pers LABELS REPL_BACKEND)
 
 # Test Aurora RDS monitor
 add_test_executable(auroramon.cpp auroramon auroramon LABELS HEAVY EXTERNAL_BACKEND)
