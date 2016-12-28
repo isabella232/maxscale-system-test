@@ -1,5 +1,9 @@
 #!/bin/bash
 
+###
+## @file run_session_hang.sh
+## run a set of queries in the loop (see setmix.sql) using Perl client
+
 #bug 454
 rp=`realpath $0`
 export test_dir=`dirname $rp`

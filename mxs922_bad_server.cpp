@@ -1,5 +1,5 @@
 /**
- * MXS-922: Server removal test
+ * @file mxs922_bad_server.cpp MXS-922: Server removal test
  *
  */
 

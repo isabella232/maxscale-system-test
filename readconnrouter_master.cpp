@@ -1,5 +1,5 @@
 /**
- * @file readconnrouter_master.cpp Connect to ReadConn in master mode and check if there is only one backend connection> to master
+ * @file readconnrouter_master.cpp Connect to ReadConn in master mode and check if there is only one backend connection to master
  *
  * - connect to ReadCon master
  * - expect only 1 connection to node 0 and no connections to ther nodes
@@ -10,7 +10,6 @@
  * - close connection
  * - change master back to node 0
  */
-
 
 
 #include <iostream>

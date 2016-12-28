@@ -1,3 +1,10 @@
+/**
+ * @file cdc_client.cpp Test of CDC protocol (avro listener)
+ * - configure binlog router setup, avro router, avro listener
+ * - connect to avro listener
+ * - start INSERT load thread
+ * - read data from avro listener, comapre it with inserted data
+ */
 
 #include <iostream>
 #include <unistd.h>
@@ -22,6 +29,11 @@ bool exit_flag = false;
 
 void *query_thread(void *ptr);
 
+/**
+ * @brief cdc_com Connects to avro listenet by CDC protocal, read data, compare data with inserted data
+ * @param Test TestConnections object
+ * @return true if test PASSED
+ */
 bool cdc_com(TestConnections *Test)
 {
     int max_inserted_val = Test->smoke ? 25 : 100;

@@ -1,4 +1,9 @@
 #!/bin/bash
+
+###
+## @file run_ctrl_c.sh
+## check that Maxscale is reacting correctly on ctrc+c signal and termination does not take ages
+
 rp=`realpath $0`
 export test_dir=`dirname $rp`
 export test_name=`basename $rp`

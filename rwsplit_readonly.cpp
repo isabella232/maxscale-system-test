@@ -1,5 +1,8 @@
 /**
- * @file rwsplit_readonly.cpp Testing of the read-only mode for readwritesplit when master fails
+ * @file rwsplit_readonly.cpp Test of the read-only mode for readwritesplit when master fails
+ * - check INSERTs via RWSplit
+ * - block Master
+ * - check SELECT and INSERT with -- fail_instantly, -- error_on_write, -- fail_on_write
  */
 
 

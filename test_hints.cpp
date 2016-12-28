@@ -1,5 +1,7 @@
 /**
  * @file routing_hints.cpp - Test routing hints
+ * - execute a number of 'select @@server_id' with different hints and check that
+ * query goes to backend according hint
  */
 
 

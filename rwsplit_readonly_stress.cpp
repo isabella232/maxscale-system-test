@@ -1,5 +1,7 @@
 /**
- * @file rwsplit_readonly.cpp Testing of the read-only mode for readwritesplit when master fails
+ * @file rwsplit_readonly.cpp Test of the read-only mode for readwritesplit when master fails with load
+ * - start query threads which does SELECTs in the loop
+ * - every 10 seconds block Master and then after another 10 seconds unblock master
  */
 
 

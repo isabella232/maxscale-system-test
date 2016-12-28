@@ -1,3 +1,10 @@
+/**
+ * @file mxs951_utfmb4_galera.cpp Set utf8mb4 in the backend and restart Maxscale
+ * - for all backend nodes: SET GLOBAL character_set_server = 'utf8mb4'; SET NAMES 'utf8mb4'
+ * - restart Maxscale
+ * - connect to Maxscale
+ */
+
 
 
 #include <iostream>

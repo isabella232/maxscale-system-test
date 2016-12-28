@@ -1,8 +1,15 @@
 /**
-* MXS-1045: Defunct processes after maxscale have executed script during failover
-*
-* Check that script execution doesn't leave zombie processes
-*/
+ * @file mxs1045.cpp Regression case for the bug "Defunct processes after maxscale have executed script during failover"
+ * - configure monitor:
+ * @verbatim
+script=/bin/sh -c "echo hello world!"
+events=master_down,server_down
+
+ * @endverbatim
+ * - block one node
+ * - Check that script execution doesn't leave zombie processes
+ */
+
 #include "testconnections.h"
 
 int main(int argc, char *argv[])

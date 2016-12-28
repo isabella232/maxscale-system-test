@@ -1,4 +1,7 @@
 /**
+ * @file mxs957.cpp Execute given SQL through readwritesplit (with temporary tables usage)
+ *
+ *
  * Execute the following SQL through readwritesplit without errors.
  * 
  * CREATE OR REPLACE TABLE t1(`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY);

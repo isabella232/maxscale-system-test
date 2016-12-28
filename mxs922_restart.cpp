@@ -1,5 +1,5 @@
 /**
- * MXS-922: Test persisting of configuration changes
+ * @file mxs922_restart.cpp MXS-922: Test persisting of configuration changes
  *
  */
 

@@ -258,22 +258,22 @@ add_test_executable(galera_priority.cpp galera_priority galera_priority LABELS g
 # Block and unblock Master and check that Maxscale survived
 add_test_executable(kill_master.cpp kill_master replication LABELS readwritesplit LIGHT REPL_BACKEND)
 
-# Checks load balancing parameters
+# Check load balancing
 add_test_executable(load_balancing.cpp load_balancing load LABELS readwritesplit LIGHT REPL_BACKEND)
 
-# Checks load balancing parameters with Galera backend
+# Check load balancing with Galera backend
 add_test_executable(load_balancing_galera.cpp load_balancing_galera load_galera LABELS readwritesplit GALERA_BACKEND)
 
-# Checks load balancing parameters with Galera backend and 1 persistent connection
+# Check load balancing parameters with Galera backend and 1 persistent connection
 add_test_script(load_balancing_galera_pers1 load_balancing_galera load_galera_pers1 LABELS readwritesplit HEAVY GALERA_BACKEND)
 
-# Checks load balancing parameters with Galera backend and 10 persistent connections
+# Check load balancing parameters with Galera backend and 10 persistent connections
 add_test_script(load_balancing_galera_pers10 load_balancing_galera load_galera_pers10 LABELS readwritesplit HEAVY GALERA_BACKEND)
 
-# Checks load balancing parameters with 1 persistent connection
+# Check load balancing parameters with 1 persistent connection
 add_test_script(load_balancing_pers1 load_balancing load_pers1 LABELS readwritesplit HEAVY REPL_BACKEND)
 
-# Checks load balancing parameters with 10 persistent connections
+# Check load balancing parameters with 10 persistent connections
 add_test_script(load_balancing_pers10 load_balancing load_pers10 LABELS readwritesplit HEAVY REPL_BACKEND)
 
 # Test with extremely bin blob inserting
@@ -402,84 +402,201 @@ add_test_executable(mxs822_maxpasswd.cpp mxs822_maxpasswd maxpasswd LABELS maxsc
 add_test_executable(mxs827_write_timeout.cpp mxs827_write_timeout replication LABELS readwritesplit REPL_BACKEND)
 set_tests_properties(mxs827_write_timeout PROPERTIES WILL_FAIL TRUE)
 
-add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery mxs874 LABELS readwritesplit)
-add_test_executable(mxs922_bad_server.cpp mxs922_bad_server mxs922 LABELS maxscale)
-add_test_executable(mxs922_server.cpp mxs922_server mxs922_base LABELS maxscale)
-add_test_executable(mxs922_monitor.cpp mxs922_monitor mxs922_base LABELS maxscale)
-add_test_executable(mxs922_double_listener.cpp mxs922_double_listener mxs922_base LABELS maxscale)
-add_test_executable(mxs922_restart.cpp mxs922_restart mxs922 LABELS maxscale)
-add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_base LABELS maxscale)
-add_test_executable(mxs951_utfmb4_galera.cpp mxs951_utfmb4_galera galera LABELS galeramon)
-add_test_executable(mxs957.cpp mxs957 replication LABELS readwritesplit)
-add_test_executable(mxs1045.cpp mxs1045 mxs1045 LABELS maxscale)
-add_test_executable(namedserverfilter.cpp namedserverfilter namedserverfilter LABELS namedserverfilter LIGHT)
-add_test_executable(open_close_connections.cpp open_close_connections replication LABELS maxscale)
-add_test_script(open_close_connections_ssl open_close_connections ssl LABELS maxscale)
-add_test_executable(pers_01.cpp pers_01 pers_01 LABELS maxscale)
-add_test_executable(pers_02.cpp pers_02 pers_01 LABELS maxscale)
-add_test_executable(prepared_statement.cpp prepared_statement replication LABELS readwritesplit LIGHT)
-add_test_executable(readconnrouter_master.cpp readconnrouter_master replication LABELS readconnroute LIGHT)
-add_test_executable(readconnrouter_slave.cpp readconnrouter_slave replication LABELS readconnroute LIGHT)
-add_test_executable(regexfilter1.cpp regexfilter1 regexfilter1 LABELS regexfilter LIGHT)
-add_test_script(run_ctrl_c.sh run_ctrl_c.sh replication LABELS maxscale LIGHT)
-add_test_script(run_session_hang.sh run_session_hang.sh replication LABELS readwritesplit)
-add_test_executable(rw_galera_select_insert.cpp rw_galera_select_insert galera LABELS readwritesplit)
-add_test_executable(rw_select_insert.cpp rw_select_insert replication LABELS readwritesplit)
-add_test_executable(rwsplit_conn_num.cpp rwsplit_conn_num repl_lgc LABELS readwritesplit LIGHT)
-add_test_executable(rwsplit_connect.cpp rwsplit_connect replication LABELS readwritesplit LIGHT)
-add_test_executable(rwsplit_readonly.cpp rwsplit_readonly rwsplit_readonly LABELS readwritesplit)
-add_test_executable(rwsplit_readonly_stress.cpp rwsplit_readonly_stress rwsplit_readonly LABELS readwritesplit HEAVY)
-add_test_executable(schemarouter_duplicate_db.cpp schemarouter_duplicate_db schemarouter_duplicate_db LABELS schemarouter)
-add_test_executable(script.cpp script script LABELS maxscale)
-add_test_executable(server_weight.cpp server_weight galera.weight LABELS readwritesplit readconnroute LIGHT)
-add_test_executable(ses_bigmem.cpp ses_bigmem no_ses_cmd_store LABELS readwritesplit)
-add_test_executable(session_limits.cpp session_limits session_limits LABELS readwritesplit)
-add_test_executable(sharding.cpp sharding sharding LABELS schemarouter)
-add_test_executable(short_sessions.cpp short_sessions replication LABELS readwritesplit readconnroute)
-add_test_script(short_sessions_ssl short_sessions ssl LABELS readwritesplit readconnroute)
+# Block and unblock first and second slaves and check that they are recovered
+add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery mxs874 LABELS readwritesplit REPL_BACKEND)
+
+# A set of dynamic configuration tests
+# Server removal test
+add_test_executable(mxs922_bad_server.cpp mxs922_bad_server mxs922 LABELS maxscale REPL_BACKEND)
+
+# Server creation test
+add_test_executable(mxs922_server.cpp mxs922_server mxs922_base LABELS maxscale REPL_BACKEND)
+
+# Monitor creation test
+add_test_executable(mxs922_monitor.cpp mxs922_monitor mxs922_base LABELS maxscale REPL_BACKEND)
+
+# Double creation of listeners, expect no crash
+add_test_executable(mxs922_double_listener.cpp mxs922_double_listener mxs922_base LABELS maxscale REPL_BACKEND)
+
+# Test persisting of configuration changes
+add_test_executable(mxs922_restart.cpp mxs922_restart mxs922 LABELS maxscale REPL_BACKEND)
+
+# Server scaling test
+add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_base LABELS maxscale REPL_BACKEND)
+
+
+# Set utf8mb4 in the backend and restart Maxscale
+add_test_executable(mxs951_utfmb4_galera.cpp mxs951_utfmb4_galera galera LABELS galeramon GALERA_BACKEND)
+
+# Execute given SQL through readwritesplit (with temporary tables usage)
+add_test_executable(mxs957.cpp mxs957 replication LABELS readwritesplit REPL_BACKEND)
+
+# Regression case for the bug "Defunct processes after maxscale have executed script during failover"
+add_test_executable(mxs1045.cpp mxs1045 mxs1045 LABELS maxscale REPL_BACKEND)
+
+# 'namedserverfilter' test
+add_test_executable(namedserverfilter.cpp namedserverfilter namedserverfilter LABELS namedserverfilter LIGHT REPL_BACKEND)
+
+# Open and immediatelly close a big number of connections
+add_test_executable(open_close_connections.cpp open_close_connections replication LABELS maxscale REPL_BACKEND)
+
+# Open and immediatelly close a big number of connections, ssl is in use
+add_test_script(open_close_connections_ssl open_close_connections ssl LABELS maxscale REPL_BACKEND)
+
+# Persistant connection test
+add_test_executable(pers_01.cpp pers_01 pers_01 LABELS maxscale REPL_BACKEND GALERA_BACKEND)
+
+# Test with persistant connections configured and big number iof opened connections ,expect no crash
+add_test_executable(pers_02.cpp pers_02 pers_01 LABELS maxscale REPL_BACKEND GALERA_BACKEND)
+
+# Check if prepared statement works via Maxscale (via RWSplit)
+add_test_executable(prepared_statement.cpp prepared_statement replication LABELS readwritesplit LIGHT REPL_BACKEND)
+
+# Connect to ReadConn in master mode and check if there is only one backend connection to master
+add_test_executable(readconnrouter_master.cpp readconnrouter_master replication LABELS readconnroute LIGHT REPL_BACKEND)
+
+# Creates 100 connections to ReadConn in slave mode and check if connections are distributed among all slaves
+add_test_executable(readconnrouter_slave.cpp readconnrouter_slave replication LABELS readconnroute LIGHT REPL_BACKEND)
+
+# Regex filter test
+add_test_executable(regexfilter1.cpp regexfilter1 regexfilter1 LABELS regexfilter LIGHT REPL_BACKEND)
+
+# check that Maxscale is reacting correctly on ctrc+c signal and termination does not take ages
+add_test_script(run_ctrl_c.sh run_ctrl_c.sh replication LABELS maxscale LIGHT REPL_BACKEND)
+
+# run a set of queries in the loop (see setmix.sql) using Perl client
+add_test_script(run_session_hang.sh run_session_hang.sh replication LABELS readwritesplit REPL_BACKEND)
+
+# Checks changes of COM_SELECT and COM_INSERT after queris to check if RWSplit sends queries to master or to slave depending on if it is write or read only query
+add_test_executable(rw_select_insert.cpp rw_select_insert replication LABELS readwritesplit REPL_BACKEND)
+
+# Checks connections are distributed equaly among backends
+add_test_executable(rwsplit_conn_num.cpp rwsplit_conn_num repl_lgc LABELS readwritesplit LIGHT REPL_BACKEND)
+
+# Check that there is one connection to Master and one connection to one of slaves
+add_test_executable(rwsplit_connect.cpp rwsplit_connect replication LABELS readwritesplit LIGHT REPL_BACKEND)
+
+# Test of the read-only mode for readwritesplit when master fails (blocked)
+add_test_executable(rwsplit_readonly.cpp rwsplit_readonly rwsplit_readonly LABELS readwritesplit REPL_BACKEND)
+
+# Test of the read-only mode for readwritesplit when master fails (blocked), under load
+add_test_executable(rwsplit_readonly_stress.cpp rwsplit_readonly_stress rwsplit_readonly LABELS readwritesplit HEAVY REPL_BACKEND)
+
+# Schemarouter duplicate database detection test: create DB on all nodes and then try query againt schema router
+add_test_executable(schemarouter_duplicate_db.cpp schemarouter_duplicate_db schemarouter_duplicate_db LABELS schemarouter REPL_BACKEND)
+
+# Test of external script execution
+add_test_executable(script.cpp script script LABELS maxscale REPL_BACKEND)
+
+# Check if 'weightby' parameter works
+add_test_executable(server_weight.cpp server_weight galera.weight LABELS readwritesplit readconnroute LIGHT GALERA_BACKEND)
+
+# Executes a lot of session commands with "disable_sescmd_history=true" and check that memory consumption is not increasing
+add_test_executable(ses_bigmem.cpp ses_bigmem no_ses_cmd_store LABELS readwritesplit REPL_BACKEND)
+
+# test for 'max_sescmd_history' and 'connection_timeout' parameters
+add_test_executable(session_limits.cpp session_limits session_limits LABELS readwritesplit REPL_BACKEND)
+
+# Test of schema router
+add_test_executable(sharding.cpp sharding sharding LABELS schemarouter BREAKS_REPL)
+
+# Do short sessions (open conn, short query, close conn) in the loop
+add_test_executable(short_sessions.cpp short_sessions replication LABELS readwritesplit readconnroute REPL_BACKEND)
+
+# Do short sessions (open conn, short query, close conn) in the loop, client ssl is ON
+add_test_script(short_sessions_ssl short_sessions ssl LABELS readwritesplit readconnroute REPL_BACKEND)
+
+# Regression case for crash if maxadmin 'show monitors' command is issued, but no monitor is not running
 add_test_executable(show_monitor_crash.cpp show_monitor_crash show_monitor_crash LABELS maxscale)
-add_test_executable(slave_failover.cpp slave_failover replication.one_slave LABELS readwritesplit)
-add_test_executable(sql_queries.cpp sql_queries replication LABELS readwritesplit)
-add_test_script(sql_queries_pers1 sql_queries sql_queries_pers1 LABELS maxscale readwritesplit HEAVY)
-add_test_script(sql_queries_pers10 sql_queries sql_queries_pers10 LABELS maxscale readwritesplit HEAVY)
-add_test_script(ssl sql_queries ssl LABELS maxscale readwritesplit)
-add_test_script(ssl_load load_balancing ssl_load LABELS maxscale readwritesplit)
-add_test_script(ssl_load_galera load_balancing_galera ssl_load_galera LABELS maxscale readwritesplit)
-add_test_executable(stale_slaves.cpp stale_slaves replication LABELS mysqlmon)
-add_test_executable(sysbench_kill_slave.cpp sysbench_kill_slave replication LABELS UNSTABLE HEAVY)
-add_test_executable(temporal_tables.cpp temporal_tables replication LABELS readwritesplit)
-add_test_executable(test_hints.cpp test_hints hints2 LABELS hintfilter LIGHT)
+
+# Check how Maxscale works in case of one slave failure, only one slave is configured
+add_test_executable(slave_failover.cpp slave_failover replication.one_slave LABELS readwritesplit REPL_BACKEND)
+
+# Execute queries of different size, check data is the same when accessing via Maxscale and directly to backend
+add_test_executable(sql_queries.cpp sql_queries replication LABELS readwritesplit REPL_BACKEND)
+
+# Execute queries of different size, check data is the same when accessing via Maxscale and directly to backend, one persistant connection configured
+add_test_script(sql_queries_pers1 sql_queries sql_queries_pers1 LABELS maxscale readwritesplit HEAVY REPL_BACKEND)
+
+# Execute queries of different size, check data is the same when accessing via Maxscale and directly to backend, 10 persistant connections configured
+add_test_script(sql_queries_pers10 sql_queries sql_queries_pers10 LABELS maxscale readwritesplit HEAVY REPL_BACKEND)
+
+# Execute queries of different size, check data is the same when accessing via Maxscale and directly to backend, client ssl is ON
+add_test_script(ssl sql_queries ssl LABELS maxscale readwritesplit REPL_BACKEND)
+
+# Check load balancing, client ssl is ON
+add_test_script(ssl_load load_balancing ssl_load LABELS maxscale readwritesplit REPL_BACKEND)
+
+# Check load balancing, client ssl is ON, Galera backend
+add_test_script(ssl_load_galera load_balancing_galera ssl_load_galera LABELS maxscale readwritesplit GALERA_BACKEND)
+
+# Testing slaves who have lost their master and how MaxScale works with them
+add_test_executable(stale_slaves.cpp stale_slaves replication LABELS mysqlmon REPL_BACKEND)
+
+# Run sysbech test and block one slave during test execution
+add_test_executable(sysbench_kill_slave.cpp sysbench_kill_slave replication LABELS UNSTABLE HEAVY REPL_BACKEND)
+
+# Check temporal tables commands functionality
+add_test_executable(temporal_tables.cpp temporal_tables replication LABELS readwritesplit REPL_BACKEND)
+
+# Test routing hints
+add_test_executable(test_hints.cpp test_hints hints2 LABELS hintfilter LIGHT REPL_BACKEND)
 
 # Binlogrouter tests, these heavily alter the replication so they are run last
-add_test_executable(avro.cpp avro avro LABELS avrorouter binlogrouter LIGHT)
-add_test_executable(binlog_change_master.cpp binlog_change_master setup_binlog_tx_safe LABELS binlogrouter)
-add_test_executable(binlog_incompl.cpp binlog_incompl binlog_incompl LABELS binlogrouter)
-add_test_executable(binlog_semisync.cpp binlog_semisync setup_binlog_semisync LABELS binlogrouter HEAVY)
-add_test_script(binlog_semisync_txs0_ss0 binlog_semisync setup_binlog_semisync_txs0_ss0 LABELS binlogrouter HEAVY)
-add_test_script(binlog_semisync_txs0_ss1 binlog_semisync setup_binlog_semisync_txs0_ss1 LABELS binlogrouter HEAVY)
-add_test_script(binlog_semisync_txs1_ss0 binlog_semisync setup_binlog_semisync_txs1_ss0 LABELS binlogrouter HEAVY)
+add_test_executable(avro.cpp avro avro LABELS avrorouter binlogrouter LIGHT BREAKS_REPL)
+
+# In the binlog router setup stop Master and promote one of the Slaves to be new Master
+add_test_executable(binlog_change_master.cpp binlog_change_master setup_binlog_tx_safe LABELS binlogrouter BREAKS_REPL)
+
+# trying to start binlog setup with incomplete Maxscale.cnf
+add_test_executable(binlog_incompl.cpp binlog_incompl binlog_incompl LABELS binlogrouter BREAKS_REPL)
+
+# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, router options semisync=1,transaction_safety=1
+add_test_executable(binlog_semisync.cpp binlog_semisync setup_binlog_semisync LABELS binlogrouter HEAVY BREAKS_REPL)
+
+# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, router options semisync=0,transaction_safety=0
+add_test_script(binlog_semisync_txs0_ss0 binlog_semisync setup_binlog_semisync_txs0_ss0 LABELS binlogrouter HEAVY BREAKS_REPL)
+
+# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, router options semisync=0,transaction_safety=1
+add_test_script(binlog_semisync_txs0_ss1 binlog_semisync setup_binlog_semisync_txs0_ss1 LABELS binlogrouter HEAVY BREAKS_REPL)
+
+# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, router options semisync=1,transaction_safety=0
+add_test_script(binlog_semisync_txs1_ss0 binlog_semisync setup_binlog_semisync_txs1_ss0 LABELS binlogrouter HEAVY BREAKS_REPL)
+
 set_tests_properties(binlog_semisync PROPERTIES TIMEOUT 3600)
 set_tests_properties(binlog_semisync_txs0_ss0 PROPERTIES TIMEOUT 3600)
 set_tests_properties(binlog_semisync_txs0_ss1 PROPERTIES TIMEOUT 3600)
 set_tests_properties(binlog_semisync_txs1_ss0 PROPERTIES TIMEOUT 3600)
-add_test_executable(cdc_client.cpp cdc_client avro LABELS avrorouter binlogrouter)
+
+# Test of CDC protocol (avro listener)
+add_test_executable(cdc_client.cpp cdc_client avro LABELS avrorouter binlogrouter BREAKS_REPL)
 
 # Tries INSERTs with size close to 0x0ffffff * N (with binlog backend)
 add_test_executable(different_size_binlog.cpp different_size_binlog setup_binlog LABELS binlogrouter HEAVY BREAKS_REPL)
 
-add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd setup_binlog LABELS binlogrouter)
-add_test_executable(mxs813_long_hostname.cpp mxs813_long_hostname setup_binlog LABELS binlogrouter)
-add_test_executable(setup_binlog.cpp setup_binlog setup_binlog LABELS binlogrouter)
-add_test_executable(setup_binlog_crc_32.cpp setup_binlog_crc_32 setup_binlog LABELS binlogrouter)
-add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog LABELS binlogrouter LIGHT)
+# Try to configure binlog router to use wrong password for Master and check 'slave status' on binlog
+add_test_executable(mxs781_binlog_wrong_passwrd.cpp mxs781_binlog_wrong_passwrd setup_binlog LABELS binlogrouter BREAKS_REPL)
 
-# Creates KDC and tries authrization via GSSAPI
-add_test_executable(kerberos_setup.cpp kerberos_setup kerberos LABELS HEAVY gssapi)
+# Regression case for crash if long host name is used for binlog router (in 'change master to ...')
+add_test_executable(mxs813_long_hostname.cpp mxs813_long_hostname setup_binlog LABELS binlogrouter BREAKS_REPL)
 
-add_test_executable_notest(delete_rds.cpp delete_rds replication LABELS EXTERN_BACKEND)
-add_test_executable_notest(create_rds.cpp create_rds replication LABELS EXTERN_BACKEND)
+# configure binlog rouer setup, execute queries and transactions, check data;
+add_test_executable(setup_binlog.cpp setup_binlog setup_binlog LABELS binlogrouter BREAKS_REPL)
 
-add_test_executable_notest(long_sysbench.cpp long_sysbench replication LABELS readwritesplit)
+# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, backends started with --binlog-checksum=CRC32 option
+# disabled because it is included into setup_binlog test, separate test was created for debugging
+# add_test_executable(setup_binlog_crc_32.cpp setup_binlog_crc_32 setup_binlog LABELS binlogrouter BREAKS_REPL)
+
+# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, backends started with --binlog-checksum=NONE option
+# disabled because it is included into setup_binlog test, separate test was created for debugging
+# add_test_executable(setup_binlog_crc_none.cpp setup_binlog_crc_none setup_binlog LABELS binlogrouter LIGHT BREAKS_REPL)
+
+
+# Creates KDC and tries authrization via GSSAPI (both client and backend)
+# works only with yum-based distributions
+# TODO: make it working with zypper and apt, move part of KDC setup to MDBCI
+add_test_executable(kerberos_setup.cpp kerberos_setup kerberos LABELS HEAVY gssapi REPL_BACKEND)
+
 
 # enable after fixing MXS-419
 # add_test_executable(mxs419_lots_of_connections.cpp mxs419_lots_of_connections replication)
@@ -496,6 +613,18 @@ add_test_executable(auroramon.cpp auroramon auroramon LABELS HEAVY EXTERNAL_BACK
 
 # Disabled for the time being
 # add_test_executable(gatekeeper.cpp gatekeeper gatekeeper LABELS gatekeeper)
+
+# not implemented, just template
+#add_test_executable(rw_galera_select_insert.cpp rw_galera_select_insert galera LABELS readwritesplit GALERA_BACKEND)
+
+# a tool to delete RDS Aurora cluster
+add_test_executable_notest(delete_rds.cpp delete_rds replication LABELS EXTERN_BACKEND)
+
+# a tool to create RDS Aurora cluster
+add_test_executable_notest(create_rds.cpp create_rds replication LABELS EXTERN_BACKEND)
+
+# start sysbench ageints RWSplit for infinite execution
+add_test_executable_notest(long_sysbench.cpp long_sysbench replication LABELS readwritesplit REPL_BACKEND)
 
 configure_file(templates.h.in templates.h @ONLY)
 

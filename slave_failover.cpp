@@ -1,5 +1,5 @@
 /**
- * @file slave_failover.cpp  Check how Maxscale works in case of one slave failure
+ * @file slave_failover.cpp  Check how Maxscale works in case of one slave failure, only one slave is configured
  *
  * - Connect to RWSplit
  * - find which backend slave is used for connection

@@ -1,5 +1,5 @@
 /**
- * MXS-922: Server creation test
+ * @file mxs922_server.cpp MXS-922: Server creation test
  *
  */
 

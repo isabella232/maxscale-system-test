@@ -1,5 +1,5 @@
 /**
- * MXS-922: Monitor creation test
+ * @file mxs922_monitor.cpp MXS-922: Monitor creation test
  *
  */
 

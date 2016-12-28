@@ -1,4 +1,3 @@
-
 /**
  * @file mxs813_long_hostname - regression case for crash if long host name is used for binlog router
  * - configure binlog router setup
@@ -9,7 +8,6 @@
  * - show slave status;
  * - show slave status\G
  */
-
 
 
 #include <iostream>

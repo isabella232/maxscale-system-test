@@ -2,6 +2,7 @@
  * @file schemarouter_duplicate_db.cpp - Schemarouter duplicate database detection test
  *
  * - Start MaxScale
+ * - create DB on all nodes (directly via Master)
  * - Connect to schemarouter
  * - Execute query and expect failure
  * - Check that message about duplicate databases is logged into error log
