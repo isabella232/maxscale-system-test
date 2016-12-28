@@ -1,6 +1,7 @@
 /**
  * @file mxs682_cyrillic.cpp put cyrillic letters to the table
-
+ * - put string with Cyrillic into table
+ * - check SELECT from backend
  */
 
 

@@ -6,8 +6,6 @@
  * - check logs for warning
  */
 
-
-
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

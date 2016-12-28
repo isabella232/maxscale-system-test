@@ -1,6 +1,5 @@
 /**
- * @file mx321.cpp regression case for bug MXS-321: https://mariadb.atlassian.net/browse/MXS-321
- * 
+ * @file mx321.cpp regression case for bug MXS-321 ("Incorrect number of connections in maxadmin list view")
  *
  * - Set max_connections to 100
  * - Create 200 connections

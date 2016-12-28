@@ -1,5 +1,5 @@
 /**
- * @file mxs564_big_dump.cpp MXS-564 regression case ("")
+ * @file mxs564_big_dump.cpp MXS-564 regression case ("Loading database dump through readwritesplit fails")
  * - configure Maxscale to use Galera cluster
  * - start several threads which are executing session command and then sending INSERT queries agaist RWSplit router
  * - after a while block first slave

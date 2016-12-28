@@ -1,9 +1,13 @@
 
 /**
  * @file mxs729_maxadmin.cpp Test of 'maxadmin' user add/delete
- *
+ * - try to call Maxadmin as normal user
+ * - try to call Maxadmin as 'root' user
+ * - execute 'enable account'
+ * - try to call Maxadmin using this enable user
+ * - 'disable accout'
+ * - try to enable non-existing user with very long name
  */
-
 
 
 #include <iostream>

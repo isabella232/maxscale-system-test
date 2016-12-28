@@ -300,43 +300,106 @@ add_test_script(maxinfo.py maxinfo.py maxinfo LABELS maxinfo LIGHT REPL_BACKEND)
 # Checks tha Maxscale processis running as 'maxscale' user
 add_test_executable(maxscale_process_user.cpp maxscale_process_user replication LABELS maxscale LIGHT REPL_BACKEND)
 
+# Test of multi master monitor
+add_test_executable(mm.cpp mm mm LABELS mmmon BREAKS_REPL)
 
-add_test_executable(mm.cpp mm mm LABELS mmmon)
-add_test_executable(mm_mysqlmon.cpp mm_mysqlmon mm_mysqlmon LABELS mysqlmon)
-add_test_executable(mxs118.cpp mxs118 mxs118 LABELS maxscale LIGHT)
-add_test_executable(mxs127.cpp mxs127 mxs127 LABELS readwritesplit LIGHT)
-add_test_executable(mxs244_prepared_stmt_loop.cpp mxs244_prepared_stmt_loop galera LABELS readwritesplit readconnroute LIGHT)
-add_test_executable(mxs280_select_outfile.cpp mxs280_select_outfile replication LABELS readwritesplit)
-add_test_executable(mxs314.cpp mxs314 galera LABELS MySQLProtocol LIGHT)
-add_test_executable(mxs321.cpp mxs321 replication LABELS maxscale)
-add_test_script(mxs361 pers_02 mxs361 mxs361 LABELS maxscale)
-add_test_executable(mxs365.cpp mxs365 replication LABELS readwritesplit)
-add_test_executable(mxs37_table_privilege.cpp mxs37_table_privilege replication LABELS MySQLAuth LIGHT)
-add_test_script(mxs37_table_privilege_galera mxs37_table_privilege galera LABELS MySQLAuth)
-add_test_executable(mxs431.cpp mxs431 sharding LABELS schemarouter)
-add_test_executable(mxs47.cpp mxs47 replication LABELS MySQLProtocol LIGHT)
-add_test_executable(mxs501_tee_usedb.cpp mxs501_tee_usedb mxs501 LABELS tee)
-add_test_executable(mxs548_short_session_change_user.cpp mxs548_short_session_change_user mxs548 LABELS MySQLProtocol)
-add_test_executable(mxs559_block_master.cpp mxs559_block_master mxs559 LABELS readwritesplit)
-add_test_executable(mxs564_big_dump.cpp mxs564_big_dump galera_mxs564 LABELS readwritesplit readconnroute)
-add_test_script(mxs585.py mxs585.py replication LABELS readwritesplit readconnroute UNSTABLE HEAVY)
-add_test_script(mxs598.py mxs598.py ssl LABELS MySQLProtocol UNSTABLE HEAVY)
-add_test_executable(mxs621_unreadable_cnf.cpp mxs621_unreadable_cnf replication LABELS maxscale)
-add_test_executable(mxs657_restart.cpp mxs657_restart replication LABELS maxscale HEAVY)
-add_test_executable(mxs657_restart_service.cpp mxs657_restart_service replication LABELS maxscale)
-add_test_executable(mxs682_cyrillic.cpp mxs682_cyrillic replication LABELS maxscale LIGHT)
-add_test_script(mxs682_cyrillic_galera mxs682_cyrillic galera LABELS maxscale)
-add_test_executable(mxs716.cpp mxs716 replication LABELS MySQLAuth LIGHT)
-add_test_executable(mxs722.cpp mxs722 mxs722 LABELS maxscale LIGHT)
-add_test_executable(mxs729_maxadmin.cpp mxs729_maxadmin replication LABELS MaxAdminAuth LIGHT)
-add_test_script(mxs791.sh mxs791.sh replication LABELS UNSTABLE HEAVY)
-add_test_script(mxs791_galera.sh mxs791_galera.sh galera LABELS UNSTABLE HEAVY)
-add_test_executable(mxs812_1.cpp mxs812_1 longblob LABELS readwritesplit)
-add_test_executable(mxs812_2.cpp mxs812_2 longblob LABELS readwritesplit)
-add_test_executable(mxs822_maxpasswd.cpp mxs822_maxpasswd maxpasswd LABELS maxscale)
+# MySQL Monitor with Multi-master configurations
+add_test_executable(mm_mysqlmon.cpp mm_mysqlmon mm_mysqlmon LABELS mysqlmon REPL_BACKEND BREAKS_REPL)
 
+# Regression case for the bug "Two monitors loaded at the same time result into not working installation"
+add_test_executable(mxs118.cpp mxs118 mxs118 LABELS maxscale LIGHT REPL_BACKEND)
+
+# Regression case for the bug "disable_sescmd_history causes MaxScale to crash under load"
+add_test_executable(mxs127.cpp mxs127 mxs127 LABELS readwritesplit LIGHT REPL_BACKEND)
+
+# Prepearing and execution statements in the loop
+add_test_executable(mxs244_prepared_stmt_loop.cpp mxs244_prepared_stmt_loop galera LABELS readwritesplit readconnroute LIGHT GALERA_BACKEND)
+
+# Regression case for the bug "SELECT INTO OUTFILE query succeeds even if backed fails"
+add_test_executable(mxs280_select_outfile.cpp mxs280_select_outfile replication LABELS readwritesplit REPL_BACKEND)
+
+# Tries prepared stmt 'SELECT 1,1,1,1...." with different nu,ber of '1'
+add_test_executable(mxs314.cpp mxs314 galera LABELS MySQLProtocol LIGHT GALERA_BACKEND)
+
+# Creates and closes a lot of connections, checks that 'maxadmin list servers' shows 0 connections at the end
+add_test_executable(mxs321.cpp mxs321 replication LABELS maxscale REPL_BACKEND)
+
+# Crash with Galera and backend restart when persistant cfonnections are in use
+add_test_script(mxs361 pers_02 mxs361 mxs361 LABELS maxscale GALERA_BACKEND)
+
+# Load huge file with 'LOAD DATA LOCAL INFILE'
+add_test_executable(mxs365.cpp mxs365 replication LABELS readwritesplit REPL_BACKEND)
+
+# Connect to Maxscale with user with only 'SELECT' priveledge
+add_test_executable(mxs37_table_privilege.cpp mxs37_table_privilege replication LABELS MySQLAuth LIGHT REPL_BACKEND)
+
+# Connect to Maxscale with user with only 'SELECT' priveledge (Galera backend)
+add_test_script(mxs37_table_privilege_galera mxs37_table_privilege galera LABELS MySQLAuth GALERA_BACKEND)
+
+# Connect repeatedly to Schema router and execute simple query, check if auth is ok
+add_test_executable(mxs431.cpp mxs431 sharding LABELS schemarouter REPL_BACKEND BREAKS_REPL)
+
+# execute SELECT REPEAT('a',i), where 'i' is changing from 1 to 50000 (bug "Session freeze when small tail packet")
+add_test_executable(mxs47.cpp mxs47 replication LABELS MySQLProtocol LIGHT REPL_BACKEND)
+
+# Regression case for the bug "USE <db> hangs when Tee filter uses matching"
+add_test_executable(mxs501_tee_usedb.cpp mxs501_tee_usedb mxs501 LABELS tee REPL_BACKEND)
+
+# Open connection, execute 'change user', close connection in the loop
+add_test_executable(mxs548_short_session_change_user.cpp mxs548_short_session_change_user mxs548 LABELS MySQLProtocol REPL_BACKEND)
+
+# Playing with blocking and unblocking Master under load
+add_test_executable(mxs559_block_master.cpp mxs559_block_master mxs559 LABELS readwritesplit REPL_BACKEND)
+
+# Playing with blocking and unblocking nodes under INSERT load
+add_test_executable(mxs564_big_dump.cpp mxs564_big_dump galera_mxs564 LABELS readwritesplit readconnroute GALERA_BACKEND)
+
+# Executes simple queries from python script in the loop
+add_test_script(mxs585.py mxs585.py replication LABELS readwritesplit readconnroute UNSTABLE HEAVY REPL_BACKEND)
+
+# Simple transactions in the loop from python script with client SSL on
+add_test_script(mxs598.py mxs598.py ssl LABELS MySQLProtocol UNSTABLE HEAVY REPL_BACKEND)
+
+# Regression case for the bug "MaxScale fails to start silently if config file is not readable"
+add_test_executable(mxs621_unreadable_cnf.cpp mxs621_unreadable_cnf replication LABELS maxscale REPL_BACKEND)
+
+# playing with 'restart service' and restart Maxscale under load
+add_test_executable(mxs657_restart.cpp mxs657_restart replication LABELS maxscale HEAVY REPL_BACKEND)
+add_test_executable(mxs657_restart_service.cpp mxs657_restart_service replication LABELS maxscale REPL_BACKEND)
+
+# put cyrillic letters to the table and check from backend
+add_test_executable(mxs682_cyrillic.cpp mxs682_cyrillic replication LABELS maxscale LIGHT REPL_BACKEND)
+
+# put cyrillic letters to the table and check from backend (Galera backend)
+add_test_script(mxs682_cyrillic_galera mxs682_cyrillic galera LABELS maxscale GALERA_BACKEND)
+
+# Connect using different default database using user with database and table level grants
+add_test_executable(mxs716.cpp mxs716 replication LABELS MySQLAuth LIGHT REPL_BACKEND)
+
+# MaxScale configuration check functionality test (maxscale -c)
+add_test_executable(mxs722.cpp mxs722 mxs722 LABELS maxscale LIGHT REPL_BACKEND)
+
+# Test of 'maxadmin' user Unix accounts enable/disable
+add_test_executable(mxs729_maxadmin.cpp mxs729_maxadmin replication LABELS MaxAdminAuth LIGHT REPL_BACKEND)
+
+# Simple connect test in bash, checks that defined in cmd line DB is selected
+add_test_script(mxs791.sh mxs791.sh replication LABELS UNSTABLE HEAVY REPL_BACKEND)
+
+# Simple connect test in bash, checks that defined in cmd line DB is selected (Galera backend)
+add_test_script(mxs791_galera.sh mxs791_galera.sh galera LABELS UNSTABLE HEAVY GALERA_BACKEND)
+
+# Checks "Current no. of conns" maxadmin output after long blob inserting
+add_test_executable(mxs812_1.cpp mxs812_1 longblob LABELS readwritesplit REPL_BACKEND)
+
+# Checks "Current no. of conns" maxadmin output after long blob inserting
+add_test_executable(mxs812_2.cpp mxs812_2 longblob LABELS readwritesplit REPL_BACKEND)
+
+# Execute prepared statements while master is blocked, checks "Current no. of conns" after the test
+add_test_executable(mxs822_maxpasswd.cpp mxs822_maxpasswd maxpasswd LABELS maxscale REPL_BACKEND)
+
+# Do only SELECTS during time > wait_timeout and then do INSERT
 # This test will fail because the functionality hasn't been implemented
-add_test_executable(mxs827_write_timeout.cpp mxs827_write_timeout replication LABELS readwritesplit)
+add_test_executable(mxs827_write_timeout.cpp mxs827_write_timeout replication LABELS readwritesplit REPL_BACKEND)
 set_tests_properties(mxs827_write_timeout PROPERTIES WILL_FAIL TRUE)
 
 add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery mxs874 LABELS readwritesplit)
