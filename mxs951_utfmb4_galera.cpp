@@ -1,5 +1,11 @@
 /**
  * @file mxs951_utfmb4_galera.cpp Set utf8mb4 in the backend and restart Maxscale
+ * - add following to backend server configuration:
+ @verbatim
+[mysqld]
+character_set_server=utf8mb4
+collation_server=utf8mb4_unicode_520_ci
+ @endverbatim
  * - for all backend nodes: SET GLOBAL character_set_server = 'utf8mb4'; SET NAMES 'utf8mb4'
  * - restart Maxscale
  * - connect to Maxscale
@@ -14,8 +20,20 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    setenv("no_maxscale_start", "yes", 1);
     TestConnections * Test = new TestConnections(argc, argv);
-    Test->set_timeout(10);
+    Test->stop_timeout();
+
+    char cmd [1024];
+    sprintf(cmd, "%s/utf64.cnf", Test->test_dir);
+    for (int i = 0; i < Test->galera->N; i++)
+    {
+        Test->galera->copy_to_node(cmd, (char *) "./", i);
+        Test->galera->ssh_node(i, (char *) "cp ./utf64.cnf /etc/my.cnf.d/", true);
+    }
+
+    Test->galera->start_replication();
+
 
     Test->tprintf("Set utf8mb4 for backend");
     Test->galera->execute_query_all_nodes((char *) "SET GLOBAL character_set_server = 'utf8mb4';");
@@ -32,6 +50,16 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
     //Test->check_maxscale_processes(0);
+
+    /*
+    Test->stop_timeout();
+    Test->tprintf("Restore backend configuration\n");
+    for (int i = 0; i < Test->galera->N; i++)
+    {
+        Test->galera->ssh_node(i, (char *) "rm  /etc/my.cnf.d/utf64.cnf", true);
+    }
+    Test->galera->start_replication();
+    */
     Test->copy_all_logs(); return(Test->global_result);
 }
 
