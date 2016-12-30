@@ -1,0 +1,59 @@
+settings{
+         logfile         = "/var/log/maxscale/maxscale-ha.log",
+         statusFile      = "/var/log/maxscale/maxscale-ha-status.log",
+         insist = 1
+}
+
+sync{
+default.rsyncssh,
+source="/etc", 
+host="###node_user_1###@###node_IP_1###", 
+targetdir="/etc", 
+rsync={
+      compress=true,
+      _extra = {[[--filter=+ *maxscale.cnf]],
+                [[--filter=- **]]
+               }
+      }
+}
+
+
+sync{
+default.rsyncssh,
+source="/etc", 
+host="###node_user_2###@###node_IP_2###", 
+targetdir="/etc", 
+rsync={
+      compress=true,
+      _extra = {[[--filter=+ *maxscale.cnf]],
+                [[--filter=- **]]
+               }
+      }
+}
+
+sync{
+default.rsyncssh,
+source="/etc",
+host="###node_user_2###@###node_IP_3###",
+targetdir="/etc",
+rsync={
+      compress=true,
+      _extra = {[[--filter=+ *maxscale.cnf]],
+                [[--filter=- **]]
+               }
+      }
+}
+
+sync{
+default.rsyncssh,
+source="/etc",
+host="###node_user_2###@###node_IP_4###",
+targetdir="/etc",
+rsync={
+      compress=true,
+      _extra = {[[--filter=+ *maxscale.cnf]],
+                [[--filter=- **]]
+               }
+      }
+}
+

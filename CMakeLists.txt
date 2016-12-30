@@ -626,6 +626,9 @@ add_test_executable_notest(create_rds.cpp create_rds replication LABELS EXTERN_B
 # start sysbench ageints RWSplit for infinite execution
 add_test_executable_notest(long_sysbench.cpp long_sysbench replication LABELS readwritesplit REPL_BACKEND)
 
+# Test of lsyncd setup
+add_test_executable(lsyncd.cpp lsyncd replication LABELS HEAVY REPL_BACKEND)
+
 configure_file(templates.h.in templates.h @ONLY)
 
 include(CTest)
