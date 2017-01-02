@@ -57,7 +57,7 @@ int transaction(MYSQL * conn, int N)
 int main(int argc, char *argv[])
 {
     int j;
-    setenv("no_maxscale_start", "yes", 1);
+    //setenv("no_maxscale_start", "yes", 1);
     Test = new TestConnections(argc, argv);
     Test->set_timeout(3000);
 

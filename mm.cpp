@@ -61,7 +61,7 @@ int check_conf(TestConnections* Test, int blocked_node)
 
 int main(int argc, char *argv[])
 {
-    setenv("no_maxscale_start", "yes", 1);
+    //setenv("no_maxscale_start", "yes", 1);
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(120);
     char maxadmin_result[1024];
