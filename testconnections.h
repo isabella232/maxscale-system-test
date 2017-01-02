@@ -216,9 +216,9 @@ public:
     int copy_mariadb_logs(Mariadb_nodes *repl, char * prefix);
 
     /**
-     * @brief no_nodes_check if true nodes are not checked before test and are not restarted
+     * @brief Check node status at startup
      */
-    bool no_nodes_check;
+    bool check_nodes;
 
     /**
      * @brief no_maxscale_start Do not start Maxscale automaticaly when TestConnections created

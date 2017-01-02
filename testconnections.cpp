@@ -15,7 +15,6 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
     readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
     global_result(0)
 {
-    //char str[1024];
     gettimeofday(&start_time, NULL);
     ports[0] = rwsplit_port;
     ports[1] = readconn_master_port;
@@ -24,83 +23,73 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
     read_env();
 
     bool maxscale_init = true;
-    no_nodes_check = false;
+    check_nodes = true;
+
+    static struct option long_options[] = {
+
+        {"verbose", no_argument, 0, 'v'},
+        {"silent", no_argument, 0, 'n'},
+        {"help", no_argument, 0, 'h'},
+        {"no-maxscale-start", no_argument, 0, 's'},
+        {"no-nodes-check", no_argument, 0, 'r'},
+        {"quiet", no_argument, 0, 'q'},
+        {"restart-galera", no_argument, 0, 'g'},
+        {0, 0, 0, 0}
+    };
 
     int c;
-    bool run_flag = true;
+    int option_index = 0;
 
-    while (run_flag)
+    while ((c = getopt_long(argc, argv, "vnqhsirg", long_options, &option_index)) != -1)
     {
-        static struct option long_options[] =
-        {
-
-            {"verbose", no_argument, 0, 'v'},
-            {"silent", no_argument, 0, 'n'},
-            {"help",   no_argument,  0, 'h'},
-            {"no-maxscale-start", no_argument, 0, 's'},
-            {"no-maxscale-stop",  no_argument, 0, 'd'},
-            {"no-nodes-check",  no_argument, 0, 'r'},
-            {"quiet",  no_argument, 0, 'q'},
-            {"restart-galera", no_argument, 0, 'g'},
-            {0, 0, 0, 0}
-        };
-        /* getopt_long stores the option index here. */
-        int option_index = 0;
-
-        c = getopt_long (argc, argv, "vnhsdrqg",
-                         long_options, &option_index);
-
-        /* Detect the end of the options. */
-        if (c == -1)
-            break;
-
         switch (c)
         {
-        case 'v':
-            verbose = true;
-            break;
+            case 'v':
+                verbose = true;
+                break;
 
-        case 'n':
-            verbose = false;
-            break;
+            case 'n':
+                verbose = false;
+                break;
 
-        case 'q':
-            freopen("/dev/null", "w", stdout);
-            break;
+            case 'q':
+                freopen("/dev/null", "w", stdout);
+                break;
 
-        case 'h':
-            printf ("Options:\n"
-                    "-h, --help\n"
-                    "-v, --verbose\n"
-                    "-q, --silent\n"
-                    "-s, --no-maxscale-start\n"
-                    "-i, --no-maxscale-init\n"
-                    "-g, --restart-galera\n");
-            exit(0);
-            break;
+            case 'h':
+                printf("Options:\n"
+                       "-h, --help\n"
+                       "-v, --verbose\n"
+                       "-q, --silent\n"
+                       "-s, --no-maxscale-start\n"
+                       "-i, --no-maxscale-init\n"
+                       "-g, --restart-galera\n");
+                exit(0);
+                break;
 
-        case 's':
-            printf ("Maxscale won't be started\n");
-            no_maxscale_start = true;
-            break;
-        case 'i':
-            printf ("Maxscale won't be started and Maxscale.cnf won't be uploaded\n");
-            maxscale_init = false;
-            break;
+            case 's':
+                printf("Maxscale won't be started\n");
+                no_maxscale_start = true;
+                break;
+            case 'i':
+                printf("Maxscale won't be started and Maxscale.cnf won't be uploaded\n");
+                maxscale_init = false;
+                break;
 
-        case 'r':
-            printf ("Nodes are not checked before test and are not restarted\n");
-            no_nodes_check = true;
-            break;
+            case 'r':
+                printf("Nodes are not checked before test and are not restarted\n");
+                check_nodes = false;
+                break;
 
-        case 'g':
-            printf ("Restarting Galera setup");
-            galera->stop_nodes();
-            galera->start_replication();
-            break;
+            case 'g':
+                printf("Restarting Galera setup");
+                galera->stop_nodes();
+                galera->start_replication();
+                break;
 
-        default:
-            run_flag = false;
+            default:
+                printf("UNKNOWN OPTION: %c\n", c);
+                break;
         }
     }
 
@@ -134,7 +123,7 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
         snapshot_reverted = revert_snapshot((char *) "clean");
     }
 
-    if (!snapshot_reverted && !no_nodes_check)
+    if (!snapshot_reverted && check_nodes)
     {
         if (!repl->fix_replication() || !galera->fix_replication())
         {
@@ -153,7 +142,6 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
         repl->configure_ssl(true);
         galera->configure_ssl(false);
         galera->start_replication();
-        repl->ssl = true;
     }
 
     timeout = 999999999;
@@ -234,9 +222,9 @@ int TestConnections::read_env()
     env = getenv("maxscale_access_sudo"); if (env != NULL) {sprintf(maxscale_access_sudo, "%s", env);}
     ssl = false;
     env = getenv("ssl"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {ssl = true;}
-    env = getenv("mysql51_only"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_nodes_check = true;}
+    env = getenv("mysql51_only"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {check_nodes = false;}
 
-    env = getenv("no_nodes_check"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_nodes_check = true;}
+    env = getenv("no_nodes_check"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {check_nodes = false;}
     env = getenv("no_backend_log_copy"); if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) )) {no_backend_log_copy = true;}
 
     env = getenv("maxscale_hostname"); if (env != NULL) {sprintf(maxscale_hostname, "%s", env);} else {sprintf(maxscale_hostname, "%s", maxscale_IP);}
