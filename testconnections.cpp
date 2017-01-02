@@ -23,8 +23,7 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
 
     read_env();
 
-    bool no_maxscale_init = false;
-    bool no_maxscale_stop = false;
+    bool maxscale_init = true;
     no_nodes_check = false;
 
     int c;
@@ -76,7 +75,6 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
                     "-q, --silent\n"
                     "-s, --no-maxscale-start\n"
                     "-i, --no-maxscale-init\n"
-                    "-d, --no-maxscale-stop\n"
                     "-g, --restart-galera\n");
             exit(0);
             break;
@@ -87,12 +85,7 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
             break;
         case 'i':
             printf ("Maxscale won't be started and Maxscale.cnf won't be uploaded\n");
-            no_maxscale_init = true;
-            break;
-
-        case 'd':
-            printf ("Maxscale won't be stopped\n");
-            no_maxscale_stop = true;
+            maxscale_init = false;
             break;
 
         case 'r':
@@ -149,7 +142,7 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
         }
     }
 
-    if (!no_maxscale_init)
+    if (maxscale_init)
     {
         init_maxscale();
     }
@@ -370,29 +363,15 @@ int TestConnections::init_maxscale()
     sprintf(str, "cp %s/ssl-cert/* .", test_dir);
     system(str);
 
-    if (no_maxscale_start)
-    {
-        ssh_maxscale_sh(true, "chown maxscale:maxscale -R %s/certs;"
-                        "chmod 664 %s/certs/*.pem;"
-                        " chmod a+x %s;"
-                        "killall -9 maxscale;"
-                        "rm -f %s/maxscale.log %s/maxscale1.log;"
-                        "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;",
-                        maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
-                        maxscale_log_dir, maxscale_log_dir);
-    }
-    else
-    {
-        ssh_maxscale_sh(true, "chown maxscale:maxscale -R %s/certs;"
-                        "chmod 664 %s/certs/*.pem;"
-                        " chmod a+x %s;"
-                        "killall -9 maxscale;"
-                        "rm -f %s/maxscale.log %s/maxscale1.log;"
-                        "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;"
-                        "service maxscale restart",
-                        maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
-                        maxscale_log_dir, maxscale_log_dir);
-    }
+    ssh_maxscale_sh(true, "chown maxscale:maxscale -R %s/certs;"
+                    "chmod 664 %s/certs/*.pem;"
+                    " chmod a+x %s;"
+                    "killall -9 maxscale;"
+                    "rm -f %s/maxscale.log %s/maxscale1.log;"
+                    "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;"
+                    "%s",
+                    maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
+                    maxscale_log_dir, maxscale_log_dir, no_maxscale_start ? "": "service maxscale restart");
 
     fflush(stdout);
 
