@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
     Test->check_maxscale_alive();
     //Test->check_maxscale_processes(0);
 
-    /*
     Test->stop_timeout();
     Test->tprintf("Restore backend configuration\n");
     for (int i = 0; i < Test->repl->N; i++)
@@ -59,7 +58,7 @@ int main(int argc, char *argv[])
         Test->repl->ssh_node(i, (char *) "rm  /etc/my.cnf.d/utf64.cnf", true);
     }
     Test->repl->start_replication();
-    */
+
     Test->copy_all_logs(); return(Test->global_result);
 }
 
