@@ -26,20 +26,20 @@ int main(int argc, char *argv[])
 
     char cmd [1024];
     sprintf(cmd, "%s/utf64.cnf", Test->test_dir);
-    for (int i = 0; i < Test->galera->N; i++)
+    for (int i = 0; i < Test->repl->N; i++)
     {
-        Test->galera->copy_to_node(cmd, (char *) "./", i);
-        Test->galera->ssh_node(i, (char *) "cp ./utf64.cnf /etc/my.cnf.d/", true);
+        Test->repl->copy_to_node(cmd, (char *) "./", i);
+        Test->repl->ssh_node(i, (char *) "cp ./utf64.cnf /etc/my.cnf.d/", true);
     }
 
-    Test->galera->start_replication();
+    Test->repl->start_replication();
 
 
     Test->tprintf("Set utf8mb4 for backend");
-    Test->galera->execute_query_all_nodes((char *) "SET GLOBAL character_set_server = 'utf8mb4';");
+    Test->repl->execute_query_all_nodes((char *) "SET GLOBAL character_set_server = 'utf8mb4';");
 
     Test->tprintf("Set names to utf8mb4 for backend");
-    Test->galera->execute_query_all_nodes((char *) "SET NAMES 'utf8mb4';");
+    Test->repl->execute_query_all_nodes((char *) "SET NAMES 'utf8mb4';");
 
     Test->set_timeout(120);
 
@@ -54,11 +54,11 @@ int main(int argc, char *argv[])
     /*
     Test->stop_timeout();
     Test->tprintf("Restore backend configuration\n");
-    for (int i = 0; i < Test->galera->N; i++)
+    for (int i = 0; i < Test->repl->N; i++)
     {
-        Test->galera->ssh_node(i, (char *) "rm  /etc/my.cnf.d/utf64.cnf", true);
+        Test->repl->ssh_node(i, (char *) "rm  /etc/my.cnf.d/utf64.cnf", true);
     }
-    Test->galera->start_replication();
+    Test->repl->start_replication();
     */
     Test->copy_all_logs(); return(Test->global_result);
 }

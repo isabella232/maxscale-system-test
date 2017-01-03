@@ -426,7 +426,7 @@ add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_base LABELS maxscal
 
 
 # Set utf8mb4 in the backend and restart Maxscale
-add_test_executable(mxs951_utfmb4_galera.cpp mxs951_utfmb4_galera galera LABELS galeramon GALERA_BACKEND)
+add_test_executable(mxs951_utfmb4.cpp mxs951_utfmb4 replication LABELS REPL_BACKEND)
 
 # Execute given SQL through readwritesplit (with temporary tables usage)
 add_test_executable(mxs957.cpp mxs957 replication LABELS readwritesplit REPL_BACKEND)
