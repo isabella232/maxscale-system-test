@@ -1,7 +1,8 @@
 settings{
          logfile         = "/var/log/maxscale/maxscale-ha.log",
          statusFile      = "/var/log/maxscale/maxscale-ha-status.log",
-         insist = 1
+         insist = 1,
+         log = all
 }
 
 sync{

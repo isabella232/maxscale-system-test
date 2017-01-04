@@ -84,6 +84,9 @@ int main(int argc, char *argv[])
     {
         Test->repl->copy_to_node("id_rsa*", ".ssh/", i);
         Test->repl->ssh_node(i, "cat .ssh/id_rsa.pub >> .ssh/authorized_keys", false);
+
+        // HACK
+        Test->repl->ssh_node(i, "chmod 777 -R /etc", true);
     }
 
 
