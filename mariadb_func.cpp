@@ -288,6 +288,43 @@ int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * aff
     }
 }
 
+int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_rows[], unsigned long long * i)
+{
+    MYSQL_RES *res;
+    my_ulonglong N;
+
+
+    printf("%s\n", sql);
+    if (conn != NULL) {
+        if(mysql_query(conn, sql) != 0) {
+            printf("Error: can't execute SQL-query: %s\n", sql);
+            printf("%s\n\n", mysql_error(conn));
+            return(1);
+        } else {
+            *i = 0;
+            do {
+                res = mysql_store_result(conn);
+                if (res != NULL)
+                {
+                    N = mysql_num_rows(res);
+                }
+                else
+                {
+                    N = 0;
+                }
+                num_of_rows[*i] = N;
+                *i = *i + 1;
+                mysql_free_result(res);
+            } while ( mysql_next_result(conn) == 0 );
+            return(0);
+        }
+    } else {
+        printf("Connection is broken\n");
+        return(1);
+    }
+}
+
+
 int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
 {
     MYSQL_RES *res;

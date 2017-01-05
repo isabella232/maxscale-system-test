@@ -144,6 +144,18 @@ int execute_query1(MYSQL *conn, const char *sql, bool silent);
 int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * affected_rows);
 
 /**
+ * @brief Executes SQL query and get number of rows in the result
+ * This function does not check boudaries of 'num_of_rows' array. This
+ * array have to be big enough to store all results
+ * @param MYSQL	connection struct
+ * @param sql	SQL string
+ * @param num_of_rows pointer to array to store number of result rows
+ * @param i pointer to variable to store number of result sets
+ * @return 0 in case of success
+ */
+int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_rows[], unsigned long long *i);
+
+/**
  * @brief execute_query_check_one Executes query and check if first field of first row is equal to 'expected'
  * @param conn MYSQL handler
  * @param sql query SQL query to execute
