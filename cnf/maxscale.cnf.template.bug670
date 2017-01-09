@@ -39,10 +39,6 @@ type=filter
 module=tee 
 service=RW Split2
 
-[testfilter]
-type=filter
-module=foobar
-
 [RW Split Router]
 type=service
 router=readwritesplit
