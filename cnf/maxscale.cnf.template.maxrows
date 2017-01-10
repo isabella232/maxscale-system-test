@@ -72,7 +72,7 @@ socket=default
 type=filter
 module=maxrows
 max_resultset_rows=20
-max_resultset_size=900000
+max_resultset_size=900000000
 debug=3
 
 [server1]

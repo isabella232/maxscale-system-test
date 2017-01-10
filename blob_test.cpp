@@ -17,6 +17,8 @@ int test_longblob(TestConnections* Test, MYSQL * conn, char * blob_name, unsigne
     sprintf(sql, "CREATE TABLE long_blob_table(id int NOT NULL AUTO_INCREMENT, x INT, b %s, PRIMARY KEY (id))", blob_name);
     Test->try_query(conn, sql);
 
+    for (int k = 0; k < rows; k++)
+    {
     Test->tprintf("Preparintg INSERT stmt\n");
     MYSQL_STMT * stmt = mysql_stmt_init(conn);
     if (stmt == NULL)
@@ -55,13 +57,14 @@ int test_longblob(TestConnections* Test, MYSQL * conn, char * blob_name, unsigne
         }
     }
 
-    for (int k = 0; k < rows; k++)
-    {
+    //for (int k = 0; k < rows; k++)
+    //{
         Test->tprintf("Executing statement: %02d\n", k);
         Test->set_timeout(3000);
         Test->add_result(mysql_stmt_execute(stmt), "INSERT Statement with %s failed, error is %s\n", blob_name, mysql_stmt_error(stmt));
-    }
+    //}
     Test->add_result(mysql_stmt_close(stmt), "Error closing stmt\n");
+    }
 
     if (global_res == Test->global_result)
     {

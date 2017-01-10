@@ -41,7 +41,8 @@ const char * test07_sql =
          "SELECT id, b from long_blob_table order by id desc limit 1;\n"
          "SELECT id, b from long_blob_table order by id desc limit 4;\n"
          "SELECT id, b from long_blob_table order by id desc limit 1;\n"
-         "SELECT id, b from long_blob_table order by id desc limit 10;\n"
+         "SELECT id, b from long_blob_table order by id desc;\n"
+         "SELECT id, b from long_blob_table order by id desc;\n"
          "SELECT 1;\n"
         "END";
 
@@ -50,7 +51,8 @@ const char * test08_sql =
          "SELECT 1,2,3;\n"
          "SELECT id, b, b from long_blob_table order by id desc limit 1;\n"
          "SELECT 2;\n"
-         "SELECT id, b from long_blob_table order by id desc limit 6;\n"
+         "SELECT id, b from long_blob_table order by id desc limit 4;\n"
+         "SELECT id, b from long_blob_table order by id desc limit 2;\n"
          "SELECT 1;\n"
          "SELECT 1;\n"
          "SELECT x1 FROM t1 LIMIT 8;\n"
@@ -206,7 +208,7 @@ int compare_stmt_expected(TestConnections * Test, MYSQL_STMT * stmt, my_ulonglon
 
 void err_check(TestConnections* Test, unsigned int expected_err)
 {
-    Test->tprintf("Error text %s error code %d\n", mysql_error(Test->conn_rwsplit), mysql_errno(Test->conn_rwsplit));
+    Test->tprintf("Error text '%s'' error code %d\n", mysql_error(Test->conn_rwsplit), mysql_errno(Test->conn_rwsplit));
     if (mysql_errno(Test->conn_rwsplit) != expected_err)
     {
         Test->add_result(1, "Error code is not %d, it is %d\n", expected_err, mysql_errno(Test->conn_rwsplit));
@@ -296,7 +298,7 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
     Test->repl->connect();
     //test_longblob(Test, Test->conn_rwsplit, (char *) "LONGBLOB", 512 * 1024 / sizeof(long int), 17 * 2, 25);
-    test_longblob(Test, Test->repl->nodes[0], (char *) "LONGBLOB", 512 * 1024 / sizeof(long int), 17 * 2, 25);
+    test_longblob(Test, Test->repl->nodes[0], (char *) "LONGBLOB", 512 * 1024 / sizeof(long int), 17 * 2, 5);
     Test->repl->close_connections();
 
 
@@ -305,14 +307,14 @@ int main(int argc, char *argv[])
     exp_rows[1] = 1;
     exp_rows[2] = 4;
     exp_rows[3] = 1;
-    exp_rows[4] = 10;
-    exp_rows[5] = 1;
-    exp_rows[6] = 0;
-
+    exp_rows[4] = 5;
+    exp_rows[5] = 5;
+    exp_rows[6] = 1;
+    exp_rows[7] = 0;
 
     Test->try_query(Test->conn_rwsplit, "DROP PROCEDURE IF EXISTS multi");
     Test->try_query(Test->conn_rwsplit, test07_sql);
-    compare_expected(Test, "CALL multi()", 7, exp_rows);
+    compare_expected(Test, "CALL multi()", 8, exp_rows);
 
     Test->tprintf("**** Test 8 ****\n");
     exp_rows[0] = 0;
@@ -345,8 +347,7 @@ int main(int argc, char *argv[])
 
     // Prepared statements
 
-    /* Temporary disabled
-    Test->tprintf("**** Test 12 (C ) ****\n");
+    Test->tprintf("**** Test 12 (C++) ****\n");
     exp_rows[0] = 0;
 
     stmt = mysql_stmt_init(Test->conn_rwsplit);
@@ -359,7 +360,7 @@ int main(int argc, char *argv[])
 
     compare_stmt_expected(Test, stmt, 1, exp_rows);
 
-    mysql_stmt_close(stmt); */
+    mysql_stmt_close(stmt);
 
 
 
@@ -372,7 +373,7 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, "DEALLOCATE PREPARE stmt1");
 
 
-    Test->tprintf("**** Test 13 (C )****\n");
+    Test->tprintf("**** Test 13 (C++)****\n");
     exp_rows[0] = 10;
     exp_rows[1] = 0;
     stmt = mysql_stmt_init(Test->conn_rwsplit);
@@ -463,7 +464,7 @@ int main(int argc, char *argv[])
 
     Test->close_rwsplit();
 
-    Test->ssh_maxscale(true, "sed -i \"s/max_resultset_size=900000/max_resultset_size=90/\" /etc/maxscale.cnf");
+    Test->ssh_maxscale(true, "sed -i \"s/max_resultset_size=900000000/max_resultset_size=9000000/\" /etc/maxscale.cnf");
     Test->set_timeout(100);
     Test->restart_maxscale();
 
