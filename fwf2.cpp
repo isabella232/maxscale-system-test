@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     FILE* file;
 
     sprintf(rules_dir, "%s/fw2/", Test->test_dir);
-    int N = 3;
+    int N = 4;
     int i;
 
     for (i = 1; i < N + 1; i++)

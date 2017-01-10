@@ -1,0 +1,6 @@
+select sum(1);
+select avg(1);
+select sum(avg(1));
+select my_function(1);
+select my_function("1");
+
