@@ -26,7 +26,6 @@ router_options= slave
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
-use_sql_variables_in=all
 
 [Read Connection Router Master]
 type=service
@@ -35,7 +34,6 @@ router_options=master
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
-use_sql_variables_in=all
 
 [RW Split Listener]
 type=listener

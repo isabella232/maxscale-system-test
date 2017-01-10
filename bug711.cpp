@@ -1,6 +1,6 @@
 /**
  * @file bug711.cpp bug711 regression case (Some MySQL Workbench Management actions hang with R/W split router)
- * - configure all routers with use_sql_variables_in=all
+ * - configure rwsplit with use_sql_variables_in=all
  * - try SHOW GLOBAL STATUS with all routers
  * - check if Maxscale is still alive
  */
