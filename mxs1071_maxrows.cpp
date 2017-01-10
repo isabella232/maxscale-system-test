@@ -149,7 +149,7 @@ const char * test19_sql =
 
 int compare_expected(TestConnections * Test, const char * sql, my_ulonglong exp_i, my_ulonglong exp_rows[])
 {
-    my_ulonglong *rows = new my_ulonglong[10];
+    my_ulonglong *rows = new my_ulonglong[30];
     my_ulonglong i;
 
     Test->set_timeout(10);
@@ -177,7 +177,7 @@ int compare_expected(TestConnections * Test, const char * sql, my_ulonglong exp_
 
 int compare_stmt_expected(TestConnections * Test, MYSQL_STMT * stmt, my_ulonglong exp_i, my_ulonglong exp_rows[])
 {
-    my_ulonglong *rows = new my_ulonglong[10];
+    my_ulonglong *rows = new my_ulonglong[30];
     my_ulonglong i;
 
     Test->set_timeout(10);
@@ -216,7 +216,7 @@ void err_check(TestConnections* Test, unsigned int expected_err)
 int main(int argc, char *argv[])
 {
 
-    my_ulonglong *exp_rows = new my_ulonglong[25];
+    my_ulonglong *exp_rows = new my_ulonglong[30];
     MYSQL_STMT * stmt;
 
     TestConnections * Test = new TestConnections(argc, argv);
@@ -452,7 +452,7 @@ int main(int argc, char *argv[])
 
     Test->try_query(Test->conn_rwsplit, "DROP PROCEDURE IF EXISTS multi");
     Test->try_query(Test->conn_rwsplit, test19_sql);
-    compare_expected(Test, "CALL multi()", 0, exp_rows);
+    compare_expected(Test, "CALL multi()", 1, exp_rows);
 
     Test->tprintf("**** Test 20 ****\n");
     exp_rows[0] = 2;
