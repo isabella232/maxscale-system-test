@@ -299,6 +299,7 @@ int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_
         if(mysql_query(conn, sql) != 0) {
             printf("Error: can't execute SQL-query: %s\n", sql);
             printf("%s\n\n", mysql_error(conn));
+            * i = 0;
             return(1);
         } else {
             *i = 0;
@@ -320,9 +321,51 @@ int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_
         }
     } else {
         printf("Connection is broken\n");
+        * i = 0;
         return(1);
     }
 }
+
+int execute_stmt_num_of_rows(MYSQL_STMT * stmt, my_ulonglong num_of_rows[], unsigned long long * i)
+{
+    MYSQL_RES *res;
+    my_ulonglong N;
+
+
+    //printf("%s\n", sql);
+    //if (conn != NULL) {
+        if(mysql_stmt_execute(stmt) != 0) {
+            printf("Error: can't execute prepared statement\n");
+            printf("%s\n\n", mysql_stmt_error(stmt));
+            * i = 0;
+            return(1);
+        } else {
+            *i = 0;
+            do {
+                mysql_stmt_store_result(stmt);
+                N = mysql_stmt_num_rows(stmt);
+                /*res = mysql_stmt_result_metadata(stmt);
+                if (res != NULL)
+                {
+                    N = mysql_num_rows(res);
+                }
+                else
+                {
+                    N = 0;
+                }*/
+                num_of_rows[*i] = N;
+                *i = *i + 1;
+                //mysql_free_result(res);
+            } while ( mysql_stmt_next_result(stmt) == 0 );
+            return(0);
+        }
+    //} else {
+    //    printf("Connection is broken\n");
+    //    * i = 0;
+    //    return(1);
+    //}
+}
+
 
 
 int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)

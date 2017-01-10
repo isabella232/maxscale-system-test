@@ -155,6 +155,8 @@ int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * aff
  */
 int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_rows[], unsigned long long *i);
 
+int execute_stmt_num_of_rows(MYSQL_STMT *stmt, my_ulonglong num_of_rows[], unsigned long long * i);
+
 /**
  * @brief execute_query_check_one Executes query and check if first field of first row is equal to 'expected'
  * @param conn MYSQL handler
