@@ -554,22 +554,25 @@ add_test_executable(binlog_change_master.cpp binlog_change_master setup_binlog_t
 # trying to start binlog setup with incomplete Maxscale.cnf
 add_test_executable(binlog_incompl.cpp binlog_incompl binlog_incompl LABELS binlogrouter BREAKS_REPL)
 
-# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, router options semisync=1,transaction_safety=1
+# configure binlog router setup, execute queries and transactions, check data; install semysync plugin, router options semisync=1,transaction_safety=1
 add_test_executable(binlog_semisync.cpp binlog_semisync setup_binlog_semisync LABELS binlogrouter HEAVY BREAKS_REPL)
 
-# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, router options semisync=0,transaction_safety=0
+# configure binlog router setup, execute queries and transactions, check data; install semysync plugin, router options semisync=0,transaction_safety=0
 add_test_script(binlog_semisync_txs0_ss0 binlog_semisync setup_binlog_semisync_txs0_ss0 LABELS binlogrouter HEAVY BREAKS_REPL)
 
-# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, router options semisync=0,transaction_safety=1
+# configure binlog router setup, execute queries and transactions, check data; install semysync plugin, router options semisync=0,transaction_safety=1
 add_test_script(binlog_semisync_txs0_ss1 binlog_semisync setup_binlog_semisync_txs0_ss1 LABELS binlogrouter HEAVY BREAKS_REPL)
 
-# configure binlog rouer setup, execute queries and transactions, check data; install semysync plugin, router options semisync=1,transaction_safety=0
+# configure binlog router setup, execute queries and transactions, check data; install semysync plugin, router options semisync=1,transaction_safety=0
 add_test_script(binlog_semisync_txs1_ss0 binlog_semisync setup_binlog_semisync_txs1_ss0 LABELS binlogrouter HEAVY BREAKS_REPL)
 
 set_tests_properties(binlog_semisync PROPERTIES TIMEOUT 3600)
 set_tests_properties(binlog_semisync_txs0_ss0 PROPERTIES TIMEOUT 3600)
 set_tests_properties(binlog_semisync_txs0_ss1 PROPERTIES TIMEOUT 3600)
 set_tests_properties(binlog_semisync_txs1_ss0 PROPERTIES TIMEOUT 3600)
+
+# Binlog encription test
+add_test_executable(mxs1073_binlog_enc.cpp mxs1073_binlog_enc binlog_enc LABELS binlogrouter BREAKS_REPL)
 
 # Test of CDC protocol (avro listener)
 add_test_executable(cdc_client.cpp cdc_client avro LABELS avrorouter binlogrouter BREAKS_REPL)
