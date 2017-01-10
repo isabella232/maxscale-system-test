@@ -48,7 +48,8 @@ find_library(MYSQL_CLIENT mariadbclient mysqlclient PATH_SUFFIXES mysql mariadb)
 add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
-  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp rds_vpc.cpp execute_cmd.cpp)
+  different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp rds_vpc.cpp execute_cmd.cpp
+  blob_test.cpp)
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 
@@ -424,6 +425,8 @@ add_test_executable(mxs922_restart.cpp mxs922_restart mxs922 LABELS maxscale REP
 # Server scaling test
 add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_base LABELS maxscale REPL_BACKEND)
 
+# Test of MaxRows filter
+add_test_executable(mxs1071_maxrows.cpp mxs1071_maxrows maxrows LABELS maxrowsfilter REPL_BACKEND)
 
 # Set utf8mb4 in the backend and restart Maxscale
 add_test_executable(mxs951_utfmb4.cpp mxs951_utfmb4 replication LABELS REPL_BACKEND)
