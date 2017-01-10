@@ -308,6 +308,7 @@ int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_
                 if (res != NULL)
                 {
                     N = mysql_num_rows(res);
+                    mysql_free_result(res);
                 }
                 else
                 {
@@ -315,7 +316,6 @@ int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_
                 }
                 num_of_rows[*i] = N;
                 *i = *i + 1;
-                mysql_free_result(res);
             } while ( mysql_next_result(conn) == 0 );
             return(0);
         }
@@ -328,45 +328,58 @@ int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_
 
 int execute_stmt_num_of_rows(MYSQL_STMT * stmt, my_ulonglong num_of_rows[], unsigned long long * i)
 {
-    MYSQL_RES *res;
     my_ulonglong N;
 
+    /* This is debug hack; compatible only with t1 from t1_sql.h
+    my_ulonglong k;
+    MYSQL_BIND bind[2];
+    my_ulonglong x1;
+    my_ulonglong fl;
 
-    //printf("%s\n", sql);
-    //if (conn != NULL) {
-        if(mysql_stmt_execute(stmt) != 0) {
-            printf("Error: can't execute prepared statement\n");
-            printf("%s\n\n", mysql_stmt_error(stmt));
-            * i = 0;
-            return(1);
-        } else {
-            *i = 0;
-            do {
-                mysql_stmt_store_result(stmt);
-                N = mysql_stmt_num_rows(stmt);
-                /*res = mysql_stmt_result_metadata(stmt);
-                if (res != NULL)
-                {
-                    N = mysql_num_rows(res);
-                }
-                else
-                {
-                    N = 0;
-                }*/
-                num_of_rows[*i] = N;
-                *i = *i + 1;
-                //mysql_free_result(res);
-            } while ( mysql_stmt_next_result(stmt) == 0 );
-            return(0);
-        }
-    //} else {
-    //    printf("Connection is broken\n");
-    //    * i = 0;
-    //    return(1);
-    //}
+    unsigned long length[2];
+    my_bool       is_null[2];
+    my_bool       error[2];
+
+    memset(bind, 0, sizeof(bind));
+    bind[0].buffer = &x1;
+    bind[0].buffer_type = MYSQL_TYPE_LONG;
+    bind[0].length = &length[0];
+    bind[0].is_null = &is_null[0];
+    bind[0].error = &error[0];
+
+    bind[1].buffer = &fl;
+    bind[1].buffer_type = MYSQL_TYPE_LONG;
+    bind[1].length = &length[0];
+    bind[1].is_null = &is_null[0];
+    bind[1].error = &error[0];
+    */
+
+    if(mysql_stmt_execute(stmt) != 0) {
+        printf("Error: can't execute prepared statement\n");
+        printf("%s\n\n", mysql_stmt_error(stmt));
+        * i = 0;
+        return(1);
+    } else {
+        *i = 0;
+        do {
+            mysql_stmt_store_result(stmt);
+            N = mysql_stmt_num_rows(stmt);
+            /* This is debug hack; compatible only with t1 from t1_sql.h
+            mysql_stmt_bind_result(stmt, bind);
+            for (k = 0; k < N; k++)
+            {
+                mysql_stmt_fetch(stmt);
+                printf("%04llu: x1 %llu, fl %llu\n", k, x1, fl);
+            }
+            */
+            num_of_rows[*i] = N;
+            *i = *i + 1;
+
+        } while ( mysql_stmt_next_result(stmt) == 0 );
+        return(0);
+    }
+    return(1);
 }
-
-
 
 int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
 {

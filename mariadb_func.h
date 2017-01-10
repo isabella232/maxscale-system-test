@@ -118,7 +118,7 @@ int execute_query_from_file(MYSQL *conn, FILE *file);
 
 /**
  * @brief Executes SQL query. Function also executes mysql_store_result() and mysql_free_result() to clean up returns
- * @param MYSQL	connection struct
+ * @param conn MYSQL connection struct
  * @param sql	SQL string
  * @return 0 in case of success
  */
@@ -127,7 +127,7 @@ int execute_query_silent(MYSQL *conn, const char *sql);
 /**
  * @brief Executes SQL query. Function also executes mysql_store_result() and mysql_free_result() to clean up returns
  * This function do not support 'printf' format for sql (in compare with execute_query()
- * @param MYSQL	connection struct
+ * @param conn MYSQL	connection struct
  * @param sql	SQL string
  * @param silent if true function do not produce any printing
  * @return 0 in case of success
@@ -136,7 +136,7 @@ int execute_query1(MYSQL *conn, const char *sql, bool silent);
 
 /**
  * @brief Executes SQL query and store 'affected rows' number in affectet_rows parameter
- * @param MYSQL	connection struct
+ * @param conn MYSQL	connection struct
  * @param sql	SQL string
  * @param affected_rows pointer to variabe to store number of affected rows
  * @return 0 in case of success
@@ -147,7 +147,7 @@ int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * aff
  * @brief Executes SQL query and get number of rows in the result
  * This function does not check boudaries of 'num_of_rows' array. This
  * array have to be big enough to store all results
- * @param MYSQL	connection struct
+ * @param conn MYSQL	connection struct
  * @param sql	SQL string
  * @param num_of_rows pointer to array to store number of result rows
  * @param i pointer to variable to store number of result sets
@@ -155,6 +155,15 @@ int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * aff
  */
 int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_rows[], unsigned long long *i);
 
+/**
+ * @brief Executes perared statement and get number of rows in the result
+ * This function does not check boudaries of 'num_of_rows' array. This
+ * array have to be big enough to store all results
+ * @param stmt MYSQL_STMT statetement struct (from mysql_stmt_init())
+ * @param num_of_rows pointer to array to store number of result rows
+ * @param i pointer to variable to store number of result sets
+ * @return 0 in case of success
+ */
 int execute_stmt_num_of_rows(MYSQL_STMT *stmt, my_ulonglong num_of_rows[], unsigned long long * i);
 
 /**
@@ -168,7 +177,7 @@ int execute_query_check_one(MYSQL *conn, const char *sql, const char *expected);
 
 /**
  * @brief Executes 'show processlist' and calculates number of connections from defined host to defined DB
- * @param MYSQL	connection struct
+ * @param conn MYSQL	connection struct
  * @param ip	connections from this IP address are counted
  * @param db    name of DB to which connections are counted
  * @return number of connections
@@ -178,7 +187,7 @@ int get_conn_num(MYSQL *conn, char * ip, char * hostname, char * db);
 /**
  * @brief Find given filed in the SQL query reply
  * Function checks only firs row from the table
- * @param MYSQL	connection struct
+ * @param conn MYSQL	connection struct
  * @param sql	SQL query to execute
  * @param filed_name    name of field to find
  * @param value pointer to variable to store value of found field
@@ -188,7 +197,7 @@ int find_field(MYSQL *conn, const char * sql, const char * field_name, char * va
 
 /**
  * @brief Return the value of SECONDS_BEHIND_MASTER
- * @param MYSQL	connection struct
+ * @param conn MYSQL	connection struct
  * @return value of SECONDS_BEHIND_MASTER
  */
 unsigned int get_seconds_behind_master(MYSQL *conn);

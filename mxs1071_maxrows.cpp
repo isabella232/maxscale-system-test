@@ -72,6 +72,17 @@ const char * test14_sql =
         "CREATE PROCEDURE multi() BEGIN\n"
          "SELECT 1,3;\n"
          "SET @table = 't1';\n"
+         "SET @s = CONCAT('SELECT * FROM ', @table, ' LIMIT 18');\n"
+         "PREPARE stmt1 FROM @s;\n"
+         "EXECUTE stmt1;\n"
+         "DEALLOCATE PREPARE stmt1;\n"
+         "SELECT 2,4,5;\n"
+        "END";
+
+const char * test15_sql =
+        "CREATE PROCEDURE multi() BEGIN\n"
+         "SELECT 1,3;\n"
+         "SET @table = 't1';\n"
          "SET @s = CONCAT('SELECT * FROM ', @table, ' LIMIT 100');\n"
          "PREPARE stmt1 FROM @s;\n"
          "EXECUTE stmt1;\n"
@@ -91,14 +102,12 @@ const char * test18_sql =
             "SELECT '' as 'A' limit 1;\n"
             "SELECT '' as 'A' limit 10;\n"
             "SELECT '' as 'A';\n"
-
             "SELECT '' as 'A';\n"
             "SELECT '' as 'A';\n"
             "SELECT '' as 'A';\n"
             "SELECT '' as 'A';\n"
             "SELECT '' as 'A';\n"
             "SELECT '' as 'A';\n"
-
             "SELECT '' as 'A';\n"
             "SELECT '' as 'A' limit 1;\n"
             "SELECT '' as 'A' limit 10;\n"
@@ -208,6 +217,7 @@ int main(int argc, char *argv[])
 {
 
     my_ulonglong *exp_rows = new my_ulonglong[25];
+    MYSQL_STMT * stmt;
 
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(10);
@@ -217,6 +227,7 @@ int main(int argc, char *argv[])
     insert_into_t1(Test->conn_rwsplit, 1);
     Test->stop_timeout();
     sleep(5);
+
 
     Test->tprintf("**** Test 1 ****\n");
 
@@ -229,7 +240,6 @@ int main(int argc, char *argv[])
 
     exp_rows[0] = 10;
     compare_expected(Test, (char *) "select * from t1 limit 10", 1, exp_rows);
-
 
     Test->set_timeout(60);
     create_t1(Test->conn_rwsplit);
@@ -284,7 +294,10 @@ int main(int argc, char *argv[])
     Test->tprintf("LONGBLOB: Trying send data via RWSplit\n");
     Test->try_query(Test->conn_rwsplit, "SET GLOBAL max_allowed_packet=10000000000");
     Test->stop_timeout();
-    test_longblob(Test, Test->conn_rwsplit, (char *) "LONGBLOB", 512 * 1024 / sizeof(long int), 17 * 2, 25);
+    Test->repl->connect();
+    //test_longblob(Test, Test->conn_rwsplit, (char *) "LONGBLOB", 512 * 1024 / sizeof(long int), 17 * 2, 25);
+    test_longblob(Test, Test->repl->nodes[0], (char *) "LONGBLOB", 512 * 1024 / sizeof(long int), 17 * 2, 25);
+    Test->repl->close_connections();
 
 
     Test->tprintf("**** Test 7 ****\n");
@@ -332,10 +345,11 @@ int main(int argc, char *argv[])
 
     // Prepared statements
 
-    Test->tprintf("**** Test 12 ****\n");
+    /* Temporary disabled
+    Test->tprintf("**** Test 12 (C ) ****\n");
     exp_rows[0] = 0;
 
-    MYSQL_STMT * stmt = mysql_stmt_init(Test->conn_rwsplit);
+    stmt = mysql_stmt_init(Test->conn_rwsplit);
     if (stmt == NULL)
     {
         Test->add_result(1, "stmt init error: %s\n", mysql_stmt_error(stmt));
@@ -345,9 +359,20 @@ int main(int argc, char *argv[])
 
     compare_stmt_expected(Test, stmt, 1, exp_rows);
 
-    mysql_stmt_close(stmt);
+    mysql_stmt_close(stmt); */
 
-    Test->tprintf("**** Test 13 ****\n");
+
+
+    Test->tprintf("**** Test 12 (MariaDB command line client) ****\n");
+    exp_rows[0] = 0;
+    Test->try_query(Test->conn_rwsplit, "SET @table = 't1'");
+    Test->try_query(Test->conn_rwsplit, "SET @s = CONCAT('SELECT * FROM ', @table)");
+    Test->try_query(Test->conn_rwsplit, "PREPARE stmt1 FROM @s");
+    compare_expected(Test, "EXECUTE stmt1", 1, exp_rows);
+    Test->try_query(Test->conn_rwsplit, "DEALLOCATE PREPARE stmt1");
+
+
+    Test->tprintf("**** Test 13 (C )****\n");
     exp_rows[0] = 10;
     exp_rows[1] = 0;
     stmt = mysql_stmt_init(Test->conn_rwsplit);
@@ -357,14 +382,19 @@ int main(int argc, char *argv[])
     }
     char *stmt2 = (char *) "SELECT * FROM t1 LIMIT 10";
     Test->add_result(mysql_stmt_prepare(stmt, stmt2, strlen(stmt2)), "Error preparing stmt: %s\n", mysql_stmt_error(stmt));
-
     compare_stmt_expected(Test, stmt, 1, exp_rows);
-
     mysql_stmt_close(stmt);
+
+    Test->tprintf("**** Test 13 (MariaDB command line client) ****\n");
+    Test->try_query(Test->conn_rwsplit, "SET @table = 't1'");
+    Test->try_query(Test->conn_rwsplit, "SET @s = CONCAT('SELECT * FROM ', @table,  ' LIMIT 10')");
+    Test->try_query(Test->conn_rwsplit, "PREPARE stmt1 FROM @s");
+    compare_expected(Test, "EXECUTE stmt1", 1, exp_rows);
+    Test->try_query(Test->conn_rwsplit, "DEALLOCATE PREPARE stmt1");
 
     Test->tprintf("**** Test 14 ****\n");
     exp_rows[0] = 1;
-    exp_rows[1] = 10;
+    exp_rows[1] = 18;
     exp_rows[2] = 1;
     exp_rows[3] = 0;
     Test->try_query(Test->conn_rwsplit, "DROP PROCEDURE IF EXISTS multi");
@@ -374,13 +404,13 @@ int main(int argc, char *argv[])
     Test->tprintf("**** Test 15 ****\n");
     exp_rows[0] = 0;
     Test->try_query(Test->conn_rwsplit, "DROP PROCEDURE IF EXISTS multi");
-    Test->try_query(Test->conn_rwsplit, test14_sql);
+    Test->try_query(Test->conn_rwsplit, test15_sql);
     compare_expected(Test, "CALL multi()", 1, exp_rows);
 
     Test->tprintf("**** Test 16 ****\n");
     exp_rows[0] = 1;
     exp_rows[1] = 0;
-    compare_expected(Test, "SELECT '' as 'A' limit 1;", 2, exp_rows);
+    compare_expected(Test, "SELECT '' as 'A' limit 1;", 1, exp_rows);
 
     Test->tprintf("**** Test 17 ****\n");
     exp_rows[0] = 1;
@@ -391,7 +421,7 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, test17_sql);
     compare_expected(Test, "CALL multi()", 4, exp_rows);
 
-    /*Test->tprintf("**** Test 18 ****\n");
+    Test->tprintf("**** Test 18 ****\n");
     exp_rows[0] = 1;
     exp_rows[1] = 1;
     exp_rows[2] = 1;
@@ -421,8 +451,8 @@ int main(int argc, char *argv[])
     exp_rows[0] = 0;
 
     Test->try_query(Test->conn_rwsplit, "DROP PROCEDURE IF EXISTS multi");
-    Test->try_query(Test->conn_rwsplit, test18_sql);
-    compare_expected(Test, "CALL multi()", 0, exp_rows);*/
+    Test->try_query(Test->conn_rwsplit, test19_sql);
+    compare_expected(Test, "CALL multi()", 0, exp_rows);
 
     Test->tprintf("**** Test 20 ****\n");
     exp_rows[0] = 2;
