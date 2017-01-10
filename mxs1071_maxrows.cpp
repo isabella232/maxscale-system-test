@@ -1,3 +1,47 @@
+/**
+ * @file mxs1071_maxrows.cpp Test of Maxrows filter
+ * Initial filter configuration
+ @verbatim
+[MaxRows]
+type=filter
+module=maxrows
+max_resultset_rows=20
+max_resultset_size=9000000
+debug=3
+ @endverbatim
+ * All the tests executes statemet, prepared statement or stored procedure and checks
+ * number of rows in the result sets (multiple result sets possible)
+ *
+ * Test  1 - max_allowed_packet limit is not hit, simple SELECTs, small table
+ * Test  2 - same queries, but bigger table - limit is hit in some cases
+ * Test  3 - stored procedure, limit is not hit, single result set
+ * Test  4 - stored procedure, limit is not hit, multiple result sets
+ * Test  5 - stored procedure, limit is not hit, multiple result sets
+ * Test  6 - stored procedure, limit is hit, multiple result sets
+ * Test  7 - stored procedure, limit is not hit, long blobs, multiple result sets
+ * Test  8 - stored procedure, limit is hit, long blobs, multiple result sets
+ * Test  9 - query non-existant table, expect proper error
+ * Test 10 - stored procedure, limit could be hit if executed until the end,
+ *           multiple result sets, query non-existant table, expect proper error
+ *           and result sets generated before error
+ * Test 11 - SET @a=4 - empty result set
+ * Test 12 - prepared statement, using mysql_stmt_* functions, limit is hit
+ *           Test 12 is repeated using mysql_query() function
+ * Test 13 - same as Test 12, but limit is not hit
+ * Test 14 - prepared statement inside of store procedure, multiple result sets
+ *           limit is not hit
+ * Test 15 - prepared statement inside of store procedure, multiple result sets
+ *           limit is hit
+ * Test 16 - SELECT '' as 'A' limit 1 (empty result)
+ * Test 17 - multiple result sets with empty result, limit is not hit
+ * Test 18 - multiple result sets with empty result, exactly as a limit (20)
+ *           (expect 20 result sets)
+ * Test 19 - multiple result sets with empty result, limit is hit
+ * Test 20 - SELECT long blobs, limit is not hit
+ * Test 21 - change max_resultset_size to lower values, SELECT long blobs,
+ *           max_resultset_size limit is hit
+ */
+
 #include <iostream>
 #include "testconnections.h"
 #include "sql_t1.h"
@@ -148,7 +192,16 @@ const char * test19_sql =
             "SELECT '' as 'A';\n"
         "END";
 
-
+/**
+ * @brief compare_expected Execute sql and compare number of rows in every result set with expected values
+ * If number if result sets differs from expected value or number of rows in any result sey differs from
+ * given expected value this function calls Test->add_result
+ * @param Test TestConnections object
+ * @param sql SQL query to execute
+ * @param exp_i Expected number of result sets
+ * @param exp_rows Array of expected numbers of rows for every result set
+ * @return 0 in case of lack of error
+ */
 int compare_expected(TestConnections * Test, const char * sql, my_ulonglong exp_i, my_ulonglong exp_rows[])
 {
     my_ulonglong *rows = new my_ulonglong[30];
@@ -177,6 +230,15 @@ int compare_expected(TestConnections * Test, const char * sql, my_ulonglong exp_
     return 0;
 }
 
+/**
+ * @brief compare_stmt_expected Execute prepared statement and compare number of rows in every result set with expected values
+ * This function uses mysql_stmt-* functions (COM_STMT_EXECUTE, COM_STMT_FETCH)
+ * @param Test TestConnections object
+ * @param stmt MYSQL_STMT prepared statement handler
+ * @param exp_i Expected number of result sets
+ * @param exp_rows Array of expected numbers of rows for every result set
+ * @return 0 in case of lack of error
+ */
 int compare_stmt_expected(TestConnections * Test, MYSQL_STMT * stmt, my_ulonglong exp_i, my_ulonglong exp_rows[])
 {
     my_ulonglong *rows = new my_ulonglong[30];
@@ -205,7 +267,11 @@ int compare_stmt_expected(TestConnections * Test, MYSQL_STMT * stmt, my_ulonglon
     return 0;
 }
 
-
+/**
+ * @brief err_check Print mysql_error() and mysql_errno and compare mysql_errno with given expected value
+ * @param Test TestConnections object
+ * @param expected_err Expected error code
+ */
 void err_check(TestConnections* Test, unsigned int expected_err)
 {
     Test->tprintf("Error text '%s'' error code %d\n", mysql_error(Test->conn_rwsplit), mysql_errno(Test->conn_rwsplit));
