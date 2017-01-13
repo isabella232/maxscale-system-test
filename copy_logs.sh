@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# $1 - test name
+# $2 - time mark (iun case of periodic logs copying)
 #set -x
 
 if [ -z $1 ]; then

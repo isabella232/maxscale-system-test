@@ -144,6 +144,10 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
         galera->start_replication();
     }
 
+    char str[1024];
+    sprintf(str, "mkdir -p LOGS/%s", test_name);
+    system(str);
+
     timeout = 999999999;
     set_log_copy_interval(999999999);
     pthread_create( &timeout_thread_p, NULL, timeout_thread, this);
@@ -426,13 +430,14 @@ int TestConnections::copy_mariadb_logs(Mariadb_nodes * repl, char * prefix)
     char * mariadb_log;
     FILE * f;
     int i;
+    int exit_code;
     char str[4096];
 
     sprintf(str, "mkdir -p LOGS/%s", test_name);
     system(str);
     for (i = 0; i < repl->N; i++)
     {
-        mariadb_log = repl->ssh_node_output(i, (char *) "cat /var/lib/mysql/*.err", true);
+        mariadb_log = repl->ssh_node_output(i, (char *) "cat /var/lib/mysql/*.err", true, &exit_code);
         sprintf(str, "LOGS/%s/%s%d_mariadb_log", test_name, prefix, i);
         f = fopen(str, "w");
         if (f != NULL)

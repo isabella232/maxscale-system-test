@@ -11,6 +11,7 @@ int check_sha1(TestConnections* Test)
     char * x;
     int local_result = 0;
     int i;
+    int exit_code;
 
     char *s_maxscale;
     char *s;
@@ -68,7 +69,7 @@ int check_sha1(TestConnections* Test)
 
         sprintf(sys, "sha1sum /var/lib/mysql/mar-bin.00000%d", i);
         Test->set_timeout(50);
-        s = Test->repl->ssh_node_output(0, sys, true);
+        s = Test->repl->ssh_node_output(0, sys, true, &exit_code);
         if (s != NULL) {
             x = strchr(s, ' ');
             if (x != NULL ) { x[0] = 0; }

@@ -1,5 +1,16 @@
 /**
- * @file
+ * @file mxs1073_binlog_enc.cpp Test binlog router setup with binlogs encryption
+ * - configure binlog router with follwoing options
+ @verbatim
+ encrypt_binlog=1,encryption_key_file=/etc/mariadb_binlog_keys.txt,encryption_algorithm=aes_cbc
+ @endverbatim
+ * - put some date to Master
+ * - check that all slave have the same data
+ * - 'maxbinlogcheck' against Maxscale binlog file
+ * - check 'maxbinlogcheck' output for lack of errors and presence of 'Decrypting binlog file with algorithm' message
+ * - try remote access to Maxscale binlog with 'mysqlbinlog'
+ * - copy Maxscale binlogs to Master and check output of 'show binary logs' before and after copying
+ * (expect same file name and size, but different checksums)
  */
 
 
@@ -8,18 +19,28 @@
 #include "testconnections.h"
 #include "test_binlog_fnc.h"
 
+/**
+ * @brief get_first_binlog_file Get name, size and checksum of first binlog file from 'show binary logs' output list
+ * @param Test TestConnections object
+ * @param name string for file name
+ * @param size variable for file size
+ * @param checksum Pointer to checksum string
+ * @return 0 in case of success
+ */
 int get_first_binlog_file(TestConnections * Test, char * name, long long unsigned *size, char ** checksum)
 {
     char size_str[64];
     char cmd[256];
     int res = 0;
+    int exit_code;
     res  = find_field(Test->repl->nodes[0], (char *) "SHOW BINARY LOGS", (char *) "Log_name", name);
     res += find_field(Test->repl->nodes[0], (char *) "SHOW BINARY LOGS", (char *) "File_size", size_str);
 
     sscanf(size_str, "%llu", size);
     sprintf(cmd, "sha1sum /var/lib/mysql/%s | cut -f 1 -d \" \"", name);
 
-    *checksum = Test->repl->ssh_node_output(0, cmd, true);
+    *checksum = Test->repl->ssh_node_output(0, cmd, true, &exit_code);
+    if (exit_code != 0) res++;
 
     Test->tprintf("First master binlog file:\nname: '%s'\nsize: %llu\nchecksum: %s\n",
                   name,
@@ -37,6 +58,20 @@ int main(int argc, char *argv[])
     Test->set_timeout(1000);
     char str1[1024];
     char str2[1024];
+    char * alg;
+    char * alg1 = (char *) "aes_cbc";
+    char * alg2 = (char *) "aes_ctr";
+
+    Test->tprintf("%s %s\n", Test->test_name, argv[1]);
+
+    if (strcmp(Test->test_name, "mxs1073_binlog_enc_aes_ctr") == 0)
+    {
+        alg = alg2;
+    }
+    else
+    {
+        alg = alg1;
+    }
 
     int i;
 
@@ -45,12 +80,12 @@ int main(int argc, char *argv[])
 
 
     Test->tprintf("Coping encription config .cnf files to all nodes \n");
-    sprintf(str1, "%s/binlog_enc.cnf", Test->test_dir);
+    sprintf(str1, "%s/binlog_enc_%s.cnf", Test->test_dir, alg);
     sprintf(str2, "%s/mariadb_binlog_keys.txt", Test->test_dir);
     for (i = 0; i < Test->repl->N; i++)
     {
         Test->repl->copy_to_node(str1, (char *) "~/", i);
-        Test->repl->ssh_node(i, (char *) "cp ~/binlog_enc.cnf /etc/my.cnf.d/", true);
+        Test->repl->ssh_node(i, (char *) "cp ~/binlog_enc*.cnf /etc/my.cnf.d/", true);
 
         Test->repl->copy_to_node(str2, (char *) "~/", i);
         Test->repl->ssh_node(i, (char *) "cp ~/mariadb_binlog_keys.txt /etc/", true);
@@ -82,24 +117,30 @@ int main(int argc, char *argv[])
     execute_query(Test->repl->nodes[0], (char *) "FLUSH LOGS");
 
     Test->tprintf("Running 'maxbinlogcheck' against Maxscale binlog file\n");
-    char * maxscale_binlogcheck_output = Test->ssh_maxscale_output(true, "maxbinlogcheck -M -K /etc/mariadb_binlog_keys.txt -H /var/lib/maxscale/Binlog_Service/mar-bin.000001 2> 1");
+    char * maxscale_binlogcheck_output = Test->ssh_maxscale_output(true, "maxbinlogcheck -M -K /etc/mariadb_binlog_keys.txt -H /var/lib/maxscale/Binlog_Service/mar-bin.000001 --aes_algo=%s 2> 1", alg);
     //puts(maxscale_binlogcheck_output);
     if (strstr(maxscale_binlogcheck_output, "error") != NULL)
     {
         Test->add_result(1, "Errors in the maxbinlogcheck output:\n%s\n", maxscale_binlogcheck_output);
     }
 
-    if (strstr(maxscale_binlogcheck_output, "Decrypting binlog file with algorithm: aes_cbc") == NULL)
+    sprintf(str1, "Decrypting binlog file with algorithm: %s", alg);
+    if (strstr(maxscale_binlogcheck_output, str1) == NULL)
     {
-        Test->add_result(1, "No 'Decrypting binlog file with algorithm: aes_cbc' in the maxbinlogcheck output:\n%s\n", maxscale_binlogcheck_output);
+        Test->add_result(1, "No '%s' in the maxbinlogcheck output:\n%s\n", str1, maxscale_binlogcheck_output);
     }
 
-    sprintf(str1, "mysqlbinlog -R -h %s -P %d -u%s -p%s mar-bin.000001 --stop-position=60000", Test->maxscale_IP, Test->binlog_port, Test->maxscale_user, Test->maxscale_password);
+    sprintf(str1,
+            "mysqlbinlog -R -h %s -P %d -u%s -p%s mar-bin.000001 --stop-position=60000",
+            Test->maxscale_IP, Test->binlog_port, Test->maxscale_user, Test->maxscale_password);
     Test->tprintf("running mysqlbinlog on node_000 to connecto Maxscale: %s\n", str1);
-    //char * mysql_binlog_connect_output = Test->repl->ssh_node_output(0, str1, false);
-    Test->add_result(Test->repl->ssh_node(0, str1, false), "Remote access to Maxscale binlog failed");
-    //puts(mysql_binlog_connect_output);
-
+    int exit_code;
+    char * mysql_binlog_connect_output = Test->repl->ssh_node_output(0, str1, false, &exit_code);
+    Test->add_result(exit_code, "Remote access to Maxscale binlog failed");
+    sprintf(str1, "LOGS/%s/mysql_binlog_connect_output", Test->test_name);
+    FILE *f = fopen(str1, "wt");
+    fprintf(f, "%s", mysql_binlog_connect_output);
+    fclose(f);
 
     Test->tprintf("Checking binlog files on master\n");
     long long unsigned size_before;
@@ -168,6 +209,18 @@ int main(int argc, char *argv[])
     {
         Test->add_result(1, "Master binlog file checksum after Master restart is different\n");
     }
+
+
+    // clean up
+    Test->tprintf("Cleaning up nodes and restart replication\n");
+    Test->repl->stop_nodes();
+    for (i = 0; i < Test->repl->N; i++)
+    {
+        Test->repl->ssh_node(i, (char *) "rm  /etc/my.cnf.d/binlog_enc*.cnf", true);
+        Test->repl->ssh_node(i, (char *) "rm  /etc/mariadb_binlog_keys.txt", true);
+    }
+    Test->repl->start_replication();
+
 
 
     Test->copy_all_logs(); return(Test->global_result);

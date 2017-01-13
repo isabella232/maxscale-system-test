@@ -357,9 +357,10 @@ public:
      * @param index number of the node (index)
      * @param ssh command to execute
      * @param sudo if true the command is executed with root privelegues
+     * @param pointer to variable to store process exit code
      * @return output of the command
      */
-    char *ssh_node_output(int node, const char *ssh, bool sudo);
+    char *ssh_node_output(int node, const char *ssh, bool sudo, int *exit_code);
 
     /**
      * @brief executes shell command on the node using ssh

@@ -708,7 +708,7 @@ void Mariadb_nodes::generate_ssh_cmd(char *cmd, int node, const char *ssh, bool 
     }
 }
 
-char * Mariadb_nodes::ssh_node_output(int node, const char *ssh, bool sudo)
+char * Mariadb_nodes::ssh_node_output(int node, const char *ssh, bool sudo, int *exit_code)
 {
     char sys[strlen(ssh) + 1024];
     generate_ssh_cmd(sys, node, ssh, sudo);
@@ -728,7 +728,15 @@ char * Mariadb_nodes::ssh_node_output(int node, const char *ssh, bool sudo)
         rsize += sizeof(buffer);
         strcat(result, buffer);
     }
-    pclose(output);
+    int code = pclose(output);
+    if (WIFEXITED(code))
+    {
+        * exit_code = WEXITSTATUS(code);
+    }
+    else
+    {
+        * exit_code = 256;
+    }
     return result;
 }
 
