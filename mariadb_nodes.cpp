@@ -123,16 +123,16 @@ int Mariadb_nodes::read_env()
             env = getenv(env_name); if (env != NULL) {sprintf(stop_db_command[i], "%s", env);} else {sprintf(start_db_command[i], "%s", "service mysql stop");}
 
             sprintf(env_name, "%s_%03d_kill_vm_command", prefix, i);
-            env = getenv(env_name); if (env != NULL) {sscanf(env, "%s", kill_vm_command[i]); } else {sprintf(kill_vm_command[i], "exit 1"); }
+            env = getenv(env_name); if (env != NULL) {sprintf(kill_vm_command[i], "%s", env); } else {sprintf(kill_vm_command[i], "exit 1"); }
 
             sprintf(env_name, "%s_%03d_start_vm_command", prefix, i);
-            env = getenv(env_name); if (env != NULL) {sscanf(env, "%s", start_vm_command[i]); } else {sprintf(start_vm_command[i], "exit 1"); }
+            env = getenv(env_name); if (env != NULL) {sprintf(start_vm_command[i], "%s", env); } else {sprintf(start_vm_command[i], "exit 1"); }
 
             sprintf(env_name, "%s_%03d_whoami", prefix, i);
-            env = getenv(env_name); if (env != NULL) {sscanf(env, "%s", access_user[i]); } else {sprintf(access_user[i], "root"); }
+            env = getenv(env_name); if (env != NULL) {sprintf(access_user[i], "%s", env); } else {sprintf(access_user[i], "root"); }
 
             sprintf(env_name, "%s_%03d_access_sudo", prefix, i);
-            env = getenv(env_name); if (env != NULL) {sscanf(env, "%s", access_sudo[i]); } else {sprintf(access_sudo[i], " "); }
+            env = getenv(env_name); if (env != NULL) {sprintf(access_sudo[i], "%s", env); } else {sprintf(access_sudo[i], " "); }
 
             if (strcmp(access_user[i], "root") == 0) {
                 sprintf(access_homedir[i], "/%s/", access_user[i]);
