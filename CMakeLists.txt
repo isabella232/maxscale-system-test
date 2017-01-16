@@ -249,6 +249,7 @@ add_test_executable(failover_mysqlmon.cpp failover_mysqlmon failover_mysqlmon LA
 add_test_executable(fwf.cpp fwf fwf LABELS dbfwfilter REPL_BACKEND)
 add_test_executable(fwf2.cpp fwf2 fwf LABELS dbfwfilter REPL_BACKEND)
 add_test_executable(fwf_actions.cpp fwf_actions fwf_action LABELS dbfwfilter REPL_BACKEND)
+add_test_executable(fwf_duplicate_rules.cpp fwf_duplicate_rules fwf_duplicate_rules LABELS dbfwfilter REPL_BACKEND)
 add_test_executable(fwf_logging.cpp fwf_logging fwf_logging LABELS dbfwfilter REPL_BACKEND)
 add_test_executable(fwf_reload.cpp fwf_reload fwf LABELS dbfwfilter REPL_BACKEND)
 add_test_executable(fwf_syntax.cpp fwf_syntax fwf_syntax LABELS dbfwfilter REPL_BACKEND)
