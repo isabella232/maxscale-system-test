@@ -53,7 +53,15 @@ int get_first_binlog_file(TestConnections * Test, char * name, long long unsigne
 
 int main(int argc, char *argv[])
 {
-    setenv("no_maxscale_start", "yes", 1);
+
+    printf("ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!\n"
+           "ERROR!                                                ERROR!\n"
+           "ERROR!  This test require file key management plugin! ERROR!\n"
+           "ERROR!                                                ERROR!\n"
+           "ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!ERROR!\n");
+    return 1;
+
+
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(1000);
     char str1[1024];
