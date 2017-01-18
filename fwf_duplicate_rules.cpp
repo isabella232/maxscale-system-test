@@ -9,9 +9,11 @@
 int main(int argc, char** argv)
 {
     TestConnections test(argc, argv);
-    test.ssh_maxscale_sh(true, "echo rule test1 deny no_where_clause > ~/rules/rules.txt;"
-                         "echo rule test1 deny columns a b c >> ~/rules/rules.txt;"
-                         "users %@% match any rules test1 >> ~/rules/rules.txt;");
+    test.ssh_maxscale_sh(true, "mkdir -p /home/vagrant/rules/"
+                         "echo rule test1 deny no_where_clause > /home/vagrant/rules/rules.txt;"
+                         "echo rule test1 deny columns a b c >> /home/vagrant/rules/rules.txt;"
+                         "users %@% match any rules test1 >> /home/vagrant/rules/rules.txt;"
+                         "chmod a+r /home/vagrant/rules/rules.txt;");
 
     int rc = 0;
 
