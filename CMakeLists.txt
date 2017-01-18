@@ -426,6 +426,9 @@ add_test_executable(mxs922_restart.cpp mxs922_restart mxs922 LABELS maxscale REP
 # Server scaling test
 add_test_executable(mxs922_scaling.cpp mxs922_scaling mxs922_base LABELS maxscale REPL_BACKEND)
 
+# Dynamic listener SSL test
+add_test_executable(mxs922_listener_ssl.cpp mxs922_listener_ssl mxs922_base LABELS maxscale REPL_BACKEND)
+
 # Test of MaxRows filter
 add_test_executable(mxs1071_maxrows.cpp mxs1071_maxrows maxrows LABELS maxrowsfilter REPL_BACKEND)
 

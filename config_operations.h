@@ -110,6 +110,14 @@ class Config
      */
     void create_listener(Service service);
 
+
+    /**
+     * Create a listener with SSL enabled
+     *
+     * @param service Service where SSL listener is created
+     */
+    void create_ssl_listener(Service service);
+
     /**
      * Destroy a listener
      *
