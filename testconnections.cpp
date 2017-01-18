@@ -83,7 +83,7 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
                 break;
 
             case 'g':
-                printf("Restarting Galera setup");
+                printf("Restarting Galera setup\n");
                 restart_galera = true;
                 break;
 
