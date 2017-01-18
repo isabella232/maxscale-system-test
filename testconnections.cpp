@@ -39,6 +39,7 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
 
     int c;
     int option_index = 0;
+    bool restart_galera = false;
 
     while ((c = getopt_long(argc, argv, "vnqhsirg", long_options, &option_index)) != -1)
     {
@@ -83,8 +84,7 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
 
             case 'g':
                 printf("Restarting Galera setup");
-                galera->stop_nodes();
-                galera->start_replication();
+                restart_galera = true;
                 break;
 
             default:
@@ -115,6 +115,12 @@ copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
 
     repl = new Mariadb_nodes("node", test_dir, verbose);
     galera = new Galera_nodes("galera", test_dir, verbose);
+
+    if (restart_galera)
+    {
+        galera->stop_nodes();
+        galera->start_replication();
+    }
 
     bool snapshot_reverted = false;
 
