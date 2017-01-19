@@ -19,11 +19,11 @@ int main(int argc, char *argv[])
     test->try_query(test->conn_rwsplit, "select @@server_id") == 0;
     config.create_ssl_listener(Config::SERVICE_RCONN_SLAVE);
 
-    MYSQL *conn = open_conn(test->readconn_slave_port, test->maxscale_IP, test->maxscale_user, test->maxscale_password, true);
+    MYSQL *conn = open_conn(test->readconn_master_port, test->maxscale_IP, test->maxscale_user, test->maxscale_password, true);
     test->add_result(execute_query(conn, "select @@server_id"), "SSL query failed");
     mysql_close(conn);
 
-    test->check_maxscale_alive();
+    test->check_maxscale_processes(1);
     test->copy_all_logs();
     return test->global_result;
 }
