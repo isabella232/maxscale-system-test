@@ -436,6 +436,11 @@ add_test_executable(mxs922_listener_ssl.cpp mxs922_listener_ssl mxs922_base LABE
 # Test of MaxRows filter
 add_test_executable(mxs1071_maxrows.cpp mxs1071_maxrows maxrows LABELS maxrowsfilter REPL_BACKEND)
 
+# Test of Masking filter
+
+# NOTE: Actual template is inferred from the script name. See the script.
+add_test_script(masking_smoke masking_smoke.sh masking_smoke LABELS maskingfilter REPL_BACKEND)
+
 # Set utf8mb4 in the backend and restart Maxscale
 add_test_executable(mxs951_utfmb4.cpp mxs951_utfmb4 replication LABELS REPL_BACKEND)
 
