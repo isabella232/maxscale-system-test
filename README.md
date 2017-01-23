@@ -46,8 +46,6 @@ System level tests for MaxScale
 |galera_XXX_stop_db_command|bash command to stop DB server on Galera machine XXX|
 |galera_user|DB user name to access Galera nodes (have to have all priveligies with GRANT option)|
 |galera_password|password for node_user|
-|maxdir|Maxscale home dir|
-|maxdir_bin|path to Maxscale binary files|
 |maxscale_cnf|full name of Maxscale configuration file (maxscale.cnf)|
 |maxscale_log_dir|directory for Maxscale log files|
 |maxscale_IP|IP address of Maxscale machine|

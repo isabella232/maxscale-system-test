@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export MAXSCALE_HOME=$maxdir
-
 $maxscale_access_sudo service maxscale stop
 
 hm=`pwd`

@@ -17,7 +17,6 @@
  * - Maxscale_User - User name to access Maxscale services
  * - Maxscale_Password - Password to access Maxscale services
  * - Maxscale_sshkey - ssh key for Maxscale machine
- * - maxdir - Path to Maxscale home direcdtory
  * - maxscale_cnf - name of maxscale .cnf file (full)
  * - KillVMCommand - Command to kill a node (should handle one parameter: IP address of virtual machine to kill)
  * - StartVMCommand - Command to restart virtual machine (should handle one parameter: IP address of virtual machine to kill)
@@ -166,11 +165,6 @@ public:
      * @brief SysbenchDir   path to SysBench directory (sysbanch should be >= 0.5)
      */
     char sysbench_dir[4096];
-
-    /**
-     * @brief maxdir path to MaxScale
-     */
-    char maxdir[4096];
 
     /**
       * @brief maxscale_cnf full name of Maxscale configuration file
