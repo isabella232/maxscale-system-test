@@ -38,7 +38,7 @@
 
 int main(int argc, char *argv[])
 {
-    //setenv("no_maxscale_start", "yes", 1);
+
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(3000);
     int options_set = 3;

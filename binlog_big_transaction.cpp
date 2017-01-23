@@ -15,7 +15,7 @@ TestConnections * Test ;
 int exit_flag;
 int main(int argc, char *argv[])
 {
-    //setenv("no_maxscale_start", "yes", 1);
+
     Test = new TestConnections(argc, argv);
     Test->set_timeout(3000);
     Test->set_log_copy_interval(300);

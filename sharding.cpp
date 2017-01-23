@@ -38,7 +38,7 @@ filters=QLA
 
 int main(int argc, char *argv[])
 {
-    //setenv("no_maxscale_start", "yes", 1);
+
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(30);
     int i, j;

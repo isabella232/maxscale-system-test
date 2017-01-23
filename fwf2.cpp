@@ -55,7 +55,7 @@ int read_and_execute_queries(TestConnections *Test, const char* filename, int ex
 
 int main(int argc, char *argv[])
 {
-    //setenv("no_maxscale_start", "yes", 1);
+
     TestConnections * Test = new TestConnections(argc, argv);
     int local_result;
     char str[4096];

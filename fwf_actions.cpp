@@ -15,7 +15,7 @@
 int main(int argc, char** argv)
 {
     char rules_dir[4096];
-    //setenv("no_maxscale_start", "yes", 1);
+
     TestConnections *test = new TestConnections(argc, argv);
     test->stop_timeout();
 

@@ -55,7 +55,7 @@ void add_rule(const char *rule)
 
 int main(int argc, char** argv)
 {
-    //setenv("no_maxscale_start", "yes", 1);
+
     TestConnections *test = new TestConnections(argc, argv);
     test->stop_timeout();
     test->stop_maxscale();

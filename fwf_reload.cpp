@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[])
 {
-    //setenv("no_maxscale_start", "yes", 1);
+
     TestConnections *Test = new TestConnections(argc, argv);
     char sql[4096];
     char pass_file[4096];
