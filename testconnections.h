@@ -489,13 +489,6 @@ public:
                                    bool rc_slave);
 
     /**
-     * @brief Reconfigure MaxScale according to a configuration template
-     * @param config_template Name on the configuration template
-     * @return  0 in case of success
-     */
-    int reconfigure_maxscale(char* config_template);
-
-    /**
      * @brief Create a number of connections to all services, run simple query, close all connections
      * @param conn_N number of connections
      * @param rwsplit_flag if true connections to RWSplit router will be created, if false - no connections to RWSplit

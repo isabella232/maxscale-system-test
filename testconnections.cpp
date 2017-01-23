@@ -1014,15 +1014,6 @@ int TestConnections::copy_from_maxscale(char* src, char* dest)
     return system(sys);
 }
 
-
-int TestConnections::reconfigure_maxscale(char* config_template)
-{
-    char cmd[1024];
-    setenv("test_name",config_template,1);
-    sprintf(cmd,"%s/configure_maxscale.sh",test_dir);
-    return system(cmd);
-}
-
 int TestConnections::create_connections(int conn_N, bool rwsplit_flag, bool master_flag, bool slave_flag, bool galera_flag)
 {
     int i;

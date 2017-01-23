@@ -5,7 +5,6 @@ export test_dir=`dirname $rp`
 export test_name=`basename $rp`
 
 $test_dir/non_native_setup $test_name
-#$test_dir/configure_maxscale.sh
 
 errmsg="MaxScale doesn't have write permission to MAXSCALE_HOME. Exiting"
 ssh -i $maxscale_sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $maxscale_access_user@$maxscale_IP "$maxscale_access_sudo service maxscale stop" &
