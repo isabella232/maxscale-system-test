@@ -194,8 +194,8 @@ add_test_executable(bug670.cpp bug670 bug670 LABELS tee REPL_BACKEND)
 # Regression case for the bug "MaxScale crashes if "Users table data" is empty and "show dbusers" is executed in maxadmin"
 add_test_executable(bug673.cpp bug673 bug673 LABELS MySQLAuth REPL_BACKEND)
 
-# Craghs in case of backend node in Galera cluster stopping and then reconnect to Maxscale
-add_test_executable(bug676.cpp bug676 galera.bug676 LABELS galeramon GALERA_BACKEND)
+# Crash in case of backend node in Galera cluster stopping and then reconnect to Maxscale
+add_test_executable(bug676.cpp bug676 galera LABELS galeramon GALERA_BACKEND)
 
 # Rgression test for th bug "RWSplit: 'SELECT @a:=@a+1 as a, test.b FROM test' breaks client session"
 add_test_executable(bug694.cpp bug694 bug694 LABELS readwritesplit REPL_BACKEND)

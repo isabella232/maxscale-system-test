@@ -8,6 +8,7 @@ module=galeramon
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
+monitor_interval=1000
 
 [RW Split Router]
 type=service
