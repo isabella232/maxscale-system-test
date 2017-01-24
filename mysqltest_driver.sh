@@ -10,6 +10,12 @@ then
     exit 1
 fi
 
+if [ "$maxscale_IP" == "" ]
+then
+    echo "Error: The environment variable maxscale_IP must be set."
+    exit 1
+fi
+
 # Prepare the test environment
 test_dir=`pwd`
 user=skysql
