@@ -7,6 +7,23 @@
             "with": {
                 "fill": "X"
             }
+        },
+        {
+            "replace": {
+                "column": "b"
+            },
+            "with": {
+                "value": "012345-ABCD"
+            }
+        },
+        {
+            "replace": {
+                "column": "c"
+            },
+            "with": {
+                "value": "012345-ABCD",
+                "fill": "X"
+            }
         }
     ]
 }
