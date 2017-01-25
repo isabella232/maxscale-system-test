@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     test.ssh_maxscale(true, "mkdir -p /home/vagrant/rules/"
                       "echo rule test1 deny no_where_clause > /home/vagrant/rules/rules.txt;"
                       "echo rule test1 deny columns a b c >> /home/vagrant/rules/rules.txt;"
-                      "users %@% match any rules test1 >> /home/vagrant/rules/rules.txt;"
+                      "echo users %@% match any rules test1 >> /home/vagrant/rules/rules.txt;"
                       "chmod a+r /home/vagrant/rules/rules.txt;");
 
     int rc = 0;
