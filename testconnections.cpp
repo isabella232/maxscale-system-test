@@ -10,6 +10,22 @@
 #include <sys/time.h>
 #include <pthread.h>
 
+namespace maxscale
+{
+static bool start = true;
+static bool check_nodes = true;
+}
+
+void TestConnections::check_nodes(bool value)
+{
+    maxscale::check_nodes = value;
+}
+
+void TestConnections::skip_maxscale_start(bool value)
+{
+    maxscale::start = !value;
+}
+
 TestConnections::TestConnections(int argc, char *argv[]):
     copy_logs(true), use_snapshots(false), verbose(false), rwsplit_port(4006),
     readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
@@ -23,7 +39,6 @@ TestConnections::TestConnections(int argc, char *argv[]):
     read_env();
 
     bool maxscale_init = true;
-    check_nodes = true;
 
     static struct option long_options[] =
     {
@@ -71,7 +86,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
 
         case 's':
             printf("Maxscale won't be started\n");
-            no_maxscale_start = true;
+            maxscale::start = false;
             break;
         case 'i':
             printf("Maxscale won't be started and Maxscale.cnf won't be uploaded\n");
@@ -80,7 +95,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
 
         case 'r':
             printf("Nodes are not checked before test and are not restarted\n");
-            check_nodes = false;
+            maxscale::check_nodes = false;
             break;
 
         case 'g':
@@ -130,7 +145,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
         snapshot_reverted = revert_snapshot((char *) "clean");
     }
 
-    if (!snapshot_reverted && check_nodes)
+    if (!snapshot_reverted && maxscale::check_nodes)
     {
         if (!repl->fix_replication() || !galera->fix_replication())
         {
@@ -312,13 +327,13 @@ int TestConnections::read_env()
     env = getenv("mysql51_only");
     if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) ))
     {
-        check_nodes = false;
+        maxscale::check_nodes = false;
     }
 
     env = getenv("no_nodes_check");
     if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) ))
     {
-        check_nodes = false;
+        maxscale::check_nodes = false;
     }
     env = getenv("no_backend_log_copy");
     if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) ))
@@ -405,11 +420,7 @@ int TestConnections::read_env()
     env = getenv("no_maxscale_start");
     if (env != NULL && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) ))
     {
-        no_maxscale_start = true;
-    }
-    else
-    {
-        no_maxscale_start = false;
+        maxscale::start = false;
     }
 }
 
@@ -527,24 +538,27 @@ int TestConnections::init_maxscale()
                  "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;"
                  "%s",
                  maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
-                 maxscale_log_dir, maxscale_log_dir, no_maxscale_start ? "" : "service maxscale restart");
+                 maxscale_log_dir, maxscale_log_dir, maxscale::start ? "service maxscale restart" : "");
 
     fflush(stdout);
 
-    int waits;
-
-    for (waits = 0; waits < 15; waits++)
+    if (maxscale::start)
     {
-        if (ssh_maxscale(true, "/bin/sh -c \"maxadmin help > /dev/null || exit 1\"") == 0)
+        int waits;
+
+        for (waits = 0; waits < 15; waits++)
         {
-            break;
+            if (ssh_maxscale(true, "/bin/sh -c \"maxadmin help > /dev/null || exit 1\"") == 0)
+            {
+                break;
+            }
+            sleep(1);
         }
-        sleep(1);
-    }
 
-    if (waits > 0)
-    {
-        tprintf("Waited %d seconds for MaxScale to start", waits);
+        if (waits > 0)
+        {
+            tprintf("Waited %d seconds for MaxScale to start", waits);
+        }
     }
 }
 
@@ -1153,7 +1167,7 @@ int  TestConnections::ssh_maxscale(bool sudo, const char* format, ...)
 
     sprintf(cmd,
             "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s%s",
-            maxscale_keyfile, maxscale_access_user, maxscale_IP, verbose ? "" :  "> /dev/null");
+            maxscale_keyfile, maxscale_access_user, maxscale_IP, verbose ? "" :  " > /dev/null");
 
     int rc = 1;
     FILE *in = popen(cmd, "w");

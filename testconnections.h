@@ -210,16 +210,6 @@ public:
     int copy_mariadb_logs(Mariadb_nodes *repl, char * prefix);
 
     /**
-     * @brief Check node status at startup
-     */
-    bool check_nodes;
-
-    /**
-     * @brief no_maxscale_start Do not start Maxscale automaticaly when TestConnections created
-     */
-    bool no_maxscale_start;
-
-    /**
      * @brief no_backend_log_copy if true logs from backends are not copied (needed if case of Aurora RDS backend or similar)
      */
     bool no_backend_log_copy;
@@ -288,6 +278,12 @@ public:
      * @brief start_time time when test was started (used by printf to print Timestamp)
      */
     timeval start_time;
+
+    /** Check whether all nodes are in a valid state */
+    static void check_nodes(bool value);
+
+    /** Skip initial start of MaxScale */
+    static void skip_maxscale_start(bool value);
 
     /**
      * @brief add_result adds result to global_result and prints error message if result is not 0
