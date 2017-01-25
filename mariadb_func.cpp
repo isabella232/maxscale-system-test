@@ -245,40 +245,40 @@ int execute_query_check_one(MYSQL *conn, const char *sql, const char *expected)
             }
             else
             {
-                MYSQL_RES *res = mysql_store_result(conn);
-
-                if (mysql_num_rows(res) == 1)
+                do
                 {
-                    MYSQL_ROW row = mysql_fetch_row(res);
+                    MYSQL_RES *res = mysql_store_result(conn);
 
-                    if (row[0] != NULL)
+                    if (res)
                     {
-                        if (strcmp(row[0], expected) == 0)
+                        if (mysql_num_rows(res) == 1)
                         {
-                            r = 0;
-                            printf("First field is '%s' as expected\n", row[0]);
+                            MYSQL_ROW row = mysql_fetch_row(res);
+
+                            if (row[0] != NULL)
+                            {
+                                if (strcmp(row[0], expected) == 0)
+                                {
+                                    r = 0;
+                                    printf("First field is '%s' as expected\n", row[0]);
+                                }
+                                else
+                                {
+                                    printf("First field is '%s, but expected %s'\n", row[0], expected);
+                                }
+                            }
+                            else
+                            {
+                                printf("First field is NULL\n");
+                            }
                         }
                         else
                         {
-                            printf("First field is '%s, but expected %s'\n", row[0], expected);
+                            printf("Number of rows is not 1, it is %llu\n", mysql_num_rows(res));
                         }
-                    }
-                    else
-                    {
-                        printf("First field is NULL\n");
-                    }
-                }
-                else
-                {
-                    printf("Number of rows is not 1, it is %llu\n", mysql_num_rows(res));
-                }
 
-                mysql_free_result(res);
-
-                do
-                {
-                    res = mysql_store_result(conn);
-                    mysql_free_result(res);
+                        mysql_free_result(res);
+                    }
                 }
                 while (mysql_next_result(conn) == 0);
             }
