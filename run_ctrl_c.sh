@@ -19,5 +19,8 @@ scp -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking
 ssh -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $maxscale_access_user@$maxscale_IP "export maxscale_access_sudo=$maxscale_access_sudo; ./test_ctrl_c.sh"
 
 res=$?
+
+ssh -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $maxscale_access_user@$maxscale_IP "sudo rm -f /tmp/maxadmin.sock"
+
 $test_dir/copy_logs.sh run_ctrl_c
 exit $res
