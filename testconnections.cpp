@@ -352,7 +352,7 @@ int TestConnections::init_maxscale()
 
     process_template(template_name, "./");
 
-    ssh_maxscale_sh(true, "cp maxscale.cnf %s;rm -rf %s/certs;mkdir -m a+wrx %s/certs;", maxscale_cnf, maxscale_access_homedir, maxscale_access_homedir);
+    ssh_maxscale(true, "cp maxscale.cnf %s;rm -rf %s/certs;mkdir -m a+wrx %s/certs;", maxscale_cnf, maxscale_access_homedir, maxscale_access_homedir);
 
     char str[4096];
     sprintf(str, "%s/ssl-cert/*", test_dir);
@@ -360,7 +360,7 @@ int TestConnections::init_maxscale()
     sprintf(str, "cp %s/ssl-cert/* .", test_dir);
     system(str);
 
-    ssh_maxscale_sh(true, "chown maxscale:maxscale -R %s/certs;"
+    ssh_maxscale(true, "chown maxscale:maxscale -R %s/certs;"
                     "chmod 664 %s/certs/*.pem;"
                     " chmod a+x %s;"
                     "killall -9 maxscale;"
@@ -918,50 +918,6 @@ char* TestConnections::ssh_maxscale_output(bool sudo, const char* format, ...)
     return result;
 }
 
-int  TestConnections::ssh_maxscale_sh(bool sudo, const char* format, ...)
-{
-    va_list valist;
-
-    va_start(valist, format);
-    int message_len = vsnprintf(NULL, 0, format, valist);
-    va_end(valist);
-
-    if(message_len < 0)
-    {
-        return -1;
-    }
-
-    char *sys = (char*)malloc(message_len + 1);
-
-    va_start(valist, format);
-    vsnprintf(sys, message_len + 1, format, valist);
-    va_end(valist);
-
-    char *cmd = (char*)malloc(message_len + 1024);
-
-    sprintf(cmd, "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s",
-            maxscale_keyfile, maxscale_access_user, maxscale_IP);
-
-    int rc = 1;
-    FILE *in = popen(cmd, "w");
-
-    if (in)
-    {
-        if (sudo)
-        {
-            fprintf(in, "sudo su -\n");
-            fprintf(in, "cd /home/%s\n", maxscale_access_user);
-        }
-
-        fprintf(in, "%s\n", sys);
-        rc = pclose(in);
-    }
-
-    free(sys);
-    free(cmd);
-    return rc;
-}
-
 int  TestConnections::ssh_maxscale(bool sudo, const char* format, ...)
 {
     va_list valist;
@@ -982,13 +938,29 @@ int  TestConnections::ssh_maxscale(bool sudo, const char* format, ...)
     va_end(valist);
 
     char *cmd = (char*)malloc(message_len + 1024);
-    generate_ssh_cmd(cmd, sys, sudo);
-    int rc = system(cmd);
+
+    sprintf(cmd, "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s%s",
+            maxscale_keyfile, maxscale_access_user, maxscale_IP, verbose ? "" :  "> /dev/null");
+
+    int rc = 1;
+    FILE *in = popen(cmd, "w");
+
+    if (in)
+    {
+        if (sudo)
+        {
+            fprintf(in, "sudo su -\n");
+            fprintf(in, "cd /home/%s\n", maxscale_access_user);
+        }
+
+        fprintf(in, "%s\n", sys);
+        rc = pclose(in);
+    }
+
     free(sys);
     free(cmd);
     return rc;
 }
-
 
 int TestConnections::copy_to_maxscale(char* src, char* dest)
 {
@@ -1548,6 +1520,6 @@ bool TestConnections::test_bad_config(const char *config)
     // Set the timeout to prevent hangs with configurations that work
     set_timeout(20);
 
-    return ssh_maxscale_sh(true, "cp maxscale.cnf /etc/maxscale.cnf; service maxscale stop; "
+    return ssh_maxscale(true, "cp maxscale.cnf /etc/maxscale.cnf; service maxscale stop; "
                            "maxscale -U maxscale -lstdout &> /dev/null && sleep 1 && pkill -9 maxscale") == 0;
 }

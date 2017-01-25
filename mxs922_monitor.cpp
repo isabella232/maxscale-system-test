@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
     test->check_maxscale_alive();
 
-    test->ssh_maxscale_sh(true, "for i in 0 1 2 3; do maxadmin clear server server$i running; done");
+    test->ssh_maxscale(true, "for i in 0 1 2 3; do maxadmin clear server server$i running; done");
 
     test->add_result(test->connect_maxscale() == 0, "Should not be able to connect");
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
      * monitor is running if the states have changed and the query is
      * successful.
      */
-    test->ssh_maxscale_sh(true, "for i in 0 1 2 3; do maxadmin clear server server$i running; done");
+    test->ssh_maxscale(true, "for i in 0 1 2 3; do maxadmin clear server server$i running; done");
 
     sleep(1);
     test->add_result(execute_query_silent(test->conn_rwsplit, "SELECT 1") == 0,
