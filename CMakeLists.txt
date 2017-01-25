@@ -500,6 +500,9 @@ add_test_executable(rwsplit_readonly_stress.cpp rwsplit_readonly_stress rwsplit_
 # Test readwritesplit multi-statement handling
 add_test_executable(rwsplit_multi_stmt.cpp rwsplit_multi_stmt rwsplit_multi_stmt LABELS readwritesplit REPL_BACKEND)
 
+# Test readwritesplit multi-statement handling
+add_test_executable(rwsplit_read_only_trx.cpp rwsplit_read_only_trx rwsplit_read_only_trx LABELS readwritesplit REPL_BACKEND)
+
 # Schemarouter duplicate database detection test: create DB on all nodes and then try query againt schema router
 add_test_executable(schemarouter_duplicate_db.cpp schemarouter_duplicate_db schemarouter_duplicate_db LABELS schemarouter REPL_BACKEND)
 
