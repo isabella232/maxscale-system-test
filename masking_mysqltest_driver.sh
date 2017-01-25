@@ -4,10 +4,18 @@ script=`basename "$0"`
 
 if [ $# -lt 1 ]
 then
-    echo "usage: $script <test-name>"
+    echo "usage: $script name [user] [password]"
     echo ""
-    echo "where <test-name> is the name of the test. That selects the"
-    echo "configuration template to be used."
+    echo "name    : The name of the test (from CMakeLists.txt) That selects the"
+    echo "          configuration template to be used."
+    echo "user    : The user using which the test should be run."
+    echo "password: The password of the user."
+    exit 1
+fi
+
+if [ "$maxscale_IP" == "" ]
+then
+    echo "Error: The environment variable maxscale_IP must be set."
     exit 1
 fi
 
@@ -24,7 +32,19 @@ fi
 
 echo $source copied to $target
 
+password=
+if [ $# -ge 3 ]
+then
+    password=$3
+fi
+
+user=
+if [ $# -ge 2 ]
+then
+    user=$2
+fi
+
 # [Read Connection Listener Master] in cnf/maxscale.maxscale.cnf.template.$1
 port=4008
 
-./mysqltest_driver.sh $1 ./masking/$1 $port
+./mysqltest_driver.sh $1 ./masking/$1 $port $user $password
