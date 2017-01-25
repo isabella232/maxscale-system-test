@@ -187,10 +187,13 @@ int main(int argc, char *argv[])
 
     Test->set_timeout(600);
     Test->stop_maxscale();
-    Test->ssh_maxscale(true, (char *) "rm -rf /var/lib/maxscale/avro");
+
+    // Remove old data files and make sure that port 4001 is open
+    Test->ssh_maxscale(true, "rm -rf /var/lib/maxscale/avro;"
+                       "iptables -n -L INPUT|grep 4001 || iptables -I INPUT -p tcp --dport 4001 -j ACCEPT;");
 
     Test->repl->connect();
-    execute_query(Test->repl->nodes[0], (char *) "DROP TABLE IF EXISTS t1;");
+    execute_query(Test->repl->nodes[0], "DROP TABLE IF EXISTS t1;");
     Test->repl->close_connections();
     sleep(5);
 
@@ -200,7 +203,7 @@ int main(int argc, char *argv[])
     Test->set_timeout(120);
     Test->stop_maxscale();
 
-    Test->ssh_maxscale(true, (char *) "rm -rf /var/lib/maxscale/avro");
+    Test->ssh_maxscale(true, "rm -rf /var/lib/maxscale/avro");
 
     Test->set_timeout(120);
     Test->start_maxscale();
@@ -211,15 +214,9 @@ int main(int argc, char *argv[])
     execute_query(Test->repl->nodes[0], (char *) "INSERT INTO t1 VALUES (111, 222)");
     Test->repl->close_connections();
 
+    Test->tprintf("Waiting for binlogs to be processed...");
     Test->stop_timeout();
-    Test->tprintf("Waiting 60 seconds for binlogs to be processed.\n"
-                  "\n"
-                  "+------------------------------------------------------------+\n"
-                  "!                                                            !\n"
-                  "! This is not OK as we should be able to connect immediately !\n"
-                  "!                                                            !\n"
-                  "+------------------------------------------------------------+\n");
-    sleep(60);
+    sleep(15);
 
     Test->set_timeout(120);
 
