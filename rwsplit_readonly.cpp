@@ -15,16 +15,19 @@
 
 void test_all_ok(TestConnections *Test)
 {
-   /** Insert should work */
+    /** Insert should work */
     Test->set_timeout(30);
     Test->tprintf("Testing that writes and reads to all services work\n");
-    Test->add_result(execute_query_silent(Test->conn_rwsplit, "INSERT INTO test.readonly VALUES (1) -- fail_instantly"),
+    Test->add_result(execute_query_silent(Test->conn_rwsplit,
+                                          "INSERT INTO test.readonly VALUES (1) -- fail_instantly"),
                      "Query to service with 'fail_instantly' should succeed\n");
     Test->set_timeout(30);
-    Test->add_result(execute_query_silent(Test->conn_master, "INSERT INTO test.readonly VALUES (1) -- fail_on_write"),
+    Test->add_result(execute_query_silent(Test->conn_master,
+                                          "INSERT INTO test.readonly VALUES (1) -- fail_on_write"),
                      "Query to service with 'fail_on_write' should succeed\n");
     Test->set_timeout(30);
-    Test->add_result(execute_query_silent(Test->conn_slave, "INSERT INTO test.readonly VALUES (1) -- error_on_write"),
+    Test->add_result(execute_query_silent(Test->conn_slave,
+                                          "INSERT INTO test.readonly VALUES (1) -- error_on_write"),
                      "Query to service with 'error_on_write' should succeed\n");
     Test->set_timeout(30);
     Test->add_result(execute_query_silent(Test->conn_rwsplit, "SELECT * FROM test.readonly -- fail_instantly"),
@@ -67,7 +70,8 @@ void test_basic(TestConnections *Test)
     /** Insert to 'fail_on_write' should fail and close the connection */
     Test->set_timeout(30);
     Test->tprintf("INSERT to 'fail_on_write'\n");
-    Test->add_result(!execute_query_silent(Test->conn_master, "INSERT INTO test.readonly VALUES (1) -- fail_on_write"),
+    Test->add_result(!execute_query_silent(Test->conn_master,
+                                           "INSERT INTO test.readonly VALUES (1) -- fail_on_write"),
                      "INSERT to service with 'fail_on_write' should succeed\n");
     Test->set_timeout(30);
     Test->tprintf("SELECT to 'fail_on_write'\n");
@@ -77,7 +81,8 @@ void test_basic(TestConnections *Test)
     /** Insert to 'error_on_write' should fail but subsequent SELECTs should work */
     Test->set_timeout(30);
     Test->tprintf("INSERT to 'error_on_write'\n");
-    Test->add_result(!execute_query_silent(Test->conn_slave, "INSERT INTO test.readonly VALUES (1) -- error_on_write"),
+    Test->add_result(!execute_query_silent(Test->conn_slave,
+                                           "INSERT INTO test.readonly VALUES (1) -- error_on_write"),
                      "INSERT to service with 'error_on_write' should fail\n");
     Test->tprintf("SELECT to 'error_on_write'\n");
     Test->add_result(execute_query_silent(Test->conn_slave, "SELECT * FROM test.readonly -- error_on_write"),
@@ -88,8 +93,10 @@ void test_basic(TestConnections *Test)
     Test->close_maxscale_connections();
     Test->tprintf("Opening connections while master is blocked\n");
     Test->add_result(Test->connect_rwsplit() == 0, "Connection to 'fail_instantly' service should fail\n");
-    Test->add_result(Test->connect_readconn_master() != 0, "Connection to 'fail_on_write' service should succeed\n");
-    Test->add_result(Test->connect_readconn_slave() != 0, "Connection to 'error_on_write' service should succeed\n");
+    Test->add_result(Test->connect_readconn_master() != 0,
+                     "Connection to 'fail_on_write' service should succeed\n");
+    Test->add_result(Test->connect_readconn_slave() != 0,
+                     "Connection to 'error_on_write' service should succeed\n");
 
 
     /** The {fail|error}_on_write services should work and allow reads */
@@ -243,5 +250,5 @@ int main(int argc, char *argv[])
     /** Clean up test environment */
     Test->repl->flush_hosts();
     Test->copy_all_logs();
-    return(Test->global_result);
+    return Test->global_result;
 }

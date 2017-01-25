@@ -203,14 +203,18 @@ int main(int argc, char *argv[])
              find_field(
                  Test->conn_rwsplit, sel4,
                  "@@server_id", &serverid2[0])
-             != 0 )) {
+             != 0 ))
+    {
         Test->add_result(1, "@@server_id field not found!!\n");
         Test->copy_all_logs();
         exit(1);
-    } else {
+    }
+    else
+    {
         Test->tprintf("'%s' to RWSplit gave @@server_id %s\n", sel3, serverid1);
         Test->tprintf("'%s' directly to master gave @@server_id %s\n", sel4, serverid2);
-        Test->add_result(strcmp(serverid1, serverid2), "server_id are different depending in which order terms are in SELECT\n");
+        Test->add_result(strcmp(serverid1, serverid2),
+                         "server_id are different depending in which order terms are in SELECT\n");
     }
 
     if ( (
@@ -221,17 +225,22 @@ int main(int argc, char *argv[])
              find_field(
                  Test->conn_rwsplit, sel2,
                  "@@hostname", &serverid2[0])
-             != 0 )) {
+             != 0 ))
+    {
         Test->add_result(1, "@@hostname field not found!!\n");
         Test->copy_all_logs();
         exit(1);
-    } else {
+    }
+    else
+    {
         Test->tprintf("'%s' to RWSplit gave @@hostname %s\n", sel1, serverid1);
         Test->tprintf("'%s' to RWSplit gave @@hostname %s\n", sel2, serverid2);
-        Test->add_result(strcmp(serverid1, serverid2), "hostname are different depending in which order terms are in SELECT\n");
+        Test->add_result(strcmp(serverid1, serverid2),
+                         "hostname are different depending in which order terms are in SELECT\n");
     }
 
     Test->close_maxscale_connections();
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

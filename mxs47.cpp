@@ -13,23 +13,29 @@ int main(int argc, char *argv[])
     Test->set_timeout(10);
     char str[1024];
     int iterations = 50000;
-    if (Test->smoke) {iterations = 1000;}
+    if (Test->smoke)
+    {
+        iterations = 1000;
+    }
 
     //Test->repl->connect();
     Test->connect_maxscale();
 
-    for (int i = 1; i < iterations; i++) {
+    for (int i = 1; i < iterations; i++)
+    {
         Test->set_timeout(5);
         sprintf(str, "SELECT REPEAT('a',%d)", i);
         Test->try_query(Test->conn_rwsplit, str);
         Test->try_query(Test->conn_master, str);
         Test->try_query(Test->conn_slave, str);
-        if ((i/100)*100 == i) {
+        if ((i / 100) * 100 == i)
+        {
             Test->tprintf("%d iterations done\n", i);
         }
     }
 
     Test->close_maxscale_connections();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

@@ -23,9 +23,9 @@ int get_my_ip(char * remote_ip, char * my_ip )
     int sock = socket ( AF_INET, SOCK_DGRAM, 0);
 
     //Socket could not be created
-    if(sock < 0)
+    if (sock < 0)
     {
-        return(1);
+        return 1;
     }
 
     memset( &serv, 0, sizeof(serv) );
@@ -42,7 +42,7 @@ int get_my_ip(char * remote_ip, char * my_ip )
     char buffer[100];
     const char* p = inet_ntop(AF_INET, &name.sin_addr, buffer, 100);
 
-    if(p != NULL)
+    if (p != NULL)
     {
         //printf("Local ip is : %s \n" , buffer);
         strcpy(my_ip, buffer);
@@ -54,6 +54,6 @@ int get_my_ip(char * remote_ip, char * my_ip )
         //Some error
         printf ("Error number : %d . Error message : %s \n" , errno , strerror(errno));
         close(sock);
-        return(2);
+        return 2;
     }
 }

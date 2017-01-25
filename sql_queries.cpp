@@ -52,15 +52,21 @@ int main(int argc, char *argv[])
     int N = 4;
     int iterations = 4;
 
-    if (Test->smoke) {iterations = 1; N=2;}
+    if (Test->smoke)
+    {
+        iterations = 1;
+        N = 2;
+    }
 
     Test->tprintf("Starting test\n");
-    for (i = 0; i < iterations; i++) {
+    for (i = 0; i < iterations; i++)
+    {
 
         Test->tprintf("Connection to backend\n");
         Test->repl->connect();
         Test->tprintf("Connection to Maxscale\n");
-        if (Test->connect_maxscale() != 0) {
+        if (Test->connect_maxscale() != 0)
+        {
             Test->add_result(1, "Error connecting to MaxScale");
             break;
         }

@@ -37,7 +37,7 @@ void Config::add_server(int num)
     test_->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME2, num);
     test_->ssh_maxscale(true, "maxadmin add server server%d " SERVICE_NAME3, num);
 
-    for (auto& a: created_monitors_)
+    for (auto& a : created_monitors_)
     {
         test_->ssh_maxscale(true, "maxadmin add server server%d %s", num, a.c_str());
     }
@@ -52,7 +52,7 @@ void Config::remove_server(int num)
     test_->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME2, num);
     test_->ssh_maxscale(true, "maxadmin remove server server%d " SERVICE_NAME3, num);
 
-    for (auto& a: created_monitors_)
+    for (auto& a : created_monitors_)
     {
         test_->ssh_maxscale(true, "maxadmin remove server server%d %s", num, a.c_str());
     }
@@ -62,7 +62,7 @@ void Config::remove_server(int num)
 
 void Config::add_created_servers(const char *object)
 {
-    for (auto a: created_servers_)
+    for (auto a : created_servers_)
     {
         test_->ssh_maxscale(true, "maxadmin add server server%d %s", a, object);
     }
@@ -80,7 +80,7 @@ void Config::create_server(int num)
 {
     test_->set_timeout(120);
     test_->ssh_maxscale(true, "maxadmin create server server%d %s",
-                       num, test_->repl->IP[num]);
+                        num, test_->repl->IP[num]);
     created_servers_.insert(num);
     test_->stop_timeout();
 }
@@ -143,7 +143,7 @@ void Config::destroy_monitor(const char *name)
 
 void Config::restart_monitors()
 {
-    for (auto& a: created_monitors_)
+    for (auto& a : created_monitors_)
     {
         test_->ssh_maxscale(true, "maxadmin shutdown monitor \"%s\"", a.c_str());
         test_->ssh_maxscale(true, "maxadmin restart monitor \"%s\"", a.c_str());
@@ -156,9 +156,9 @@ void Config::create_listener(Config::Service service)
 
     test_->set_timeout(120);
     test_->ssh_maxscale(true, "maxadmin create listener %s %s 0.0.0.0 %d",
-                       services[i].service,
-                       services[i].listener,
-                       services[i].port);
+                        services[i].service,
+                        services[i].listener,
+                        services[i].port);
     test_->stop_timeout();
 }
 
@@ -171,9 +171,9 @@ void Config::create_ssl_listener(Config::Service service)
                         "/home/vagrant/certs/server-key.pem "
                         "/home/vagrant/certs/server-cert.pem "
                         "/home/vagrant/certs/ca.pem ",
-                       services[i].service,
-                       services[i].listener,
-                       services[i].port);
+                        services[i].service,
+                        services[i].listener,
+                        services[i].port);
     test_->stop_timeout();
 }
 
@@ -183,7 +183,7 @@ void Config::destroy_listener(Config::Service service)
 
     test_->set_timeout(120);
     test_->ssh_maxscale(true, "maxadmin destroy listener %s %s",
-                       services[i].service, services[i].listener);
+                        services[i].service, services[i].listener);
     test_->stop_timeout();
 }
 
@@ -211,7 +211,8 @@ bool Config::check_server_count(int expected)
 {
     bool rval = true;
 
-    if (test_->ssh_maxscale(true, "test \"`maxadmin list servers|grep 'server[0-9]'|wc -l`\" == \"%d\"", expected))
+    if (test_->ssh_maxscale(true, "test \"`maxadmin list servers|grep 'server[0-9]'|wc -l`\" == \"%d\"",
+                            expected))
     {
         test_->add_result(1, "Number of servers is not %d.", expected);
         rval = false;

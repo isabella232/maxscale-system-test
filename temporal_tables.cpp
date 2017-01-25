@@ -59,13 +59,16 @@ int main(int argc, char *argv[])
     Test->add_result(Test->connect_maxscale(), "Connectiong to Maxscale failed\n");
     Test->tprintf("Checking t1 table using RWSplit router\n");
     Test->set_timeout(240);
-    Test->add_result(execute_select_query_and_check(Test->conn_rwsplit, (char *) "SELECT * FROM t1;", 2), "check failed\n");
+    Test->add_result(execute_select_query_and_check(Test->conn_rwsplit, (char *) "SELECT * FROM t1;", 2),
+                     "check failed\n");
     Test->tprintf("Checking t1 table using ReadConn router in master mode\n");
     Test->set_timeout(240);
-    Test->add_result(execute_select_query_and_check(Test->conn_master, (char *) "SELECT * FROM t1;", 2), "check failed\n");
+    Test->add_result(execute_select_query_and_check(Test->conn_master, (char *) "SELECT * FROM t1;", 2),
+                     "check failed\n");
     Test->tprintf("Checking t1 table using ReadConn router in slave mode\n");
     Test->set_timeout(240);
-    Test->add_result(execute_select_query_and_check(Test->conn_slave, (char *) "SELECT * FROM t1;", 2), "check failed\n");
+    Test->add_result(execute_select_query_and_check(Test->conn_slave, (char *) "SELECT * FROM t1;", 2),
+                     "check failed\n");
     Test->close_maxscale_connections();
 
 
@@ -76,16 +79,20 @@ int main(int argc, char *argv[])
     Test->add_result(Test->connect_maxscale(), "Connectiong to Maxscale failed\n");
     Test->tprintf("Checking t1 table using RWSplit router\n");
     Test->set_timeout(240);
-    Test->add_result(execute_select_query_and_check(Test->conn_rwsplit, (char *) "SELECT * FROM t1;", 2), "check failed\n");
+    Test->add_result(execute_select_query_and_check(Test->conn_rwsplit, (char *) "SELECT * FROM t1;", 2),
+                     "check failed\n");
     Test->tprintf("Checking t1 table using ReadConn router in master mode\n");
     Test->set_timeout(240);
-    Test->add_result(execute_select_query_and_check(Test->conn_master, (char *) "SELECT * FROM t1;", 2), "check failed\n");
+    Test->add_result(execute_select_query_and_check(Test->conn_master, (char *) "SELECT * FROM t1;", 2),
+                     "check failed\n");
     Test->tprintf("Checking t1 table using ReadConn router in slave mode\n");
     Test->set_timeout(240);
-    Test->add_result(execute_select_query_and_check(Test->conn_slave, (char *) "SELECT * FROM t1;", 2), "check failed\n");
+    Test->add_result(execute_select_query_and_check(Test->conn_slave, (char *) "SELECT * FROM t1;", 2),
+                     "check failed\n");
     Test->close_maxscale_connections();
 
     mysql_close(conn);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

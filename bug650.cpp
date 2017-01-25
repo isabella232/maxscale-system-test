@@ -63,7 +63,8 @@ int main(int argc, char *argv[])
     Test->tprintf("Trying query to ReadConn slave\n");
     Test->try_query(Test->conn_slave, (char *) "show processlist");
     Test->tprintf("Trying query to RWSplit, expecting failure\n");
-    if (execute_query(Test->conn_rwsplit, (char *) "show processlist") == 0) {
+    if (execute_query(Test->conn_rwsplit, (char *) "show processlist") == 0)
+    {
         Test->add_result(1, "Query is ok, but failure is expected\n");
     }
     Test->close_maxscale_connections();
@@ -76,6 +77,7 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Failed to create filter 'DuplicaFilter' for service 'RW_Router'", true);
     Test->check_log_err((char *) "Setting up filters failed. Terminating session RW_Router", true);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

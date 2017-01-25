@@ -19,7 +19,8 @@ void run_test(TestConnections *Test, size_t size, int chunks)
     MYSQL_STMT * stmt = mysql_stmt_init(conn);
 
     Test->tprintf("Preparing statement");
-    Test->add_result(mysql_stmt_prepare(stmt, insert_stmt, strlen(insert_stmt)), "Error preparing stmt: %s\n", mysql_stmt_error(stmt));
+    Test->add_result(mysql_stmt_prepare(stmt, insert_stmt, strlen(insert_stmt)), "Error preparing stmt: %s\n",
+                     mysql_stmt_error(stmt));
 
     MYSQL_BIND param[1];
     param[0].buffer_type = MYSQL_TYPE_STRING;
@@ -32,10 +33,12 @@ void run_test(TestConnections *Test, size_t size, int chunks)
     memset(data, '.', size * sizeof(long int));
 
     Test->tprintf("Sending %d x %d bytes of data", size, chunks);
-    for (int i = 0; i < chunks; i++) {
+    for (int i = 0; i < chunks; i++)
+    {
         Test->set_timeout(600);
         Test->tprintf("Chunk #%d\n", i);
-        if (mysql_stmt_send_long_data(stmt, 0, (char *) data, size * sizeof(long int)) != 0) {
+        if (mysql_stmt_send_long_data(stmt, 0, (char *) data, size * sizeof(long int)) != 0)
+        {
             Test->add_result(1, "Error inserting data, iteration %d, error %s\n", i, mysql_stmt_error(stmt));
             return;
         }
@@ -43,7 +46,8 @@ void run_test(TestConnections *Test, size_t size, int chunks)
 
     Test->set_timeout(600);
     Test->tprintf("Executing statement");
-    Test->add_result(mysql_stmt_execute(stmt), "INSERT Statement with BLOB failed, error is %s\n", mysql_stmt_error(stmt));
+    Test->add_result(mysql_stmt_execute(stmt), "INSERT Statement with BLOB failed, error is %s\n",
+                     mysql_stmt_error(stmt));
 
     Test->stop_timeout();
     sleep(5);

@@ -83,16 +83,30 @@ int main(int argc, char *argv[])
     Test->repl->connect();
     Test->connect_maxscale();
 
-    Test->tprintf("Trying SHOW VARIABLES to different Maxscale services\n");  fflush(stdout);
+    Test->tprintf("Trying SHOW VARIABLES to different Maxscale services\n");
+    fflush(stdout);
     Test->tprintf("RWSplit\n");
-    for (i = 0; i < 100; i++) {Test->set_timeout(5);Test->try_query(Test->conn_rwsplit, (char *) "SHOW VARIABLES;");}
+    for (i = 0; i < 100; i++)
+    {
+        Test->set_timeout(5);
+        Test->try_query(Test->conn_rwsplit, (char *) "SHOW VARIABLES;");
+    }
     Test->tprintf("ReadConn master\n");
-    for (i = 0; i < 100; i++) {Test->set_timeout(5);Test->try_query(Test->conn_master, (char *) "SHOW VARIABLES;");}
+    for (i = 0; i < 100; i++)
+    {
+        Test->set_timeout(5);
+        Test->try_query(Test->conn_master, (char *) "SHOW VARIABLES;");
+    }
     Test->tprintf("ReadConn slave\n");
-    for (i = 0; i < 100; i++) {Test->set_timeout(5);Test->try_query(Test->conn_slave, (char *) "SHOW VARIABLES;");}
+    for (i = 0; i < 100; i++)
+    {
+        Test->set_timeout(5);
+        Test->try_query(Test->conn_slave, (char *) "SHOW VARIABLES;");
+    }
 
     Test->tprintf("All in one loop\n");
-    for (i = 0; i < 100; i++) {
+    for (i = 0; i < 100; i++)
+    {
         Test->set_timeout(5);
         Test->try_query(Test->conn_rwsplit, (char *) "SHOW VARIABLES;");
         Test->try_query(Test->conn_master, (char *) "SHOW VARIABLES;");
@@ -105,5 +119,6 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

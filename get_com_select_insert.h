@@ -22,7 +22,8 @@ int get_global_status_allnodes(long int *selects, long int *inserts, Mariadb_nod
  * @param NodesNum Number of nodes
  * @return
  */
-int print_delta(long int *new_selects, long int *new_inserts, long int *selects, long int *inserts, int nodes_num);
+int print_delta(long int *new_selects, long int *new_inserts, long int *selects, long int *inserts,
+                int nodes_num);
 
 
 #endif // GET_COM_SELECT_INSERT_H

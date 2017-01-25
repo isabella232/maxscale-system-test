@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
 
     sleep(10);
 
-    char * avro_check = Test->ssh_maxscale_output(true, " maxavrocheck -vv /var/lib/maxscale/avro/test.t1.000001.avro | grep \"{\"");
+    char * avro_check = Test->ssh_maxscale_output(true,
+                                                  " maxavrocheck -vv /var/lib/maxscale/avro/test.t1.000001.avro | grep \"{\"");
 
     //printf("%s\n", avro_check);
 
@@ -83,7 +84,8 @@ int main(int argc, char *argv[])
         get_x_fl_from_json(line, &x1, &fl);
         if ((x1 != x1_exp) || (fl != fl_exp))
         {
-            Test->add_result(1, "Wrong data in avro file: x1 = %lld, fl = %lld, but expected x1 = %d, fl = %d", x1, fl, x1_exp, fl_exp);
+            Test->add_result(1, "Wrong data in avro file: x1 = %lld, fl = %lld, but expected x1 = %d, fl = %d", x1, fl,
+                             x1_exp, fl_exp);
         }
         x1_exp++;
         if (x1_exp >= x)
@@ -104,6 +106,7 @@ int main(int argc, char *argv[])
 
     Test->set_timeout(120);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

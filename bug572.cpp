@@ -19,7 +19,8 @@ using namespace std;
 void create_drop_bad_user(MYSQL * conn, TestConnections * Test)
 {
 
-    Test->try_query(conn, (char *) "GRANT ALL PRIVILEGES ON *.* TO  'foo'@'*.foo.notexists' IDENTIFIED BY 'foo';");
+    Test->try_query(conn, (char *)
+                    "GRANT ALL PRIVILEGES ON *.* TO  'foo'@'*.foo.notexists' IDENTIFIED BY 'foo';");
     Test->try_query(conn, (char *) "GRANT ALL PRIVILEGES ON *.* TO  'bar'@'127.0.0.*' IDENTIFIED BY 'bar'");
     Test->try_query(conn, (char *) "DROP USER 'foo'@'*.foo.notexists'");
     Test->try_query(conn, (char *) "DROP USER 'bar'@'127.0.0.*'");
@@ -39,5 +40,6 @@ int main(int argc, char *argv[])
     Test->tprintf("Trying SELECT to check if Maxscale hangs\n");
     Test->try_query(Test->conn_rwsplit, (char *) "select * from mysql.user");
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

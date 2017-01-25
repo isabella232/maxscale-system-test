@@ -30,22 +30,22 @@ int main(int argc, char *argv[])
 
     for (int ir = 0; ir < r; ir++)
     {
-    Test->tprintf("Trying simple prepared statements in the loop, router %d\n", ir);
-    for (long unsigned  i = 0; i < iterations; i++)
-    {
-        Test->set_timeout(10);
-        Test->try_query(router[ir], (char *) "SET NAMES \"UTF8\"");
-        Test->try_query(router[ir], (char *) "PREPARE s1 FROM 'SHOW GLOBAL STATUS WHERE variable_name = ?'");
-        Test->try_query(router[ir], (char *) "SET @a = \"Com_stmt_prepare\"");
-        Test->try_query(router[ir], (char *) "EXECUTE s1 USING @a");
-        Test->try_query(router[ir], (char *) "PREPARE s1 FROM 'SHOW GLOBAL STATUS WHERE variable_name = ?'");
-        Test->try_query(router[ir], (char *) "SET @a = \"Com_stmt_close\"");
-        Test->try_query(router[ir], (char *) "EXECUTE s1 USING @a");
-        if ((( i / 100) * 100) == i )
+        Test->tprintf("Trying simple prepared statements in the loop, router %d\n", ir);
+        for (long unsigned  i = 0; i < iterations; i++)
         {
-            Test->tprintf("Iterations = %lu\n", i);
+            Test->set_timeout(10);
+            Test->try_query(router[ir], (char *) "SET NAMES \"UTF8\"");
+            Test->try_query(router[ir], (char *) "PREPARE s1 FROM 'SHOW GLOBAL STATUS WHERE variable_name = ?'");
+            Test->try_query(router[ir], (char *) "SET @a = \"Com_stmt_prepare\"");
+            Test->try_query(router[ir], (char *) "EXECUTE s1 USING @a");
+            Test->try_query(router[ir], (char *) "PREPARE s1 FROM 'SHOW GLOBAL STATUS WHERE variable_name = ?'");
+            Test->try_query(router[ir], (char *) "SET @a = \"Com_stmt_close\"");
+            Test->try_query(router[ir], (char *) "EXECUTE s1 USING @a");
+            if ((( i / 100) * 100) == i )
+            {
+                Test->tprintf("Iterations = %lu\n", i);
+            }
         }
-    }
     }
 
     Test->set_timeout(20);
@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 
 }

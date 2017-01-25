@@ -37,20 +37,36 @@ int transaction(MYSQL * conn, int N)
 
     Test->tprintf("START TRANSACTION\n");
     local_result += execute_query(conn, (char *) "START TRANSACTION");
-    if (local_result != 0) {Test->tprintf("START TRANSACTION Failed\n"); return(local_result);}
+    if (local_result != 0)
+    {
+        Test->tprintf("START TRANSACTION Failed\n");
+        return local_result;
+    }
     Test->tprintf("SET autocommit = 0\n");
     local_result += execute_query(conn, (char *) "SET autocommit = 0");
-    if (local_result != 0) {Test->tprintf("SET Failed\n");return(local_result);}
+    if (local_result != 0)
+    {
+        Test->tprintf("SET Failed\n");
+        return local_result;
+    }
 
     create_insert_string(sql, N_INSERTS, N);
     Test->tprintf("INSERT\n");
     local_result += execute_query(conn, sql);
-    if (local_result != 0) {Test->tprintf("Insert Failed\n");return(local_result);}
+    if (local_result != 0)
+    {
+        Test->tprintf("Insert Failed\n");
+        return local_result;
+    }
 
     Test->tprintf("COMMIT\n");
     local_result += execute_query(conn, (char *) "COMMIT");
-    if (local_result != 0) {Test->tprintf("Commit Failed\n");return(local_result);}
-    return(local_result);
+    if (local_result != 0)
+    {
+        Test->tprintf("Commit Failed\n");
+        return local_result;
+    }
+    return local_result;
 }
 
 
@@ -80,7 +96,7 @@ int main(int argc, char *argv[])
     pthread_t transaction_thread_t;
     int  transaction_iret;
 
-    exit_flag=0;
+    exit_flag = 0;
     Test->tprintf("Starting query thread\n");
     //disconnect_iret = pthread_create( &disconnec_thread_t, NULL, disconnect_thread, NULL);
     transaction_iret = pthread_create( &transaction_thread_t, NULL, transaction_thread, NULL);
@@ -145,12 +161,13 @@ int main(int argc, char *argv[])
     Test->repl->close_connections();
 
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 
-        const char * setup_slave1 =
-                "change master to MASTER_HOST='%s',\
+const char * setup_slave1 =
+    "change master to MASTER_HOST='%s',\
                  MASTER_USER='repl',\
                  MASTER_PASSWORD='repl',\
                  MASTER_LOG_FILE='%s',\
@@ -185,7 +202,8 @@ int select_new_master(TestConnections * test)
     test->tprintf("Real master pos : %s\n", log_pos);
 
     test->tprintf("Connecting to MaxScale binlog router (with any DB)\n");
-    MYSQL * binlog = open_conn_no_db(test->binlog_port, test->maxscale_IP, test->repl->user_name, test->repl->password, test->ssl);
+    MYSQL * binlog = open_conn_no_db(test->binlog_port, test->maxscale_IP, test->repl->user_name,
+                                     test->repl->password, test->ssl);
     test->add_result(mysql_errno(binlog), "Error connection to binlog router %s\n", mysql_error(binlog));
 
     test->tprintf("show master status on maxscale\n");
@@ -208,11 +226,11 @@ int select_new_master(TestConnections * test)
     test->tprintf("log file num (d) %d\n", pd);
     p[0] = '\0';
     test->tprintf("log file name %s\n", maxscale_log_file);
-    sprintf(maxscale_log_file_new, "%s%06d", maxscale_log_file, pd+1);
+    sprintf(maxscale_log_file_new, "%s%06d", maxscale_log_file, pd + 1);
 
     test->try_query(test->repl->nodes[2], (char *) "reset master");
-    test->tprintf("Flush logs %d times\n", pd+1);
-    for (int k = 0; k < pd+1; k++)
+    test->tprintf("Flush logs %d times\n", pd + 1);
+    for (int k = 0; k < pd + 1; k++)
     {
         test->try_query(test->repl->nodes[2], (char *) "flush logs");
     }
@@ -224,7 +242,8 @@ int select_new_master(TestConnections * test)
 
     test->tprintf("reconnect to binlog\n");
     mysql_close(binlog);
-    binlog = open_conn_no_db(test->binlog_port, test->maxscale_IP, test->repl->user_name, test->repl->password, test->ssl);
+    binlog = open_conn_no_db(test->binlog_port, test->maxscale_IP, test->repl->user_name, test->repl->password,
+                             test->ssl);
     test->add_result(mysql_errno(binlog), "Error connection to binlog router %s\n", mysql_error(binlog));
 
     char str[1024];
@@ -244,13 +263,21 @@ void *disconnect_thread( void *ptr )
     MYSQL * conn;
     char cmd[256];
     int i;
-    conn = open_conn(Test->binlog_port, Test->maxscale_IP, Test->repl->user_name, Test->repl->password, Test->repl->ssl);
+    conn = open_conn(Test->binlog_port, Test->maxscale_IP, Test->repl->user_name, Test->repl->password,
+                     Test->repl->ssl);
     Test->add_result(mysql_errno(conn), "Error connecting to Binlog router, error: %s\n", mysql_error(conn));
     i = 3;
-    while (exit_flag == 0) {
+    while (exit_flag == 0)
+    {
         sprintf(cmd, "DISCONNECT SERVER %d", i);
         execute_query(conn, cmd);
-        i++; if (i > Test->repl->N) {i = 3; sleep(30); execute_query(conn, (char *) "DISCONNECT SERVER ALL");}
+        i++;
+        if (i > Test->repl->N)
+        {
+            i = 3;
+            sleep(30);
+            execute_query(conn, (char *) "DISCONNECT SERVER ALL");
+        }
         sleep(5);
     }
     return NULL;
@@ -262,7 +289,8 @@ void *transaction_thread( void *ptr )
     MYSQL * conn;
     int trans_result = 0;
 
-    conn = open_conn_db_timeout(Test->repl->port[master], Test->repl->IP[master], (char *) "test", Test->repl->user_name, Test->repl->password, 20, Test->repl->ssl);
+    conn = open_conn_db_timeout(Test->repl->port[master], Test->repl->IP[master], (char *) "test",
+                                Test->repl->user_name, Test->repl->password, 20, Test->repl->ssl);
     Test->add_result(mysql_errno(conn), "Error connecting to Binlog router, error: %s\n", mysql_error(conn));
     create_t1(conn);
 
@@ -278,9 +306,10 @@ void *transaction_thread( void *ptr )
             mysql_close(conn);
             Test->tprintf("Calling select_new_master()\n");
             select_new_master(Test);
-            master=2;
+            master = 2;
 
-            conn = open_conn_db_timeout(Test->repl->port[master], Test->repl->IP[master], (char *) "test", Test->repl->user_name, Test->repl->password, 20, Test->repl->ssl);
+            conn = open_conn_db_timeout(Test->repl->port[master], Test->repl->IP[master], (char *) "test",
+                                        Test->repl->user_name, Test->repl->password, 20, Test->repl->ssl);
             Test->add_result(mysql_errno(conn), "Error connecting to Binlog router, error: %s\n", mysql_error(conn));
             Test->tprintf("Retrying transaction %d\n", i_trans);
             i_trans--;

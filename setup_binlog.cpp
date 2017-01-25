@@ -42,14 +42,18 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(3000);
     int options_set = 3;
-    if (Test->smoke) {options_set = 1;}
+    if (Test->smoke)
+    {
+        options_set = 1;
+    }
 
     Test->repl->connect();
     execute_query(Test->repl->nodes[0], (char *) "DROP TABLE IF EXISTS t1;");
     Test->repl->close_connections();
     sleep(5);
 
-    for (int option = 0; option < options_set; option++) {
+    for (int option = 0; option < options_set; option++)
+    {
         Test->binlog_cmd_option = option;
         Test->start_binlog();
         test_binlog(Test);
@@ -59,5 +63,6 @@ int main(int argc, char *argv[])
     Test->check_log_err("set autocommit=1", false);
     Test->check_log_err("select USER()", false);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

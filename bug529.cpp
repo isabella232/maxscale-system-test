@@ -158,7 +158,8 @@ int main(int argc, char *argv[])
     mysql_close(conn);
     Test->tprintf("Table t1 is created\n");
 
-    for (i = 0; i < conn_N; i++) {
+    for (i = 0; i < conn_N; i++)
+    {
         Test->set_timeout(60);
         rwsplit_conn[i] = Test->open_rwsplit_connection();
         master_conn[i] = Test->open_readconn_master_connection();
@@ -170,26 +171,31 @@ int main(int argc, char *argv[])
         fflush(stdout);
     }
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->set_timeout(60);
         num_conn = get_conn_num(Test->repl->nodes[i], Test->maxscale_IP, Test->maxscale_hostname, (char *) "test");
         Test->tprintf("Connections to node %d (%s): %d\n", i, Test->repl->IP[i], num_conn);
-        if ((i == 0) && (num_conn > 2*conn_N)) {
+        if ((i == 0) && (num_conn > 2 * conn_N))
+        {
             Test->add_result(1, "too many connections to master\n");
         }
     }
 
     Test->tprintf("Closing RWSptit and ReadConn master connections\n");
-    for (i = 0; i < conn_N; i++) {
+    for (i = 0; i < conn_N; i++)
+    {
         mysql_close(rwsplit_conn[i]);
         mysql_close(master_conn[i]);
     }
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->set_timeout(60);
         num_conn = get_conn_num(Test->repl->nodes[i], Test->maxscale_IP, Test->maxscale_hostname, (char *) "test");
         printf("Connections to node %d (%s): %d\n", i, Test->repl->IP[i], num_conn);
-        if ((i == 0) && (num_conn > 2*conn_N)) {
+        if ((i == 0) && (num_conn > 2 * conn_N))
+        {
             Test->add_result(1, "too many connections to master\n");
         }
     }
@@ -200,10 +206,12 @@ int main(int argc, char *argv[])
     //pthread_join(parall_traffic1, NULL);
 
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         num_conn = get_conn_num(Test->repl->nodes[i], Test->maxscale_IP, Test->maxscale_hostname, (char *) "test");
         printf("Connections to node %d (%s): %d\n", i, Test->repl->IP[i], num_conn);
-        if ((i == 0) && (num_conn > 2*conn_N)) {
+        if ((i == 0) && (num_conn > 2 * conn_N))
+        {
             Test->add_result(1, "too many connections to master\n");
         }
     }
@@ -212,31 +220,37 @@ int main(int argc, char *argv[])
     Test->tprintf("Sleeping 15 seconds\n");
     sleep(15);
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->set_timeout(60);
         num_conn = get_conn_num(Test->repl->nodes[i], Test->maxscale_IP, Test->maxscale_hostname, (char *) "test");
         printf("Connections to node %d (%s): %d\n", i, Test->repl->IP[i], num_conn);
-        if ((i == 0) && (num_conn != 0)) {
+        if ((i == 0) && (num_conn != 0))
+        {
             Test->add_result(1, "there are still connections to master\n");
         }
     }
 
     printf("Closing ReadConn slave connections\n");
-    for (i = 0; i < conn_N; i++) {
+    for (i = 0; i < conn_N; i++)
+    {
         mysql_close(slave_conn[i]);
     }
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->set_timeout(60);
         num_conn = get_conn_num(Test->repl->nodes[i], Test->maxscale_IP, Test->maxscale_hostname, (char *) "test");
         Test->tprintf("Connections to node %d (%s): %d\n", i, Test->repl->IP[i], num_conn);
-        if ((i == 0) && (num_conn != 0)) {
+        if ((i == 0) && (num_conn != 0))
+        {
             Test->add_result(1, "there are still connections to master\n");
         }
     }
 
     Test->tprintf("Opening ReadConn slave connections again\n");
-    for (i = 0; i < conn_N; i++) {
+    for (i = 0; i < conn_N; i++)
+    {
         Test->set_timeout(60);
         slave_conn[i] = Test->open_readconn_slave_connection();
         sprintf(sql, "SELECT * FROM t1");
@@ -244,32 +258,38 @@ int main(int argc, char *argv[])
         fflush(stdout);
     }
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->set_timeout(60);
         num_conn = get_conn_num(Test->repl->nodes[i], Test->maxscale_IP, Test->maxscale_hostname, (char *) "test");
         Test->tprintf("Connections to node %d (%s): %d\n", i, Test->repl->IP[i], num_conn);
-        if ((i == 0) && (num_conn != 0)) {
+        if ((i == 0) && (num_conn != 0))
+        {
             Test->add_result(1, "there are still connections to master\n");
         }
     }
 
     Test->tprintf("Closing ReadConn slave connections\n");
-    for (i = 0; i < conn_N; i++) {
+    for (i = 0; i < conn_N; i++)
+    {
         Test->set_timeout(20);
         mysql_close(slave_conn[i]);
     }
     exit_flag = 1;
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->set_timeout(60);
         num_conn = get_conn_num(Test->repl->nodes[i], Test->maxscale_IP, Test->maxscale_hostname, (char *) "test");
         Test->tprintf("Connections to node %d (%s): %d\n", i, Test->repl->IP[i], num_conn);
-        if ((i == 0) && (num_conn != 0)) {
+        if ((i == 0) && (num_conn != 0))
+        {
             Test->add_result(1, "there are still connections to master\n");
         }
     }
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 
@@ -277,15 +297,18 @@ void *parall_traffic( void *ptr )
 {
     MYSQL * slave_conn1[conn_N];
     int i;
-    for (i = 0; i < conn_N; i++) {
+    for (i = 0; i < conn_N; i++)
+    {
         slave_conn1[i] = Test->open_readconn_slave_connection();
         execute_query(slave_conn1[i], "SELECT * FROM t1");
     }
 
-    while (exit_flag == 0) {
+    while (exit_flag == 0)
+    {
         execute_query(slave_conn1[0], "SELECT * FROM t1");
     }
-    for (i = 0; i < conn_N; i++) {
+    for (i = 0; i < conn_N; i++)
+    {
         mysql_close(slave_conn1[i]);
     }
 

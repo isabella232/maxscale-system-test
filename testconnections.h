@@ -332,55 +332,91 @@ public:
      * @brief ConnectRWSplit    Opens connections to RWSplit and store MYSQL struct in conn_rwsplit
      * @return 0 in case of success
      */
-    int connect_rwsplit() {conn_rwsplit = open_conn(rwsplit_port, maxscale_IP, maxscale_user, maxscale_password, ssl); routers[0] = conn_rwsplit; return(mysql_errno(conn_rwsplit));}
+    int connect_rwsplit()
+    {
+        conn_rwsplit = open_conn(rwsplit_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+        routers[0] = conn_rwsplit;
+        return (mysql_errno(conn_rwsplit));
+    }
 
     /**
      * @brief ConnectReadMaster Opens connections to ReadConn master and store MYSQL struct in conn_master
      * @return 0 in case of success
      */
-    int connect_readconn_master() {conn_master = open_conn(readconn_master_port, maxscale_IP, maxscale_user, maxscale_password, ssl); routers[1] = conn_master; return(mysql_errno(conn_master));}
+    int connect_readconn_master()
+    {
+        conn_master = open_conn(readconn_master_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+        routers[1] = conn_master;
+        return (mysql_errno(conn_master));
+    }
 
     /**
      * @brief ConnectReadSlave Opens connections to ReadConn slave and store MYSQL struct in conn_slave
      * @return 0 in case of success
      */
-    int connect_readconn_slave() {conn_slave = open_conn(readconn_slave_port, maxscale_IP, maxscale_user, maxscale_password, ssl); routers[2] = conn_slave; return(mysql_errno(conn_slave));}
+    int connect_readconn_slave()
+    {
+        conn_slave = open_conn(readconn_slave_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+        routers[2] = conn_slave;
+        return (mysql_errno(conn_slave));
+    }
 
     /**
      * @brief OpenRWSplitConn   Opens new connections to RWSplit and returns MYSQL struct
      * To close connection mysql_close() have to be called
      * @return MYSQL struct
      */
-    MYSQL * open_rwsplit_connection() {return open_conn(rwsplit_port, maxscale_IP, maxscale_user, maxscale_password, ssl);}
+    MYSQL * open_rwsplit_connection()
+    {
+        return open_conn(rwsplit_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    }
 
     /**
      * @brief OpenReadMasterConn    Opens new connections to ReadConn master and returns MYSQL struct
      * To close connection mysql_close() have to be called
      * @return MYSQL struct
      */
-    MYSQL * open_readconn_master_connection() {return open_conn(readconn_master_port, maxscale_IP, maxscale_user, maxscale_password, ssl);}
+    MYSQL * open_readconn_master_connection()
+    {
+        return open_conn(readconn_master_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    }
 
     /**
      * @brief OpenReadSlaveConn    Opens new connections to ReadConn slave and returns MYSQL struct
      * To close connection mysql_close() have to be called
      * @return  MYSQL struct
      */
-    MYSQL * open_readconn_slave_connection() {return open_conn(readconn_slave_port, maxscale_IP, maxscale_user, maxscale_password, ssl);}
+    MYSQL * open_readconn_slave_connection()
+    {
+        return open_conn(readconn_slave_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    }
 
     /**
      * @brief CloseRWSplit Closes RWplit connections stored in conn_rwsplit
      */
-    void close_rwsplit(){mysql_close(conn_rwsplit);conn_rwsplit = NULL;}
+    void close_rwsplit()
+    {
+        mysql_close(conn_rwsplit);
+        conn_rwsplit = NULL;
+    }
 
     /**
      * @brief CloseReadMaster Closes ReadConn master connections stored in conn_master
      */
-    void close_readconn_master(){mysql_close(conn_master);conn_master = NULL;}
+    void close_readconn_master()
+    {
+        mysql_close(conn_master);
+        conn_master = NULL;
+    }
 
     /**
      * @brief CloseReadSlave Closes ReadConn slave connections stored in conn_slave
      */
-    void close_readconn_slave(){mysql_close(conn_slave);conn_slave = NULL;}
+    void close_readconn_slave()
+    {
+        mysql_close(conn_slave);
+        conn_slave = NULL;
+    }
 
     /**
      * @brief restart_maxscale Issues 'service maxscale restart' command
@@ -466,14 +502,14 @@ public:
 
     /**
      * @brief Test that connections to MaxScale are in the expected state
-     * @param rw_split State of the MaxScale connection to Readwritesplit. True for working connection, false for no connection. 
+     * @param rw_split State of the MaxScale connection to Readwritesplit. True for working connection, false for no connection.
      * @param rc_master State of the MaxScale connection to Readconnroute Master. True for working connection, false for no connection.
      * @param rc_slave State of the MaxScale connection to Readconnroute Slave. True for working connection, false for no connection.
      * @return  0 if connections are in the expected state
      */
     int test_maxscale_connections(bool rw_split,
-                                   bool rc_master,
-                                   bool rc_slave);
+                                  bool rc_master,
+                                  bool rc_slave);
 
     /**
      * @brief Create a number of connections to all services, run simple query, close all connections
@@ -601,7 +637,7 @@ public:
 
     int execute_maxadmin_command(char * cmd);
     int execute_maxadmin_command_print(char * cmd);
-    int check_maxadmin_param(const char *command,const  char *param,const  char *value);
+    int check_maxadmin_param(const char *command, const  char *param, const  char *value);
     int get_maxadmin_param(char *command, char *param, char *result);
     void check_current_operations(int value);
     void check_current_connections(int value);

@@ -76,9 +76,13 @@ int main(int argc, char *argv[])
     Test->get_maxadmin_param((char *) "show server server1", (char *) "Number of connections:", res);
     sscanf(res, "%d", &res_d);
     Test->tprintf("After: num of conn %d\n", res_d);
-    if (res_d != 1) {Test->add_result(1, "num of conn is not 1");}
+    if (res_d != 1)
+    {
+        Test->add_result(1, "num of conn is not 1");
+    }
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

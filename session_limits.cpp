@@ -34,14 +34,17 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Wait 35 seconds more and try quiry again expecting failure\n");
     sleep(35);
-    if (execute_query(Test->conn_rwsplit, "SELECT 1") == 0) {
+    if (execute_query(Test->conn_rwsplit, "SELECT 1") == 0)
+    {
         Test->add_result(1, "Session was not closed after 40 seconds\n");
     }
     Test->close_maxscale_connections();
 
-    Test->tprintf("Open session and execute 10 session commands\n");fflush(stdout);
+    Test->tprintf("Open session and execute 10 session commands\n");
+    fflush(stdout);
     Test->connect_maxscale();
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++)
+    {
         sprintf(sql, "set @test=%d", i);
         Test->try_query(Test->conn_rwsplit, sql);
     }
@@ -53,5 +56,6 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Router session exceeded session command history limit", true);
     Test->close_maxscale_connections();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

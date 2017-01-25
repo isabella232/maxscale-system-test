@@ -14,7 +14,8 @@
 #include "sql_t1.h"
 //#include "get_com_select_insert.h"
 
-typedef struct  {
+typedef struct
+{
     int exit_flag;
     int thread_id;
     long i;
@@ -35,13 +36,15 @@ int main(int argc, char *argv[])
     openclose_thread_data data[threads_num];
 
     int i;
-    int run_time=100;
+    int run_time = 100;
 
-    if (Test->smoke) {
-        run_time=10;
+    if (Test->smoke)
+    {
+        run_time = 10;
     }
 
-    for (i = 0; i < threads_num; i++) {
+    for (i = 0; i < threads_num; i++)
+    {
         data[i].i = 0;
         data[i].exit_flag = 0;
         data[i].Test = Test;
@@ -66,8 +69,11 @@ int main(int argc, char *argv[])
         if (x != master)
         {
             slaves[k] = x;
-            k++; x++;
-        } else {
+            k++;
+            x++;
+        }
+        else
+        {
             x++;
         }
     }
@@ -85,14 +91,18 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE IF EXISTS t1");
     Test->try_query(Test->conn_rwsplit, (char *) "CREATE TABLE t1 (x1 int, fl int)");
 
-    for (i = 0; i < threads_num; i++) { data[i].rwsplit_only = 1;}
+    for (i = 0; i < threads_num; i++)
+    {
+        data[i].rwsplit_only = 1;
+    }
     /* Create independent threads each of them will execute function */
-    for (i = 0; i < threads_num; i++) {
+    for (i = 0; i < threads_num; i++)
+    {
         iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, &data[i]);
     }
     Test->tprintf("Threads are running %d seconds \n", run_time);
 
-    Test->set_timeout(3*run_time + 60);
+    Test->set_timeout(3 * run_time + 60);
     sleep(20);
     sleep(run_time);
     Test->tprintf("Blocking slave %d\n", slaves[0]);
@@ -116,12 +126,16 @@ int main(int argc, char *argv[])
 
     Test->tprintf("all routers are involved, threads are running %d seconds more\n", run_time);
 
-    for (i = 0; i < threads_num; i++) { data[i].rwsplit_only = 0;}
-    for (i = 0; i < threads_num; i++) {
+    for (i = 0; i < threads_num; i++)
+    {
+        data[i].rwsplit_only = 0;
+    }
+    for (i = 0; i < threads_num; i++)
+    {
         iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, &data[i]);
     }
 
-    Test->set_timeout(3*run_time + 60);
+    Test->set_timeout(3 * run_time + 60);
     sleep(20);
     sleep(run_time);
     Test->tprintf("Blocking node %d\n", slaves[0]);
@@ -159,7 +173,8 @@ int main(int argc, char *argv[])
     //Test->check_log_err((char *) "due to handshake failure", false);
     //Test->check_log_err((char *) "Refresh rate limit exceeded for load of users' table", false);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 void *query_thread1( void *ptr )
@@ -191,14 +206,14 @@ void *query_thread1( void *ptr )
 
     while (data->exit_flag == 0)
     {
-        if(data->Test->try_query(data->conn1, sql))
+        if (data->Test->try_query(data->conn1, sql))
         {
             data->Test->add_result(1, "Query to ReadConn Master failed\n");
             return NULL;
         }
         if (data->rwsplit_only == 0)
         {
-            if(data->Test->try_query(data->conn2, sql))
+            if (data->Test->try_query(data->conn2, sql))
             {
                 data->Test->add_result(1, "Query to RWSplit failed\n");
                 return NULL;
@@ -206,9 +221,16 @@ void *query_thread1( void *ptr )
         }
         data->i++;
     }
-    if (data->conn1 != NULL) {mysql_close(data->conn1);}
-    if (data->rwsplit_only == 0) {
-        if (data->conn2 != NULL) {mysql_close(data->conn2);}
+    if (data->conn1 != NULL)
+    {
+        mysql_close(data->conn1);
+    }
+    if (data->rwsplit_only == 0)
+    {
+        if (data->conn2 != NULL)
+        {
+            mysql_close(data->conn2);
+        }
     }
     return NULL;
 }

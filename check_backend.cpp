@@ -23,24 +23,29 @@ int main(int argc, char *argv[])
     if (g_conn != NULL )
     {
         Test->tprintf("Testing connection\n");
-        Test->add_result(Test->try_query(g_conn, (char *) "SELECT 1"), (char *) "Error executing query against RWSplit Galera\n");
+        Test->add_result(Test->try_query(g_conn, (char *) "SELECT 1"),
+                         (char *) "Error executing query against RWSplit Galera\n");
     }
     Test->tprintf("Closing connections\n");
     Test->close_maxscale_connections();
     Test->check_maxscale_alive();
 
     Test->tprintf("Maxscale_full_version_start:");
-    Test->ssh_maxscale(false, "maxscale --version-full"); fflush(stdout);
+    Test->ssh_maxscale(false, "maxscale --version-full");
+    fflush(stdout);
     Test->tprintf("Maxscale_full_version_end:");
 
     if ((Test->global_result == 0) && (Test->use_snapshots))
     {
         Test->tprintf("Taking snapshot\n");
         Test->take_snapshot((char *) "clean");
-    } else {
+    }
+    else
+    {
         Test->tprintf("Snapshots are not in use\n");
     }
 
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

@@ -11,7 +11,7 @@ RDS::RDS(char * cluster)
 const char * RDS::get_instance_name(json_t * instance)
 {
     json_t * instance_name = json_object_get(instance, "DBInstanceIdentifier");
-    return(json_string_value(instance_name));
+    return json_string_value(instance_name);
 }
 
 json_t * RDS::get_cluster_descr(char * json)
@@ -28,7 +28,7 @@ json_t * RDS::get_cluster_descr(char * json)
 
     json_t * clusters = json_object_get(root, "DBClusters");
     //cluster_intern =
-    return(json_array_get(clusters, 0));
+    return json_array_get(clusters, 0);
 }
 
 json_t * RDS::get_subnets_group_descr(char * json)
@@ -45,12 +45,12 @@ json_t * RDS::get_subnets_group_descr(char * json)
     }
 
     json_t * subnets = json_object_get(root, "DBSubnetGroups");
-    return(json_array_get(subnets, 0));
+    return json_array_get(subnets, 0);
 }
 
 json_t * RDS::get_cluster_nodes()
 {
-    return(get_cluster_nodes(cluster_intern));
+    return get_cluster_nodes(cluster_intern);
 }
 
 json_t * RDS::get_cluster_nodes(json_t *cluster)
@@ -65,7 +65,7 @@ json_t * RDS::get_cluster_nodes(json_t *cluster)
         member = json_array_get(members, i);
         json_array_append(node_names, json_string(get_instance_name(member)));
     }
-    return(node_names);
+    return node_names;
 }
 
 json_t * RDS::get_subnets()
@@ -92,7 +92,7 @@ json_t * RDS::get_subnets()
         json_array_append(subnets_names, json_object_get(member, "SubnetIdentifier"));
     }
     subnets_intern = subnets_names;
-    return(subnets_names);
+    return subnets_names;
 }
 
 const char * RDS::get_subnetgroup_name()
@@ -100,11 +100,13 @@ const char * RDS::get_subnetgroup_name()
     if (cluster_intern != NULL)
     {
         subnets_group_name_intern = json_string_value(json_object_get(cluster_intern, "DBSubnetGroup"));
-    } else {
+    }
+    else
+    {
         subnets_group_name_intern = cluster_name_intern;
     }
 
-    return(subnets_group_name_intern);
+    return subnets_group_name_intern;
 }
 
 json_t * RDS::get_cluster()
@@ -113,7 +115,7 @@ json_t * RDS::get_cluster()
     char *result;
     sprintf(cmd, "aws rds describe-db-clusters --db-cluster-identifier=%s", cluster_name_intern);
     execute_cmd(cmd , &result);
-    return(get_cluster_descr(result));
+    return get_cluster_descr(result);
 }
 
 int RDS::destroy_nodes(json_t * node_names)
@@ -127,7 +129,8 @@ int RDS::destroy_nodes(json_t * node_names)
     for (size_t i = 0; i < N; i++)
     {
         node = json_array_get(node_names, i);
-        sprintf(cmd, "aws rds delete-db-instance --skip-final-snapshot --db-instance-identifier=%s", json_string_value(node));
+        sprintf(cmd, "aws rds delete-db-instance --skip-final-snapshot --db-instance-identifier=%s",
+                json_string_value(node));
         printf("%s\n", cmd);
         if (execute_cmd(cmd, &res) != 0)
         {
@@ -135,7 +138,7 @@ int RDS::destroy_nodes(json_t * node_names)
             fprintf( stderr, "error: can not delete node %s\n", json_string_value(node));
         }
     }
-    return(err);
+    return err;
 }
 
 int RDS::destroy_subnets()
@@ -158,7 +161,7 @@ int RDS::destroy_subnets()
             fprintf( stderr, "error: can not delete subnet %s\n", json_string_value(subnet));
         }
     }
-    return(err);
+    return err;
 }
 
 int RDS::destroy_route_tables()
@@ -261,7 +264,7 @@ int RDS::create_vpc(const char **vpc_id)
 
     if (execute_cmd((char *) "aws ec2 create-vpc --cidr-block 172.30.0.0/16", &result) != 0)
     {
-        fprintf(stderr,"error: can not create VPC\n");
+        fprintf(stderr, "error: can not create VPC\n");
         return -1;
     }
     root = json_loads( result, 0, &error );
@@ -273,7 +276,7 @@ int RDS::create_vpc(const char **vpc_id)
     *vpc_id = json_string_value(json_object_get(json_object_get(root, "Vpc"), "VpcId"));
     if (*vpc_id == NULL)
     {
-        fprintf(stderr,"error: can not parse output of create-vpc command\n");
+        fprintf(stderr, "error: can not parse output of create-vpc command\n");
         return -1;
     }
     vpc_id_intern = * vpc_id;
@@ -281,13 +284,13 @@ int RDS::create_vpc(const char **vpc_id)
     sprintf(cmd, "aws ec2 modify-vpc-attribute --enable-dns-support --vpc-id %s", *vpc_id);
     if (system(cmd) != 0)
     {
-        fprintf(stderr,"error: can not enable dns support\n");
+        fprintf(stderr, "error: can not enable dns support\n");
         return -1;
     }
     sprintf(cmd, "aws ec2 modify-vpc-attribute --enable-dns-hostnames --vpc-id %s", *vpc_id);
     if (system(cmd) != 0)
     {
-        fprintf(stderr,"error: can not enable dns hostnames\n");
+        fprintf(stderr, "error: can not enable dns hostnames\n");
         return -1;
     }
 
@@ -302,11 +305,12 @@ int RDS::create_subnet(const char * az, const char * cidr, const char **subnet_i
     char cmd[1024];
 
     *subnet_id = NULL;
-    sprintf(cmd, "aws ec2 create-subnet --cidr-block %s --availability-zone %s --vpc-id %s", cidr, az, vpc_id_intern);
+    sprintf(cmd, "aws ec2 create-subnet --cidr-block %s --availability-zone %s --vpc-id %s", cidr, az,
+            vpc_id_intern);
     puts(cmd);
     if (execute_cmd(cmd, &result) != 0)
     {
-        fprintf(stderr,"error: can not create subnet\n");
+        fprintf(stderr, "error: can not create subnet\n");
         return -1;
     }
     root = json_loads( result, 0, &error );
@@ -318,7 +322,7 @@ int RDS::create_subnet(const char * az, const char * cidr, const char **subnet_i
     *subnet_id = json_string_value(json_object_get(json_object_get(root, "Subnet"), "SubnetId"));
     if (*subnet_id == NULL)
     {
-        fprintf(stderr,"error: can not parse output of create-vpc command\n");
+        fprintf(stderr, "error: can not parse output of create-vpc command\n");
         return -1;
     }
 
@@ -331,7 +335,7 @@ int RDS::create_subnet(const char * az, const char * cidr, const char **subnet_i
     sprintf(cmd, "aws ec2 modify-subnet-attribute --map-public-ip-on-launch --subnet-id %s", *subnet_id);
     if (system(cmd) != 0)
     {
-        fprintf(stderr,"error: can not modify subnet attribute\n");
+        fprintf(stderr, "error: can not modify subnet attribute\n");
         return -1;
     }
 
@@ -344,7 +348,9 @@ int RDS::create_subnet_group()
     size_t i;
     json_t * subnet;
 
-    sprintf(cmd, "aws rds create-db-subnet-group --db-subnet-group-name %s --db-subnet-group-description maxscale --subnet-ids", cluster_name_intern);
+    sprintf(cmd,
+            "aws rds create-db-subnet-group --db-subnet-group-name %s --db-subnet-group-description maxscale --subnet-ids",
+            cluster_name_intern);
     json_array_foreach(subnets_intern, i, subnet)
     {
         strcat(cmd, " ");
@@ -353,11 +359,11 @@ int RDS::create_subnet_group()
     subnets_group_name_intern = cluster_name_intern;
     if (system(cmd) != 0)
     {
-        fprintf(stderr,"error: can not create subnets group\n");
+        fprintf(stderr, "error: can not create subnets group\n");
         return -1;
     }
 
-    return(0);
+    return 0;
 }
 
 int RDS::create_gw(const char **gw_id)
@@ -370,7 +376,7 @@ int RDS::create_gw(const char **gw_id)
     gw_intern = NULL;
     if (execute_cmd((char *) "aws ec2 create-internet-gateway", &result) != 0)
     {
-        fprintf(stderr,"error: can not create internet gateway\n");
+        fprintf(stderr, "error: can not create internet gateway\n");
         return -1;
     }
     json_t * root = json_loads( result, 0, &error );
@@ -383,7 +389,7 @@ int RDS::create_gw(const char **gw_id)
     *gw_id = json_string_value(json_object_get(json_object_get(root, "InternetGateway"), "InternetGatewayId"));
     if (*gw_id == NULL)
     {
-        fprintf(stderr,"error: can not parse output of create-internet-gateway command\n");
+        fprintf(stderr, "error: can not parse output of create-internet-gateway command\n");
         return -1;
     }
     gw_intern = *gw_id;
@@ -391,11 +397,11 @@ int RDS::create_gw(const char **gw_id)
     sprintf(cmd, "aws ec2 attach-internet-gateway --internet-gateway-id %s --vpc-id %s", *gw_id, vpc_id_intern);
     if (system(cmd) != 0)
     {
-        fprintf(stderr,"error: can not attach gateway to VPC\n");
+        fprintf(stderr, "error: can not attach gateway to VPC\n");
         return -1;
     }
 
-    return(0);
+    return 0;
 }
 
 int RDS::configure_route_table(const char **rt)
@@ -407,7 +413,7 @@ int RDS::configure_route_table(const char **rt)
     *rt = NULL;
     if (execute_cmd((char *) "aws ec2 describe-route-tables", &result) != 0)
     {
-        fprintf(stderr,"error: can not get route tables description\n");
+        fprintf(stderr, "error: can not get route tables description\n");
         return -1;
     }
     json_t * root = json_loads( result, 0, &error );
@@ -434,7 +440,8 @@ int RDS::configure_route_table(const char **rt)
         {
             // add route to route table which belongs to give VPC
             *rt = json_string_value(json_object_get(rtb, "RouteTableId"));
-            sprintf(cmd, "aws ec2 create-route --route-table-id %s --gateway-id %s --destination-cidr-block 0.0.0.0/0", *rt, gw_intern);
+            sprintf(cmd, "aws ec2 create-route --route-table-id %s --gateway-id %s --destination-cidr-block 0.0.0.0/0",
+                    *rt, gw_intern);
             if (system(cmd) != 0)
             {
                 fprintf( stderr, "error: can not create route\n");
@@ -457,7 +464,9 @@ int RDS::create_cluster()
     json_error_t error;
     size_t i;
 
-    sprintf(cmd, "aws rds create-db-cluster --database-name=test --engine=aurora --master-username=skysql --master-user-password=skysqlrds --db-cluster-identifier=%s --db-subnet-group-name=%s", cluster_name_intern, cluster_name_intern);
+    sprintf(cmd,
+            "aws rds create-db-cluster --database-name=test --engine=aurora --master-username=skysql --master-user-password=skysqlrds --db-cluster-identifier=%s --db-subnet-group-name=%s",
+            cluster_name_intern, cluster_name_intern);
 
     execute_cmd(cmd , &result);
     json_t * root = json_loads( result, 0, &error );
@@ -476,18 +485,21 @@ int RDS::create_cluster()
     {
         sg_id = json_string_value(json_object_get(sg, "VpcSecurityGroupId"));
         printf("Security group %s\n", sg_id);
-        sprintf(cmd, "aws ec2 authorize-security-group-ingress --group-id %s --protocol tcp --port 3306 --cidr 0.0.0.0/0", sg_id);
+        sprintf(cmd,
+                "aws ec2 authorize-security-group-ingress --group-id %s --protocol tcp --port 3306 --cidr 0.0.0.0/0", sg_id);
         system(cmd);
     }
     sg_intern = sg_id;
 
     for (size_t i = 0; i < N_intern; i++)
     {
-        sprintf(cmd, "aws rds create-db-instance --db-cluster-identifier=%s --engine=aurora --db-instance-class=db.t2.medium --publicly-accessible --db-instance-identifier=node%03lu", cluster_name_intern, i);
+        sprintf(cmd,
+                "aws rds create-db-instance --db-cluster-identifier=%s --engine=aurora --db-instance-class=db.t2.medium --publicly-accessible --db-instance-identifier=node%03lu",
+                cluster_name_intern, i);
         printf("%s\n", cmd);
         system(cmd);
     }
-    return(0);
+    return 0;
 }
 
 int RDS::get_writer(const char ** writer_name)
@@ -511,25 +523,27 @@ int RDS::get_writer(const char ** writer_name)
         node = json_array_get(nodes, i);
         writer = json_is_true(json_object_get(node, "IsClusterWriter"));
         i++;
-    } while (!writer);
+    }
+    while (!writer);
     * writer_name = json_string_value(json_object_get(node, "DBInstanceIdentifier"));
 
-    return(0);
+    return 0;
 }
 
 int RDS::destroy_vpc()
 {
     char cmd[1024];
     sprintf(cmd, "aws ec2 delete-vpc --vpc-id=%s", vpc_id_intern);
-    return(system(cmd));
+    return system(cmd);
 }
 
 int RDS::destroy_cluster()
 {
     char cmd[1024];
     char * result;
-    sprintf(cmd, "aws rds delete-db-cluster --db-cluster-identifier=%s --skip-final-snapshot", cluster_name_intern);
-    return(execute_cmd(cmd, &result));
+    sprintf(cmd, "aws rds delete-db-cluster --db-cluster-identifier=%s --skip-final-snapshot",
+            cluster_name_intern);
+    return execute_cmd(cmd, &result);
 }
 
 int RDS::destroy_subnets_group()
@@ -606,7 +620,7 @@ int RDS::create_rds_db(int N)
         destroy_vpc();
         return -1;
     }
-    return(0);
+    return 0;
 }
 
 int RDS::delete_rds_cluster()
@@ -639,7 +653,8 @@ int RDS::delete_rds_cluster()
         current_cluster = get_cluster();
         nodes = get_cluster_nodes(current_cluster);
         alive_nodes = json_array_size(nodes);
-    } while ( alive_nodes > 0);
+    }
+    while ( alive_nodes > 0);
 
     printf("Destroy cluster\n");
     destroy_cluster();
@@ -651,7 +666,8 @@ int RDS::delete_rds_cluster()
         sprintf(cmd, "aws rds describe-db-clusters --db-cluster-identifier=%s", cluster_name_intern);
         execute_cmd(cmd, &result);
 
-    } while (get_cluster_descr(result) != NULL);
+    }
+    while (get_cluster_descr(result) != NULL);
 
     printf("Destroy subnets\n");
     destroy_subnets();
@@ -703,7 +719,8 @@ int RDS::wait_for_nodes(size_t N)
                 active_nodes++;
             }
         }
-    } while ( active_nodes != N);
+    }
+    while ( active_nodes != N);
     return 0;
 }
 
@@ -719,18 +736,21 @@ int RDS::do_failover()
     }
 
     sprintf(cmd, "aws rds failover-db-cluster --db-cluster-identifier=%s", cluster_name_intern);
-    if (execute_cmd(cmd, &result) != 0) {
+    if (execute_cmd(cmd, &result) != 0)
+    {
         return -1;
     }
     do
     {
-        if (get_writer(&new_writer) != 0) {
+        if (get_writer(&new_writer) != 0)
+        {
             return -1;
         }
         printf("writer: %s\n", new_writer);
         sleep(5);
-    } while (strcmp(writer, new_writer) == 0);
-    return(0);
+    }
+    while (strcmp(writer, new_writer) == 0);
+    return 0;
 }
 
 json_t * RDS::get_endpoints()
@@ -772,5 +792,5 @@ json_t * RDS::get_endpoints()
         endpoint = json_object_get(node_json, "Endpoint");
         json_array_append(endpoints, endpoint);
     }
-    return(endpoints);
+    return endpoints;
 }

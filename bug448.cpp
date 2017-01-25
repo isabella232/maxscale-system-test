@@ -81,24 +81,35 @@ int main(int argc, char *argv[])
     Test->tprintf("Creating user 'user1' for %s host\n", my_ip);
     Test->set_timeout(30);
 
-    Test->add_result(execute_query(Test->conn_rwsplit, "CREATE USER user1@'%s';", my_ip), "Failed to create user");
-    Test->add_result(execute_query(Test->conn_rwsplit, "GRANT ALL PRIVILEGES ON *.* TO user1@'%s' identified by 'pass1';  FLUSH PRIVILEGES;", my_ip),
+    Test->add_result(execute_query(Test->conn_rwsplit, "CREATE USER user1@'%s';", my_ip),
+                     "Failed to create user");
+    Test->add_result(execute_query(Test->conn_rwsplit,
+                                   "GRANT ALL PRIVILEGES ON *.* TO user1@'%s' identified by 'pass1';  FLUSH PRIVILEGES;", my_ip),
                      "Failed to grant privileges.");
 
     Test->tprintf("Trying to open connection using user1\n");
 
-    MYSQL * conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, (char *) "user1", (char *) "pass1", Test->ssl);
-    if (mysql_errno(conn) != 0) {
+    MYSQL * conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, (char *) "user1", (char *) "pass1",
+                             Test->ssl);
+    if (mysql_errno(conn) != 0)
+    {
         Test->add_result(1, "TEST_FAILED! Authentification failed! error: %s\n", mysql_error(conn));
-    } else {
+    }
+    else
+    {
         Test->tprintf("Authentification for user@'%s' is ok", my_ip);
-        if (conn != NULL) {mysql_close(conn);}
+        if (conn != NULL)
+        {
+            mysql_close(conn);
+        }
     }
 
-    Test->add_result(execute_query(Test->conn_rwsplit, "DROP USER user1@'%s';  FLUSH PRIVILEGES;", my_ip), "Query Failed\n");
+    Test->add_result(execute_query(Test->conn_rwsplit, "DROP USER user1@'%s';  FLUSH PRIVILEGES;", my_ip),
+                     "Query Failed\n");
 
     Test->close_maxscale_connections();
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

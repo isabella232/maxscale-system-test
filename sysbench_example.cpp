@@ -17,7 +17,8 @@ int main(int argc, char *argv[])
 
     char sys1[4096];
 
-    Test->ssh_maxscale(false, "maxscale --version-full"); fflush(stdout);
+    Test->ssh_maxscale(false, "maxscale --version-full");
+    fflush(stdout);
     Test->tprintf("Connecting to RWSplit %s\n", Test->maxscale_IP);
 
     sprintf(&sys1[0], sysbench_prepare_short, Test->sysbench_dir, Test->sysbench_dir, Test->maxscale_IP);
@@ -28,19 +29,23 @@ int main(int argc, char *argv[])
 
     Test->stop_timeout();
 
-    sprintf(&sys1[0], sysbench_command_short, Test->sysbench_dir, Test->sysbench_dir, Test->maxscale_IP, Test->rwsplit_port, "off");
+    sprintf(&sys1[0], sysbench_command_short, Test->sysbench_dir, Test->sysbench_dir, Test->maxscale_IP,
+            Test->rwsplit_port, "off");
     Test->set_log_copy_interval(300);
     Test->tprintf("Executing sysbench \n%s\n", sys1);
-    if (system(sys1) != 0) {
+    if (system(sys1) != 0)
+    {
         Test->tprintf("Error executing sysbench test\n");
     }
 
     Test->connect_maxscale();
 
-    printf("Dropping sysbanch tables!\n"); fflush(stdout);
+    printf("Dropping sysbanch tables!\n");
+    fflush(stdout);
 
     Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE sbtest1");
-    if (!Test->smoke) {
+    if (!Test->smoke)
+    {
         Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE sbtest2");
         Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE sbtest3");
         Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE sbtest4");
@@ -48,15 +53,19 @@ int main(int argc, char *argv[])
 
     //global_result += execute_query(Test->conn_rwsplit, (char *) "DROP TABLE sbtest");
 
-    printf("closing connections to MaxScale!\n"); fflush(stdout);
+    printf("closing connections to MaxScale!\n");
+    fflush(stdout);
 
     Test->close_maxscale_connections();
 
-    Test->tprintf("Checking if MaxScale is still alive!\n"); fflush(stdout);
+    Test->tprintf("Checking if MaxScale is still alive!\n");
+    fflush(stdout);
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); fflush(stdout);
-    Test->tprintf("Logs copied!\n"); fflush(stdout);
-    return(Test->global_result);
+    Test->copy_all_logs();
+    fflush(stdout);
+    Test->tprintf("Logs copied!\n");
+    fflush(stdout);
+    return Test->global_result;
 }
 

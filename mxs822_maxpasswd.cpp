@@ -32,13 +32,13 @@ void try_password(TestConnections* Test, char * pass)
     Test->tprintf("Encrypting password: %s", pass);
     Test->set_timeout(30);
     int rc = Test->ssh_maxscale(true, "maxpasswd '%s' | tr -dc '[:xdigit:]' > /tmp/pw.txt && "
-                                   "sed -i 's/user=.*/user=test/' /etc/maxscale.cnf && "
-                                   "sed -i \"s/passwd=.*/passwd=$(cat /tmp/pw.txt)/\" /etc/maxscale.cnf && "
-                                   "service maxscale restart && "
-                                   "sleep 3 && "
-                                   "sed -i 's/user=.*/user=maxskysql/' /etc/maxscale.cnf && "
-                                   "sed -i 's/passwd=.*/passwd=skysql/' /etc/maxscale.cnf && "
-                                   "service maxscale restart", pass);
+                                "sed -i 's/user=.*/user=test/' /etc/maxscale.cnf && "
+                                "sed -i \"s/passwd=.*/passwd=$(cat /tmp/pw.txt)/\" /etc/maxscale.cnf && "
+                                "service maxscale restart && "
+                                "sleep 3 && "
+                                "sed -i 's/user=.*/user=maxskysql/' /etc/maxscale.cnf && "
+                                "sed -i 's/passwd=.*/passwd=skysql/' /etc/maxscale.cnf && "
+                                "service maxscale restart", pass);
 
     Test->add_result(rc, "Failed to encrypt password '%s'", pass);
     sleep(3);

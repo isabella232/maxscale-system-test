@@ -40,13 +40,16 @@ int get_first_binlog_file(TestConnections * Test, char * name, long long unsigne
     sprintf(cmd, "sha1sum /var/lib/mysql/%s | cut -f 1 -d \" \"", name);
 
     *checksum = Test->repl->ssh_node_output(0, cmd, true, &exit_code);
-    if (exit_code != 0) res++;
+    if (exit_code != 0)
+    {
+        res++;
+    }
 
     Test->tprintf("First master binlog file:\nname: '%s'\nsize: %llu\nchecksum: %s\n",
                   name,
                   *size,
                   *checksum
-                  );
+                 );
 
     return res;
 }
@@ -114,7 +117,8 @@ int main(int argc, char *argv[])
     Test->tprintf("Sleeping to let replication happen\n");
     sleep(60);
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->tprintf("Checking data from node %d (%s)\n", i, Test->repl->IP[i]);
         Test->set_timeout(100);
         Test->add_result(select_from_t1(Test->repl->nodes[i], 4), "Selecting from t1 failed\n");
@@ -125,7 +129,9 @@ int main(int argc, char *argv[])
     execute_query(Test->repl->nodes[0], (char *) "FLUSH LOGS");
 
     Test->tprintf("Running 'maxbinlogcheck' against Maxscale binlog file\n");
-    char * maxscale_binlogcheck_output = Test->ssh_maxscale_output(true, "maxbinlogcheck -M -K /etc/mariadb_binlog_keys.txt -H /var/lib/maxscale/Binlog_Service/mar-bin.000001 --aes_algo=%s 2> 1", alg);
+    char * maxscale_binlogcheck_output = Test->ssh_maxscale_output(true,
+                                                                   "maxbinlogcheck -M -K /etc/mariadb_binlog_keys.txt -H /var/lib/maxscale/Binlog_Service/mar-bin.000001 --aes_algo=%s 2> 1",
+                                                                   alg);
     //puts(maxscale_binlogcheck_output);
     if (strstr(maxscale_binlogcheck_output, "error") != NULL)
     {
@@ -192,7 +198,8 @@ int main(int argc, char *argv[])
     }
     if (strcmp(checksum_before, checksum_after) == 0)
     {
-        Test->add_result(1, "Master binlog file checksum after copying Maxscale binlogs to Master is the same. Probably binlog copying error different\n");
+        Test->add_result(1,
+                         "Master binlog file checksum after copying Maxscale binlogs to Master is the same. Probably binlog copying error different\n");
     }
 
     Test->repl->stop_node(0);
@@ -201,17 +208,20 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Checking binlog files on master after copying binlogs from Maxscale and Master restart\n");
     Test->repl->connect();
-    Test->add_result(get_first_binlog_file(Test, name_after_restart, &size_after_restart, &checksum_after_restart),
+    Test->add_result(get_first_binlog_file(Test, name_after_restart, &size_after_restart,
+                                           &checksum_after_restart),
                      "Error getting binlog name and size\n");
     Test->repl->close_connections();
 
     if (size_before != size_after_restart)
     {
-        Test->add_result(1, "Master binlog file size after copying Maxscale binlogs to Master and restart is different\n");
+        Test->add_result(1,
+                         "Master binlog file size after copying Maxscale binlogs to Master and restart is different\n");
     }
     if (strcmp(name_before, name_after_restart) != 0)
     {
-        Test->add_result(1, "Master binlog file name after copying Maxscale binlogs to Master and restart is different\n");
+        Test->add_result(1,
+                         "Master binlog file name after copying Maxscale binlogs to Master and restart is different\n");
     }
     if (strcmp(checksum_after_restart, checksum_after) != 0)
     {
@@ -231,5 +241,6 @@ int main(int argc, char *argv[])
 
 
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

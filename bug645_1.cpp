@@ -84,7 +84,8 @@ int main(int argc, char *argv[])
 
     Test->connect_maxscale();
     Test->tprintf("trying query to RWSplit, expecting failure\n");
-    if (execute_query(Test->conn_rwsplit, (char *) "show processlist") == 0) {
+    if (execute_query(Test->conn_rwsplit, (char *) "show processlist") == 0)
+    {
         Test->add_result(1, "Query is ok, but failue is expected\n");
     }
     Test->tprintf("Trying query to ReadConn router master\n");
@@ -97,5 +98,6 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Couldn't find suitable Master from 2 candidates", true);
     Test->check_log_err((char *) "Creating client session for Tee filter failed. Terminating session.", true);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

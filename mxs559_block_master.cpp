@@ -14,7 +14,8 @@
 #include "testconnections.h"
 #include "sql_t1.h"
 
-typedef struct  {
+typedef struct
+{
     int exit_flag;
     int thread_id;
     long i;
@@ -44,12 +45,14 @@ int main(int argc, char *argv[])
     tt[1] = 5;
     tt[2] = 10;
 
-    if (Test->smoke) {
+    if (Test->smoke)
+    {
         iterations = 5;
         t_iterations = 1;
     }
 
-    for (i = 0; i < load_threads_num; i++) {
+    for (i = 0; i < load_threads_num; i++)
+    {
         data_master[i].i = 0;
         data_master[i].exit_flag = 0;
         data_master[i].Test = Test;
@@ -72,9 +75,13 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
 
     Test->tprintf("Create threads\n");
-    for (i = 0; i < load_threads_num; i++) { data_master[i].rwsplit_only = 1;}
+    for (i = 0; i < load_threads_num; i++)
+    {
+        data_master[i].rwsplit_only = 1;
+    }
     /* Create independent threads each of them will create some load on Mastet */
-    for (i = 0; i < load_threads_num; i++) {
+    for (i = 0; i < load_threads_num; i++)
+    {
         Test->tprintf("Thread %d\n", i);
         iret_master[i] = pthread_create( &thread_master[i], NULL, disconnect_thread, &data_master[i]);
     }
@@ -85,17 +92,17 @@ int main(int argc, char *argv[])
     {
         for (i = 0; i < iterations; i++)
         {
-            Test->set_timeout(30+tt[j]*10);
+            Test->set_timeout(30 + tt[j] * 10);
             Test->tprintf("Block master\n");
             Test->repl->block_node(0);
             Test->stop_timeout();
             sleep(tt[j]);
-            Test->set_timeout(30+tt[j]*10);
+            Test->set_timeout(30 + tt[j] * 10);
             Test->tprintf("Unlock master\n");
             Test->repl->unblock_node(0);
             Test->stop_timeout();
             sleep(tt[j]);
-            Test->set_timeout(30+tt[j]*10);
+            Test->set_timeout(30 + tt[j] * 10);
         }
     }
 
@@ -127,7 +134,8 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "due to handshake failure", false);
     Test->check_log_err((char *) "Refresh rate limit exceeded for load of users' table", false);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 
@@ -142,7 +150,8 @@ void *disconnect_thread( void *ptr )
     while (data->exit_flag == 0)
     {
         //data->conn1 = data->Test->open_rwsplit_connection();
-        data->conn1 = open_conn_db_timeout(data->Test->rwsplit_port, data->Test->maxscale_IP, (char*) "test", data->Test->maxscale_user, data->Test->maxscale_password, 10, data->Test->ssl);
+        data->conn1 = open_conn_db_timeout(data->Test->rwsplit_port, data->Test->maxscale_IP, (char*) "test",
+                                           data->Test->maxscale_user, data->Test->maxscale_password, 10, data->Test->ssl);
         execute_query_silent(data->conn1, sql);
         mysql_close(data->conn1);
         data->i++;

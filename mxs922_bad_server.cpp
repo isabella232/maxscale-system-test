@@ -48,7 +48,7 @@ void destroy_servers(TestConnections *test)
 
 void do_query(TestConnections *test, bool should_fail)
 {
-    test->tprintf("Trying to query, expecting %s", should_fail ? "failure": "success");
+    test->tprintf("Trying to query, expecting %s", should_fail ? "failure" : "success");
     test->set_timeout(120);
 
     test->connect_maxscale();
@@ -56,8 +56,8 @@ void do_query(TestConnections *test, bool should_fail)
     bool failed = execute_query(test->conn_rwsplit, "select @@server_id") == 0;
 
     const char *msg = should_fail ?
-        "Query was successful when failure was expected." :
-        "Query failed when success was expected.";
+                      "Query was successful when failure was expected." :
+                      "Query failed when success was expected.";
 
     test->add_result(failed == should_fail, msg);
     test->close_maxscale_connections();

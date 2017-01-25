@@ -110,7 +110,7 @@ int simple_failover(TestConnections* test)
         if ((myerrno = test->connect_rwsplit()) == 0 && test->conn_rwsplit)
         {
             test->tprintf("Connecting to rwsplit was expected to fail but it was"
-                    " successful. Returned error was %d.\n", myerrno);
+                          " successful. Returned error was %d.\n", myerrno);
             if (execute_query(test->conn_rwsplit, "SELECT @@server_id") == 0)
             {
                 test->tprintf("SELECT @@server_id was expected to fail but the query was successful.\n");

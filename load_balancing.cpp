@@ -32,10 +32,14 @@ int main(int argc, char *argv[])
     long int new_inserts[256];
     long int i1, i2;
 
-    if (Test->smoke) {threads_num = 15;}
+    if (Test->smoke)
+    {
+        threads_num = 15;
+    }
     Test->tprintf("Increasing connection and error limits on backend nodes.\n");
     Test->repl->connect();
-    for (int i = 0; i < Test->repl->N; i++) {
+    for (int i = 0; i < Test->repl->N; i++)
+    {
         execute_query(Test->repl->nodes[i], (char *) "set global max_connections = 300;");
         execute_query(Test->repl->nodes[i], (char *) "set global max_connect_errors = 100000;");
     }
@@ -51,20 +55,25 @@ int main(int argc, char *argv[])
     long int max_q = avr * 3;
     Test->tprintf("Acceplable value for every node from %ld until %ld\n", min_q, max_q);
 
-    for (int i = 1; i < Test->repl->N; i++) {
+    for (int i = 1; i < Test->repl->N; i++)
+    {
         q = new_selects[i] - selects[i];
-        if ((q > max_q) || (q < min_q)) {
-            Test->add_result(1, "number of queries for node %d is %ld\n", i+1, q);
+        if ((q > max_q) || (q < min_q))
+        {
+            Test->add_result(1, "number of queries for node %d is %ld\n", i + 1, q);
         }
     }
 
-    if ((new_selects[0] - selects[0]) > avr / 3 ) {
-        Test->add_result(1, "number of queries for master greater then 30%% of averange number of queries per node\n");
+    if ((new_selects[0] - selects[0]) > avr / 3 )
+    {
+        Test->add_result(1,
+                         "number of queries for master greater then 30%% of averange number of queries per node\n");
     }
 
     Test->tprintf("Restoring nodes\n");
     Test->repl->connect();
-    for (int i = 0; i < Test->repl->N; i++) {
+    for (int i = 0; i < Test->repl->N; i++)
+    {
         execute_query(Test->repl->nodes[i], (char *) "flush hosts;");
         execute_query(Test->repl->nodes[i], (char *) "set global max_connections = 151;");
     }
@@ -75,5 +84,6 @@ int main(int argc, char *argv[])
 
     Test->repl->start_replication();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

@@ -51,146 +51,146 @@ debug=3
 using namespace std;
 
 const char * test03_sql =
-        " CREATE PROCEDURE multi()\n"
-        "BEGIN\n"
-        "SELECT x1 FROM t1 LIMIT 2;\n"
-        "END";
+    " CREATE PROCEDURE multi()\n"
+    "BEGIN\n"
+    "SELECT x1 FROM t1 LIMIT 2;\n"
+    "END";
 
 const char * test04_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-            "SELECT 1;\n"
-            "SELECT x1 FROM t1 LIMIT 2;\n"
-            "SELECT 1,2,3; \n"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT 1;\n"
+    "SELECT x1 FROM t1 LIMIT 2;\n"
+    "SELECT 1,2,3; \n"
+    "END";
 
 const char * test05_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-            "SELECT 1;\n"
-            "SELECT x1 FROM t1 LIMIT 8;\n"
-            "SELECT 1,2,3; \n"
-            "SELECT 1;"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT 1;\n"
+    "SELECT x1 FROM t1 LIMIT 8;\n"
+    "SELECT 1,2,3; \n"
+    "SELECT 1;"
+    "END";
 
 const char * test06_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-            "SELECT 1;\n"
-            "SELECT x1 FROM t1 LIMIT 18;\n"
-            "SELECT 2; \n"
-            "SELECT 2;"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT 1;\n"
+    "SELECT x1 FROM t1 LIMIT 18;\n"
+    "SELECT 2; \n"
+    "SELECT 2;"
+    "END";
 
 const char * test07_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-         "SELECT 1,2,3,4;\n"
-         "SELECT id, b from long_blob_table order by id desc limit 1;\n"
-         "SELECT id, b from long_blob_table order by id desc limit 4;\n"
-         "SELECT id, b from long_blob_table order by id desc limit 1;\n"
-         "SELECT id, b from long_blob_table order by id desc;\n"
-         "SELECT id, b from long_blob_table order by id desc;\n"
-         "SELECT 1;\n"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT 1,2,3,4;\n"
+    "SELECT id, b from long_blob_table order by id desc limit 1;\n"
+    "SELECT id, b from long_blob_table order by id desc limit 4;\n"
+    "SELECT id, b from long_blob_table order by id desc limit 1;\n"
+    "SELECT id, b from long_blob_table order by id desc;\n"
+    "SELECT id, b from long_blob_table order by id desc;\n"
+    "SELECT 1;\n"
+    "END";
 
 const char * test08_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-         "SELECT 1,2,3;\n"
-         "SELECT id, b, b from long_blob_table order by id desc limit 1;\n"
-         "SELECT 2;\n"
-         "SELECT id, b from long_blob_table order by id desc limit 4;\n"
-         "SELECT id, b from long_blob_table order by id desc limit 2;\n"
-         "SELECT 1;\n"
-         "SELECT 1;\n"
-         "SELECT x1 FROM t1 LIMIT 8;\n"
-         "SELECT 1;\n"
-         "SELECT 1,2,3,4;\n"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT 1,2,3;\n"
+    "SELECT id, b, b from long_blob_table order by id desc limit 1;\n"
+    "SELECT 2;\n"
+    "SELECT id, b from long_blob_table order by id desc limit 4;\n"
+    "SELECT id, b from long_blob_table order by id desc limit 2;\n"
+    "SELECT 1;\n"
+    "SELECT 1;\n"
+    "SELECT x1 FROM t1 LIMIT 8;\n"
+    "SELECT 1;\n"
+    "SELECT 1,2,3,4;\n"
+    "END";
 
 const char * test10_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-         "SELECT 1;\n"
-         "SELECT x1 FROM t1 limit 4;\n"
-         "select * from dual;\n"
-         "set @a=4;\n"
-         "SELECT 2;\n"
-         "SELECT * FROM t1;\n"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT 1;\n"
+    "SELECT x1 FROM t1 limit 4;\n"
+    "select * from dual;\n"
+    "set @a=4;\n"
+    "SELECT 2;\n"
+    "SELECT * FROM t1;\n"
+    "END";
 
 const char * test14_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-         "SELECT 1,3;\n"
-         "SET @table = 't1';\n"
-         "SET @s = CONCAT('SELECT * FROM ', @table, ' LIMIT 18');\n"
-         "PREPARE stmt1 FROM @s;\n"
-         "EXECUTE stmt1;\n"
-         "DEALLOCATE PREPARE stmt1;\n"
-         "SELECT 2,4,5;\n"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT 1,3;\n"
+    "SET @table = 't1';\n"
+    "SET @s = CONCAT('SELECT * FROM ', @table, ' LIMIT 18');\n"
+    "PREPARE stmt1 FROM @s;\n"
+    "EXECUTE stmt1;\n"
+    "DEALLOCATE PREPARE stmt1;\n"
+    "SELECT 2,4,5;\n"
+    "END";
 
 const char * test15_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-         "SELECT 1,3;\n"
-         "SET @table = 't1';\n"
-         "SET @s = CONCAT('SELECT * FROM ', @table, ' LIMIT 100');\n"
-         "PREPARE stmt1 FROM @s;\n"
-         "EXECUTE stmt1;\n"
-         "DEALLOCATE PREPARE stmt1;\n"
-         "SELECT 2,4,5;\n"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT 1,3;\n"
+    "SET @table = 't1';\n"
+    "SET @s = CONCAT('SELECT * FROM ', @table, ' LIMIT 100');\n"
+    "PREPARE stmt1 FROM @s;\n"
+    "EXECUTE stmt1;\n"
+    "DEALLOCATE PREPARE stmt1;\n"
+    "SELECT 2,4,5;\n"
+    "END";
 
 const char * test17_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-            "SELECT '' as 'A' limit 1;\n"
-            "SELECT '' as 'A' limit 10;\n"
-            "SELECT '' as 'A';\n"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT '' as 'A' limit 1;\n"
+    "SELECT '' as 'A' limit 10;\n"
+    "SELECT '' as 'A';\n"
+    "END";
 
 const char * test18_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-            "SELECT '' as 'A' limit 1;\n"
-            "SELECT '' as 'A' limit 10;\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A' limit 1;\n"
-            "SELECT '' as 'A' limit 10;\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT '' as 'A' limit 1;\n"
+    "SELECT '' as 'A' limit 10;\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A' limit 1;\n"
+    "SELECT '' as 'A' limit 10;\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "END";
 
 const char * test19_sql =
-        "CREATE PROCEDURE multi() BEGIN\n"
-            "SELECT '' as 'A' limit 1;\n"
-            "SELECT '' as 'A' limit 10;\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A' limit 1;\n"
-            "SELECT '' as 'A' limit 10;\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-            "SELECT '' as 'A';\n"
-        "END";
+    "CREATE PROCEDURE multi() BEGIN\n"
+    "SELECT '' as 'A' limit 1;\n"
+    "SELECT '' as 'A' limit 10;\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A' limit 1;\n"
+    "SELECT '' as 'A' limit 10;\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "SELECT '' as 'A';\n"
+    "END";
 
 /**
  * @brief compare_expected Execute sql and compare number of rows in every result set with expected values
@@ -239,7 +239,8 @@ int compare_expected(TestConnections * Test, const char * sql, my_ulonglong exp_
  * @param exp_rows Array of expected numbers of rows for every result set
  * @return 0 in case of lack of error
  */
-int compare_stmt_expected(TestConnections * Test, MYSQL_STMT * stmt, my_ulonglong exp_i, my_ulonglong exp_rows[])
+int compare_stmt_expected(TestConnections * Test, MYSQL_STMT * stmt, my_ulonglong exp_i,
+                          my_ulonglong exp_rows[])
 {
     my_ulonglong *rows = new my_ulonglong[30];
     my_ulonglong i;
@@ -274,7 +275,8 @@ int compare_stmt_expected(TestConnections * Test, MYSQL_STMT * stmt, my_ulonglon
  */
 void err_check(TestConnections* Test, unsigned int expected_err)
 {
-    Test->tprintf("Error text '%s'' error code %d\n", mysql_error(Test->conn_rwsplit), mysql_errno(Test->conn_rwsplit));
+    Test->tprintf("Error text '%s'' error code %d\n", mysql_error(Test->conn_rwsplit),
+                  mysql_errno(Test->conn_rwsplit));
     if (mysql_errno(Test->conn_rwsplit) != expected_err)
     {
         Test->add_result(1, "Error code is not %d, it is %d\n", expected_err, mysql_errno(Test->conn_rwsplit));
@@ -422,7 +424,8 @@ int main(int argc, char *argv[])
         Test->add_result(1, "stmt init error: %s\n", mysql_stmt_error(stmt));
     }
     char *stmt1 = (char *) "SELECT * FROM t1";
-    Test->add_result(mysql_stmt_prepare(stmt, stmt1, strlen(stmt1)), "Error preparing stmt: %s\n", mysql_stmt_error(stmt));
+    Test->add_result(mysql_stmt_prepare(stmt, stmt1, strlen(stmt1)), "Error preparing stmt: %s\n",
+                     mysql_stmt_error(stmt));
 
     compare_stmt_expected(Test, stmt, 1, exp_rows);
 
@@ -448,7 +451,8 @@ int main(int argc, char *argv[])
         Test->add_result(1, "stmt init error: %s\n", mysql_stmt_error(stmt));
     }
     char *stmt2 = (char *) "SELECT * FROM t1 LIMIT 10";
-    Test->add_result(mysql_stmt_prepare(stmt, stmt2, strlen(stmt2)), "Error preparing stmt: %s\n", mysql_stmt_error(stmt));
+    Test->add_result(mysql_stmt_prepare(stmt, stmt2, strlen(stmt2)), "Error preparing stmt: %s\n",
+                     mysql_stmt_error(stmt));
     compare_stmt_expected(Test, stmt, 1, exp_rows);
     mysql_stmt_close(stmt);
 
@@ -530,7 +534,8 @@ int main(int argc, char *argv[])
 
     Test->close_rwsplit();
 
-    Test->ssh_maxscale(true, "sed -i \"s/max_resultset_size=900000000/max_resultset_size=9000000/\" /etc/maxscale.cnf");
+    Test->ssh_maxscale(true,
+                       "sed -i \"s/max_resultset_size=900000000/max_resultset_size=9000000/\" /etc/maxscale.cnf");
     Test->set_timeout(100);
     Test->restart_maxscale();
 

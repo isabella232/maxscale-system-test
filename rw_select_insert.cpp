@@ -193,7 +193,8 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
     Test->repl->sync_slaves();
     get_global_status_allnodes(&new_selects[0], &new_inserts[0], Test->repl, silent);
-    Test->add_result(check_com_select(&new_selects[0], &new_inserts[0], &selects[0], &inserts[0], Test->repl, 100),
+    Test->add_result(check_com_select(&new_selects[0], &new_inserts[0], &selects[0], &inserts[0], Test->repl,
+                                      100),
                      "Wrong check_com_select result\n");
 
 
@@ -211,11 +212,12 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
     Test->repl->sync_slaves();
     get_global_status_allnodes(&new_selects[0], &new_inserts[0], Test->repl, silent);
-    Test->add_result(check_com_insert(&new_selects[0], &new_inserts[0], &selects[0], &inserts[0], Test->repl, 100),
+    Test->add_result(check_com_insert(&new_selects[0], &new_inserts[0], &selects[0], &inserts[0], Test->repl,
+                                      100),
                      "Wrong check_com_insert result\n");
 
     Test->close_rwsplit();
 
     Test->copy_all_logs();
-    return (Test->global_result);
+    return Test->global_result;
 }

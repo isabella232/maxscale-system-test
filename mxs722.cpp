@@ -36,11 +36,11 @@ int main(int argc, char *argv[])
     /** Set router_options to a bad value */
     test->ssh_maxscale(true, "sed -i -e 's/router_options.*/router_options=bad_option=true/' /etc/maxscale.cnf");
     test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale"),
-                    "Bad router_options should be detected.\n");
+                     "Bad router_options should be detected.\n");
 
     test->ssh_maxscale(true, "cp /etc/maxscale.cnf.backup /etc/maxscale.cnf");
 
-    /** Configure bad filter parameter */ 
+    /** Configure bad filter parameter */
     test->ssh_maxscale(true, "sed -i -e 's/filebase/basefile/' /etc/maxscale.cnf");
     test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale"),
                      "Bad filter parameter should be detected.\n");

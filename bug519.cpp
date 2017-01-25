@@ -67,9 +67,12 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
-    int N=4;
+    int N = 4;
     int iterations = 2;
-    if (Test->smoke) {iterations = 1;}
+    if (Test->smoke)
+    {
+        iterations = 1;
+    }
     char str[1024];
     Test->set_timeout(10);
 
@@ -85,9 +88,13 @@ int main(int argc, char *argv[])
     Test->repl->sync_slaves();
     Test->set_timeout(200);
 
-    sprintf(str, "%s rm -f /tmp/t*.csv; %s chmod 777 /tmp", Test->repl->access_sudo[0], Test->repl->access_sudo[0]);
+    sprintf(str, "%s rm -f /tmp/t*.csv; %s chmod 777 /tmp", Test->repl->access_sudo[0],
+            Test->repl->access_sudo[0]);
     Test->tprintf("%s\n", str);
-    for (int k = 0; k < Test->repl->N; k++)  {Test->repl->ssh_node(k, str, false);}
+    for (int k = 0; k < Test->repl->N; k++)
+    {
+        Test->repl->ssh_node(k, str, false);
+    }
     //system(str);
 
     Test->tprintf("Copying data from t1 to file...\n");
@@ -99,7 +106,9 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_slave, (char *) "SELECT * INTO OUTFILE '/tmp/t3.csv' FROM t1;");
 
     Test->tprintf("Copying t1.cvs from Maxscale machine:\n");
-    sprintf(str, "scp -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s:/tmp/t1.csv ./", Test->repl->sshkey[0], Test->repl->access_user[0], Test->repl->IP[0]);
+    sprintf(str,
+            "scp -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s:/tmp/t1.csv ./",
+            Test->repl->sshkey[0], Test->repl->access_user[0], Test->repl->IP[0]);
     Test->tprintf("%s\n", str);
     system(str);
 
@@ -107,7 +116,8 @@ int main(int argc, char *argv[])
 
     srv[0] = Test->conn_rwsplit;
     srv[1] = Test->conn_master;
-    for (int i = 0; i < iterations; i++) {
+    for (int i = 0; i < iterations; i++)
+    {
         Test->set_timeout(100);
         Test->tprintf("Dropping t1 \n");
         Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE t1;");
@@ -134,6 +144,7 @@ int main(int argc, char *argv[])
     Test->repl->close_connections();
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

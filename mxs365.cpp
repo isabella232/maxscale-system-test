@@ -68,7 +68,8 @@ int main(int argc, char *argv[])
     test->set_timeout(20);
     test->connect_maxscale();
     char query[1024];
-    snprintf(query, sizeof (filename), "LOAD DATA LOCAL INFILE '%s' INTO TABLE test.dump FIELDS TERMINATED BY ','",
+    snprintf(query, sizeof (filename),
+             "LOAD DATA LOCAL INFILE '%s' INTO TABLE test.dump FIELDS TERMINATED BY ','",
              filename);
     test->tprintf("Loading data\n");
     test->set_timeout(100);

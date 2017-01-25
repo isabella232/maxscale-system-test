@@ -21,7 +21,10 @@ int main(int argc, char *argv[])
     int iterations = 10000;
 
     TestConnections * Test = new TestConnections(argc, argv);
-    if (Test->smoke) {iterations = 100;}
+    if (Test->smoke)
+    {
+        iterations = 100;
+    }
     Test->set_timeout(20);
 
     Test->repl->connect();
@@ -37,7 +40,8 @@ int main(int argc, char *argv[])
     mysql_close(conn);
     Test->tprintf("Table t1 is created\n");
 
-    for (int i = 0; i < iterations; i++) {
+    for (int i = 0; i < iterations; i++)
+    {
         Test->set_timeout(15);
         conn = Test->open_rwsplit_connection();
         sprintf(sql, "INSERT INTO t1 (x1, fl) VALUES(%d, 1);", i);
@@ -53,17 +57,21 @@ int main(int argc, char *argv[])
     Test->add_result(Test->connect_maxscale(), "Error connecting to Maxscale\n");
     Test->tprintf("Checking t1 table using RWSplit router\n");
     Test->set_timeout(240);
-    Test->add_result( execute_select_query_and_check(Test->conn_rwsplit, (char *) "SELECT * FROM t1;", iterations), "t1 is wrong\n");
+    Test->add_result( execute_select_query_and_check(Test->conn_rwsplit, (char *) "SELECT * FROM t1;",
+                                                     iterations), "t1 is wrong\n");
     Test->tprintf("Checking t1 table using ReadConn router in master mode\n");
     Test->set_timeout(240);
-    Test->add_result(  execute_select_query_and_check(Test->conn_master, (char *) "SELECT * FROM t1;", iterations), "t1 is wrong\n");
+    Test->add_result(  execute_select_query_and_check(Test->conn_master, (char *) "SELECT * FROM t1;",
+                                                      iterations), "t1 is wrong\n");
     Test->tprintf("Checking t1 table using ReadConn router in slave mode\n");
     Test->set_timeout(240);
-    Test->add_result(  execute_select_query_and_check(Test->conn_slave, (char *) "SELECT * FROM t1;", iterations), "t1 is wrong\n");
+    Test->add_result(  execute_select_query_and_check(Test->conn_slave, (char *) "SELECT * FROM t1;", iterations),
+                       "t1 is wrong\n");
     Test->set_timeout(20);
     Test->close_maxscale_connections();
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

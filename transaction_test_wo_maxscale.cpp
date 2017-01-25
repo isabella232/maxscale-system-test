@@ -26,7 +26,8 @@ int check_sha1(TestConnections* Test)
 
     Test->tprintf("FLUSH LOGS\n");
     Test->try_query(Test->repl->nodes[0], (char *) "FLUSH LOGS");
-    Test->tprintf("Logs flushed\n"); fflush(stdout);
+    Test->tprintf("Logs flushed\n");
+    fflush(stdout);
 
     sleep(19);
     printf("ls before FLUSH LOGS\n");
@@ -34,7 +35,7 @@ int check_sha1(TestConnections* Test)
     printf("Master");
     Test->repl->ssh_node(0, (char *) "ls -la /var/lib/mysql/mar-bin.0000*", false);
 
-    return(Test->global_result);
+    return Test->global_result;
 }
 
 int start_transaction(TestConnections* Test)
@@ -47,7 +48,7 @@ int start_transaction(TestConnections* Test)
     Test->tprintf("INSERT data\n");
     global_result += execute_query(Test->repl->nodes[0], (char *) "INSERT INTO t1 VALUES(111, 10)");
     sleep(20);
-    return(global_result);
+    return global_result;
 }
 
 int main(int argc, char *argv[])
@@ -57,7 +58,8 @@ int main(int argc, char *argv[])
 
     int i;
 
-    for (int option = 0; option < 3; option++) {
+    for (int option = 0; option < 3; option++)
+    {
 
         Test->repl->connect();
 
@@ -66,7 +68,8 @@ int main(int argc, char *argv[])
         Test->tprintf("Sleeping to let replication happen\n");
         sleep(30);
 
-        for (i = 0; i < Test->repl->N; i++) {
+        for (i = 0; i < Test->repl->N; i++)
+        {
             Test->tprintf("Checking data from node %d (%s)\n", i, Test->repl->IP[i]);
             Test->add_result( select_from_t1(Test->repl->nodes[i], 4), "select form t1 wrong\n");
         }
@@ -75,7 +78,8 @@ int main(int argc, char *argv[])
         start_transaction(Test);
 
         Test->tprintf("SELECT * FROM t1 WHERE fl=10, checking inserted values\n");
-        Test->add_result( execute_query_check_one(Test->repl->nodes[0], (char *) "SELECT * FROM t1 WHERE fl=10", "111"), "failed\n");
+        Test->add_result( execute_query_check_one(Test->repl->nodes[0], (char *) "SELECT * FROM t1 WHERE fl=10",
+                                                  "111"), "failed\n");
 
         //printf("SELECT, checking inserted values from slave\n");
         //global_result += execute_query_check_one(Test->repl->nodes[2], (char *) "SELECT * FROM t1 WHERE fl=10", "111");
@@ -89,10 +93,12 @@ int main(int argc, char *argv[])
         sleep(20);
 
         Test->tprintf("SELECT * FROM t1 WHERE fl=10, checking inserted values\n");
-        Test->add_result( execute_query_check_one(Test->repl->nodes[0], (char *) "SELECT * FROM t1 WHERE fl=10", "112"), "failed\n");
+        Test->add_result( execute_query_check_one(Test->repl->nodes[0], (char *) "SELECT * FROM t1 WHERE fl=10",
+                                                  "112"), "failed\n");
 
         Test->tprintf("SELECT * FROM t1 WHERE fl=10, checking inserted values from slave\n");
-        Test->add_result( execute_query_check_one(Test->repl->nodes[2], (char *) "SELECT * FROM t1 WHERE fl=10", "112"), "failed\n");
+        Test->add_result( execute_query_check_one(Test->repl->nodes[2], (char *) "SELECT * FROM t1 WHERE fl=10",
+                                                  "112"), "failed\n");
         Test->tprintf("DELETE FROM t1 WHERE fl=10\n");
         Test->try_query(Test->repl->nodes[0], (char *) "DELETE FROM t1 WHERE fl=10");
         Test->tprintf("Checking t1\n");
@@ -105,10 +111,12 @@ int main(int argc, char *argv[])
         Test->try_query(Test->repl->nodes[0], (char *) "COMMIT");
 
         printf("SELECT, checking inserted values\n");
-        Test->add_result( execute_query_check_one(Test->repl->nodes[0], (char *) "SELECT * FROM t1 WHERE fl=10", "111"), "failed\n");
+        Test->add_result( execute_query_check_one(Test->repl->nodes[0], (char *) "SELECT * FROM t1 WHERE fl=10",
+                                                  "111"), "failed\n");
 
         Test->tprintf("SELECT, checking inserted values from slave\n");
-        Test->add_result( execute_query_check_one(Test->repl->nodes[2], (char *) "SELECT * FROM t1 WHERE fl=10", "111"), "failed\n");
+        Test->add_result( execute_query_check_one(Test->repl->nodes[2], (char *) "SELECT * FROM t1 WHERE fl=10",
+                                                  "111"), "failed\n");
         Test->tprintf("DELETE FROM t1 WHERE fl=10\n");
         Test->try_query(Test->repl->nodes[0], (char *) "DELETE FROM t1 WHERE fl=10");
 
@@ -117,5 +125,6 @@ int main(int argc, char *argv[])
     }
 
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

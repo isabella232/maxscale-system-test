@@ -25,57 +25,57 @@ Th issue was discovered with following setup state:
 
 MaxScale> show servers
 Server 0x3428260 (server1)
-    Server:				192.168.122.106
-    Status:               		Master, Running
-    Protocol:			MySQLBackend
-    Port:				3306
-    Server Version:			5.5.40-MariaDB-log
-    Node Id:			106
-    Master Id:			-1
-    Slave Ids:			107, 108 , 109
-    Repl Depth:			0
-    Number of connections:		0
-    Current no. of conns:		0
-    Current no. of operations:	0
+    Server:             192.168.122.106
+    Status:                     Master, Running
+    Protocol:           MySQLBackend
+    Port:               3306
+    Server Version:         5.5.40-MariaDB-log
+    Node Id:            106
+    Master Id:          -1
+    Slave Ids:          107, 108 , 109
+    Repl Depth:         0
+    Number of connections:      0
+    Current no. of conns:       0
+    Current no. of operations:  0
 Server 0x3428160 (server2)
-    Server:				192.168.122.107
-    Status:               		Slave, Running
-    Protocol:			MySQLBackend
-    Port:				3306
-    Server Version:			5.5.40-MariaDB-log
-    Node Id:			107
-    Master Id:			106
+    Server:             192.168.122.107
+    Status:                     Slave, Running
+    Protocol:           MySQLBackend
+    Port:               3306
+    Server Version:         5.5.40-MariaDB-log
+    Node Id:            107
+    Master Id:          106
     Slave Ids:
-    Repl Depth:			1
-    Number of connections:		0
-    Current no. of conns:		0
-    Current no. of operations:	0
+    Repl Depth:         1
+    Number of connections:      0
+    Current no. of conns:       0
+    Current no. of operations:  0
 Server 0x3428060 (server3)
-    Server:				192.168.122.108
-    Status:               		Running
-    Protocol:			MySQLBackend
-    Port:				3306
-    Server Version:			5.5.40-MariaDB-log
-    Node Id:			108
-    Master Id:			106
+    Server:             192.168.122.108
+    Status:                     Running
+    Protocol:           MySQLBackend
+    Port:               3306
+    Server Version:         5.5.40-MariaDB-log
+    Node Id:            108
+    Master Id:          106
     Slave Ids:
-    Repl Depth:			1
-    Number of connections:		0
-    Current no. of conns:		0
-    Current no. of operations:	0
+    Repl Depth:         1
+    Number of connections:      0
+    Current no. of conns:       0
+    Current no. of operations:  0
 Server 0x338c3f0 (server4)
-    Server:				192.168.122.109
-    Status:               		Running
-    Protocol:			MySQLBackend
-    Port:				3306
-    Server Version:			5.5.40-MariaDB-log
-    Node Id:			109
-    Master Id:			106
+    Server:             192.168.122.109
+    Status:                     Running
+    Protocol:           MySQLBackend
+    Port:               3306
+    Server Version:         5.5.40-MariaDB-log
+    Node Id:            109
+    Master Id:          106
     Slave Ids:
-    Repl Depth:			1
-    Number of connections:		0
-    Current no. of conns:		0
-    Current no. of operations:	0
+    Repl Depth:         1
+    Number of connections:      0
+    Current no. of conns:       0
+    Current no. of operations:  0
 
 
 Maxscale read mysql.user table from server4 which was not properly replicated
@@ -97,17 +97,23 @@ int main(int argc, char *argv[])
     Test->repl->connect();
     Test->connect_maxscale();
 
-    for (i = 1; i < Test->repl->N; i++) {
+    for (i = 1; i < Test->repl->N; i++)
+    {
         execute_query(Test->repl->nodes[i], (char *) "stop slave;");
     }
 
     execute_query(Test->conn_rwsplit, (char *) "CREATE USER 'test_user'@'%%' IDENTIFIED BY 'pass'");
 
-    MYSQL * conn = open_conn_no_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test_user", (char *) "pass", Test->ssl);
+    MYSQL * conn = open_conn_no_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "test_user", (char *) "pass",
+                                   Test->ssl);
 
-    if (conn == NULL) { Test->add_result(1, "Connections error\n"); }
+    if (conn == NULL)
+    {
+        Test->add_result(1, "Connections error\n");
+    }
 
-    for (i = 1; i < Test->repl->N; i++) {
+    for (i = 1; i < Test->repl->N; i++)
+    {
         execute_query(Test->repl->nodes[i], (char *) "start slave;");
     }
 
@@ -116,6 +122,7 @@ int main(int argc, char *argv[])
     Test->repl->close_connections();
     Test->close_maxscale_connections();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 
 }

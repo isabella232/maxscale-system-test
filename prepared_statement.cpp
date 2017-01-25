@@ -22,10 +22,11 @@ int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(60);
-    int N=4;
+    int N = 4;
 
     Test->repl->connect();
-    if (Test->connect_maxscale() !=0 ) {
+    if (Test->connect_maxscale() != 0 )
+    {
         printf("Error connecting to MaxScale\n");
         Test->copy_all_logs();
         exit(1);
@@ -42,7 +43,8 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, (char *) "EXECUTE stmt");
 
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 

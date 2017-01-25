@@ -194,9 +194,9 @@ admin interface gives:
 MaxScale> show dbusers "RW Split Router"
 Users table data
 Hashtable: 0x7f6b64000c30, size 52
-    No. of entries:     	7
-    Average chain length:	0.1
-    Longest chain length:	1
+    No. of entries:         7
+    Average chain length:   0.1
+    Longest chain length:   1
 User names: root@192.168.122.106, repl@%, skysql@%, maxuser@127.0.0.1, skysql@127.0.0.1, root@127.0.0.1, maxuser@%
 
 
@@ -226,20 +226,27 @@ int main(int argc, char *argv[])
     Test->tprintf("Creating 'root'@'%%'\n");
     //global_result += execute_query(Test->conn_rwsplit, (char *) "CREATE USER 'root'@'%'; SET PASSWORD FOR 'root'@'%' = PASSWORD('skysqlroot');");
 
-    Test->try_query(Test->conn_rwsplit, (char *) "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%%' IDENTIFIED BY 'skysqlroot';");
+    Test->try_query(Test->conn_rwsplit,
+                    (char *) "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%%' IDENTIFIED BY 'skysqlroot';");
     sleep(10);
 
     MYSQL * conn;
 
     Test->tprintf("Connecting using 'root'@'%%'\n");
     conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, (char *) "root", (char *)  "skysqlroot", Test->ssl);
-    if (mysql_errno(conn) != 0) {
+    if (mysql_errno(conn) != 0)
+    {
         Test->add_result(1, "Connection using 'root' user failed, error: %s\n", mysql_error(conn));
-    } else {
+    }
+    else
+    {
         Test->tprintf("Simple query...\n");
         Test->try_query(conn, (char *) "SELECT * from mysql.user");
     }
-    if (conn != NULL) {mysql_close(conn);}
+    if (conn != NULL)
+    {
+        mysql_close(conn);
+    }
 
     Test->tprintf("Dropping 'root'@'%%'\n");
     Test->try_query(Test->conn_rwsplit, (char *) "DROP USER 'root'@'%%';");
@@ -251,5 +258,6 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Couldn't find suitable Master", false);
 
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

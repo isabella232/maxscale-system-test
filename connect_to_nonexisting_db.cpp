@@ -16,11 +16,13 @@ int main(int argc, char *argv[])
     Test->set_timeout(30);
 
     Test->tprintf("Connecting to RWSplit\n");
-    Test->conn_rwsplit = open_conn_no_db(Test->rwsplit_port, Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, Test->ssl);
-    if (Test->conn_rwsplit == NULL) {
+    Test->conn_rwsplit = open_conn_no_db(Test->rwsplit_port, Test->maxscale_IP, Test->maxscale_user,
+                                         Test->maxscale_password, Test->ssl);
+    if (Test->conn_rwsplit == NULL)
+    {
         Test->add_result(1, "Error connecting to MaxScale\n");
         Test->copy_all_logs();
-        return(1);
+        return 1;
     }
     Test->tprintf("Removing 'test' DB\n");
     execute_query(Test->conn_rwsplit, (char *) "DROP DATABASE IF EXISTS test;");
@@ -33,11 +35,13 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
 
     Test->tprintf("Connecting to RWSplit again to recreate 'test' db\n");
-    Test->conn_rwsplit = open_conn_no_db(Test->rwsplit_port, Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, Test->ssl);
-    if (Test->conn_rwsplit == NULL) {
+    Test->conn_rwsplit = open_conn_no_db(Test->rwsplit_port, Test->maxscale_IP, Test->maxscale_user,
+                                         Test->maxscale_password, Test->ssl);
+    if (Test->conn_rwsplit == NULL)
+    {
         printf("Error connecting to MaxScale\n");
         Test->copy_all_logs();
-        return(1);
+        return 1;
     }
 
     Test->tprintf("Creating and selecting 'test' DB\n");
@@ -51,9 +55,11 @@ int main(int argc, char *argv[])
     Test->tprintf("Trying simple operations with t1 \n");
     Test->try_query(Test->conn_rwsplit, (char *) "INSERT INTO t1 (x1, fl) VALUES(0, 1);");
     Test->set_timeout(240);
-    Test->add_result(execute_select_query_and_check(Test->conn_rwsplit, (char *) "SELECT * FROM t1;", 1), "Error execution SELECT * FROM t1;\n");
+    Test->add_result(execute_select_query_and_check(Test->conn_rwsplit, (char *) "SELECT * FROM t1;", 1),
+                     "Error execution SELECT * FROM t1;\n");
 
     Test->close_maxscale_connections();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

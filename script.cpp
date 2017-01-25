@@ -36,7 +36,8 @@ void test_script_monitor(TestConnections* Test, Mariadb_nodes* nodes, char * exp
     system(str);
     Test->ssh_maxscale(false, "rm -f %s/script_output", Test->maxscale_access_homedir);
 
-    Test->tprintf("%s\n", str);fflush(stdout);
+    Test->tprintf("%s\n", str);
+    fflush(stdout);
     Test->ssh_maxscale(false, "%s touch %s/script_output; %s chown maxscale:maxscale %s/script_output",
                        Test->maxscale_access_sudo, Test->maxscale_access_homedir,
                        Test->maxscale_access_sudo, Test->maxscale_access_homedir);
@@ -71,9 +72,13 @@ void test_script_monitor(TestConnections* Test, Mariadb_nodes* nodes, char * exp
     Test->ssh_maxscale(false, "cat %s/script_output", Test->maxscale_access_homedir);
 
     Test->tprintf("Comparing results\n");
-    if (Test->ssh_maxscale(false, "diff %s/script_output %s", Test->maxscale_access_homedir, expected_filename) != 0) {
+    if (Test->ssh_maxscale(false, "diff %s/script_output %s", Test->maxscale_access_homedir,
+                           expected_filename) != 0)
+    {
         Test->add_result(1, "Wrong script output!\n");
-    } else {
+    }
+    else
+    {
         Test->tprintf("Script output is OK!\n");
     }
 }
@@ -86,12 +91,14 @@ int main(int argc, char *argv[])
     Test->tprintf("Creating script on Maxscale machine\n");
 
 
-    Test->ssh_maxscale(false, "%s rm -rf %s/script; mkdir %s/script; echo \"echo \\$* >> %s/script_output\" > %s/script/script.sh; \
+    Test->ssh_maxscale(false,
+                       "%s rm -rf %s/script; mkdir %s/script; echo \"echo \\$* >> %s/script_output\" > %s/script/script.sh; \
             chmod a+x %s/script/script.sh; chmod a+x %s; %s chown maxscale:maxscale %s/script -R",
-            Test->maxscale_access_sudo, Test->maxscale_access_homedir,
-            Test->maxscale_access_homedir, Test->maxscale_access_homedir,
-            Test->maxscale_access_homedir, Test->maxscale_access_homedir, Test->maxscale_access_homedir, Test->maxscale_access_sudo,
-            Test->maxscale_access_homedir);
+                       Test->maxscale_access_sudo, Test->maxscale_access_homedir,
+                       Test->maxscale_access_homedir, Test->maxscale_access_homedir,
+                       Test->maxscale_access_homedir, Test->maxscale_access_homedir, Test->maxscale_access_homedir,
+                       Test->maxscale_access_sudo,
+                       Test->maxscale_access_homedir);
 
     Test->restart_maxscale();
 
@@ -143,7 +150,8 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Copying expected script output to Maxscale machine\n");
     char str[2048];
-    sprintf(str, "scp -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet script_output_expected* %s@%s:%s/",
+    sprintf(str,
+            "scp -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet script_output_expected* %s@%s:%s/",
             Test->maxscale_keyfile, Test->maxscale_access_user, Test->maxscale_IP, Test->maxscale_access_homedir);
     system(str);
 
@@ -177,5 +185,6 @@ int main(int argc, char *argv[])
     Test->tprintf("checking if Maxscale is alive\n");
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

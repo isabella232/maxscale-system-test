@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
     int i, j;
     MYSQL * conn;
 
-    int N_cmd=2;
-    char * fail_cmd[N_cmd-1];
+    int N_cmd = 2;
+    char * fail_cmd[N_cmd - 1];
 
     int N_ports = 3;
     int ports[N_ports];
@@ -31,12 +31,17 @@ int main(int argc, char *argv[])
     ports[1] = Test->readconn_master_port;
     ports[2] = Test->readconn_slave_port;
 
-    for (i = 0; i < N_cmd; i++) {
-        for (j = 0; j < N_ports; j++) {
+    for (i = 0; i < N_cmd; i++)
+    {
+        for (j = 0; j < N_ports; j++)
+        {
             Test->tprintf("Executing MaxAdmin command '%s'\n", fail_cmd[i]);
-            if (execute_maxadmin_command(Test->maxscale_IP, (char *) "admin", Test->maxadmin_password, fail_cmd[i]) != 0) {
+            if (execute_maxadmin_command(Test->maxscale_IP, (char *) "admin", Test->maxadmin_password, fail_cmd[i]) != 0)
+            {
                 Test->add_result(1, "MaxAdmin command failed\n");
-            } else {
+            }
+            else
+            {
                 printf("Trying query against %d\n", ports[j]);
                 conn = open_conn(ports[j], Test->maxscale_IP, Test->maxscale_user, Test->maxscale_user, Test->ssl);
                 Test->try_query(conn, (char *) "show processlist;");
@@ -45,5 +50,6 @@ int main(int argc, char *argv[])
     }
 
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

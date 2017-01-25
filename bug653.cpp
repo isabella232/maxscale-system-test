@@ -45,24 +45,35 @@ int main(int argc, char *argv[])
     Test->connect_maxscale();
 
     Test->tprintf("Creating user with old style password\n");
-    Test->try_query(Test->conn_rwsplit, (char *) "CREATE USER 'user_long_host11'@'very_long_hostname_that_probably_caused_crashhh.com.net.org' IDENTIFIED BY 'old'");
-    Test->try_query(Test->conn_rwsplit, (char *) "GRANT ALL PRIVILEGES ON *.* TO 'user_long_host11'@'very_long_hostname_that_probably_caused_crashhh.com.net.org' WITH GRANT OPTION");
+    Test->try_query(Test->conn_rwsplit,
+                    (char *) "CREATE USER 'user_long_host11'@'very_long_hostname_that_probably_caused_crashhh.com.net.org' IDENTIFIED BY 'old'");
+    Test->try_query(Test->conn_rwsplit,
+                    (char *) "GRANT ALL PRIVILEGES ON *.* TO 'user_long_host11'@'very_long_hostname_that_probably_caused_crashhh.com.net.org' WITH GRANT OPTION");
     sleep(10);
 
     Test->tprintf("Trying to connect using user with old style password\n");
-    MYSQL * conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, (char *) "user_long_host11", (char *)  "old", Test->ssl);
+    MYSQL * conn = open_conn(Test->rwsplit_port, Test->maxscale_IP, (char *) "user_long_host11", (char *)  "old",
+                             Test->ssl);
 
-    if ( mysql_errno(conn) != 0 ) {
+    if ( mysql_errno(conn) != 0 )
+    {
         Test->tprintf("Connections is not open as expected\n");
-    } else {
+    }
+    else
+    {
         Test->add_result(1, "Connections is open for the user with bad host\n");
     }
-    if (conn != NULL) {mysql_close(conn);}
+    if (conn != NULL)
+    {
+        mysql_close(conn);
+    }
 
-    Test->try_query(Test->conn_rwsplit, (char *) "DROP USER 'user_long_host11'@'very_long_hostname_that_probably_caused_crashhh.com.net.org'");
+    Test->try_query(Test->conn_rwsplit,
+                    (char *) "DROP USER 'user_long_host11'@'very_long_hostname_that_probably_caused_crashhh.com.net.org'");
     Test->close_maxscale_connections();
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

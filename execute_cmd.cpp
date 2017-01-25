@@ -21,7 +21,7 @@ int execute_cmd(char * cmd, char ** res)
     size_t rsize = sizeof(buffer);
     result =  (char*)calloc(rsize, sizeof(char));
 
-    while(fgets(buffer, sizeof(buffer), output))
+    while (fgets(buffer, sizeof(buffer), output))
     {
         result = (char*)realloc(result, sizeof(buffer) + rsize);
         rsize += sizeof(buffer);
@@ -33,11 +33,11 @@ int execute_cmd(char * cmd, char ** res)
     int return_code = pclose(output);
     if (WIFEXITED(return_code))
     {
-      return WEXITSTATUS(return_code);
+        return WEXITSTATUS(return_code);
     }
     else
     {
-      return -1;
+        return -1;
     }
 }
 

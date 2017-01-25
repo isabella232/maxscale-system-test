@@ -29,8 +29,8 @@ void* query_thread(void *data)
     while (running)
     {
         MYSQL* mysql = iter % 200 == 0 ?
-            Test->open_readconn_master_connection() :
-            Test->open_readconn_slave_connection();
+                       Test->open_readconn_master_connection() :
+                       Test->open_readconn_slave_connection();
 
         if (!mysql)
         {
@@ -90,5 +90,5 @@ int main(int argc, char *argv[])
     /** Clean up test environment */
     Test->repl->flush_hosts();
     Test->copy_all_logs();
-    return(Test->global_result);
+    return Test->global_result;
 }

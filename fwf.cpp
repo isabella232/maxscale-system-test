@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
     int N = 10;
     int i;
 
-    for (i = 1; i < N+1; i++){
+    for (i = 1; i < N + 1; i++)
+    {
         Test->set_timeout(180);
         local_result = 0;
 
@@ -54,41 +55,54 @@ int main(int argc, char *argv[])
         Test->tprintf("Deny file: %s\n", deny_file);
 
         file = fopen(pass_file, "r");
-        if (file != NULL) {
+        if (file != NULL)
+        {
             Test->tprintf("********** Trying queries that should be OK ********** \n");
-            while (fgets(sql, sizeof(sql), file)) {
-                if (strlen(sql) > 1) {
+            while (fgets(sql, sizeof(sql), file))
+            {
+                if (strlen(sql) > 1)
+                {
                     Test->tprintf("%s", sql);
                     local_result += execute_query(Test->conn_rwsplit, sql);
                 }
             }
             fclose(file);
-        } else {
+        }
+        else
+        {
             Test->add_result(1, "Error opening query file\n");
         }
 
         file = fopen(deny_file, "r");
-        if (file != NULL) {
+        if (file != NULL)
+        {
             Test->tprintf("********** Trying queries that should FAIL ********** \n");
-            while (fgets(sql, sizeof(sql), file)) {
+            while (fgets(sql, sizeof(sql), file))
+            {
                 Test->set_timeout(180);
-                if (strlen(sql) > 1) {
+                if (strlen(sql) > 1)
+                {
                     Test->tprintf("%s", sql);
                     execute_query(Test->conn_rwsplit, sql);
-                    if (mysql_errno(Test->conn_rwsplit) != 1141) {
+                    if (mysql_errno(Test->conn_rwsplit) != 1141)
+                    {
                         Test->tprintf("Query succeded, but fail expected, errono is %d\n", mysql_errno(Test->conn_rwsplit));
                         local_result++;
                     }
                 }
             }
             fclose(file);
-        } else {
+        }
+        else
+        {
             Test->add_result(1, "Error opening query file\n");
         }
         if (local_result != 0)
         {
             Test->add_result(1, "********** rules%d test FAILED\n", i);
-        }  else {
+        }
+        else
+        {
             Test->tprintf("********** rules%d test PASSED\n", i);
         }
 
@@ -113,7 +127,8 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Trying 'DELETE FROM t1' and expecting FAILURE\n");
     execute_query(Test->conn_rwsplit, "DELETE FROM t1");
-    if (mysql_errno(Test->conn_rwsplit) != 1141) {
+    if (mysql_errno(Test->conn_rwsplit) != 1141)
+    {
         Test->add_result(1, "Query succeded, but fail expected, errono is %d\n", mysql_errno(Test->conn_rwsplit));
     }
     Test->tprintf("Waiting 3 minutes and trying 'DELETE FROM t1', expecting OK\n");
@@ -133,7 +148,8 @@ int main(int argc, char *argv[])
     Test->connect_rwsplit();
 
     printf("Trying 10 quries as fast as possible\n");
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++)
+    {
         Test->add_result(execute_query(Test->conn_rwsplit, "SELECT * FROM t1"), "%d -query failed\n", i);
     }
 
@@ -145,23 +161,27 @@ int main(int argc, char *argv[])
     gettimeofday(&t1, NULL);
 
 
-    do {
+    do
+    {
         gettimeofday(&t2, NULL);
         elapsedTime = (t2.tv_sec - t1.tv_sec);
         elapsedTime += (double) (t2.tv_usec - t1.tv_usec) / 1000000.0;
-    } while ((execute_query_silent(Test->conn_rwsplit, "SELECT * FROM t1") != 0) && (elapsedTime < 10));
+    }
+    while ((execute_query_silent(Test->conn_rwsplit, "SELECT * FROM t1") != 0) && (elapsedTime < 10));
 
     Test->tprintf("Quries were blocked during %f (using clock_gettime())\n", elapsedTime);
-    Test->tprintf("Quries were blocked during %lu (using time())\n", time(NULL)-start_time_clock);
-    if ((elapsedTime > 6) or (elapsedTime < 4)) {
+    Test->tprintf("Quries were blocked during %lu (using time())\n", time(NULL) - start_time_clock);
+    if ((elapsedTime > 6) or (elapsedTime < 4))
+    {
         Test->add_result(1, "Queries were blocked during wrong time\n");
     }
 
     Test->set_timeout(180);
     printf("Trying 20 quries, 1 query / second\n");
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < 20; i++)
+    {
         sleep(1);
-        Test->add_result(execute_query(Test->conn_rwsplit, "SELECT * FROM t1"),"query failed\n");
+        Test->add_result(execute_query(Test->conn_rwsplit, "SELECT * FROM t1"), "query failed\n");
         Test->tprintf("%d ", i);
     }
     Test->tprintf("\n");
@@ -178,13 +198,15 @@ int main(int argc, char *argv[])
     Test->connect_rwsplit();
 
     Test->tprintf("Trying to connectt to Maxscale when 'rules' has syntax error, expecting failures\n");
-    if (execute_query(Test->conn_rwsplit, "SELECT * FROM t1") == 0) {
+    if (execute_query(Test->conn_rwsplit, "SELECT * FROM t1") == 0)
+    {
         Test->add_result(1, "Rule has syntax error, but query OK\n");
     }
 
     Test->check_maxscale_processes(0);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 

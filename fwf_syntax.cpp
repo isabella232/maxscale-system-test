@@ -15,31 +15,31 @@
 const char *temp_rules = "rules_tmp.txt";
 
 const char *users_ok[] =
-    {
-        "users %@% match any rules testrule",
-        NULL
-    };
+{
+    "users %@% match any rules testrule",
+    NULL
+};
 
 const char *rules_failure[] =
-    {
-        "rule testrule deny nothing",
-        "rule testrule deny regex",
-        "rule testrule deny columns",
-        "rule testrule deny limit_queries",
-        "rule testrule deny no-where-clause",
-        "rule testrule deny wildcard wildcard",
-        "rule testrule deny wildcard rule testrule deny no_where_clause",
-        "rule testrule allow anything",
-        "rule testrule block",
-        "rule deny wildcard",
-        "testrule deny wildcard",
-        "rule testrule deny wildcard on_queries select | not_select",
-        "rule testrule deny wildcard on_queries select|not_select",
-        "rule testrule deny wildcard on_queries select |",
-        "rule testrule deny wildcard on_queries select|",
-        "rule ᐫᐬᐭᐮᐯᐰᐱ deny wildcard on_queries select|",
-        NULL
-    };
+{
+    "rule testrule deny nothing",
+    "rule testrule deny regex",
+    "rule testrule deny columns",
+    "rule testrule deny limit_queries",
+    "rule testrule deny no-where-clause",
+    "rule testrule deny wildcard wildcard",
+    "rule testrule deny wildcard rule testrule deny no_where_clause",
+    "rule testrule allow anything",
+    "rule testrule block",
+    "rule deny wildcard",
+    "testrule deny wildcard",
+    "rule testrule deny wildcard on_queries select | not_select",
+    "rule testrule deny wildcard on_queries select|not_select",
+    "rule testrule deny wildcard on_queries select |",
+    "rule testrule deny wildcard on_queries select|",
+    "rule ᐫᐬᐭᐮᐯᐰᐱ deny wildcard on_queries select|",
+    NULL
+};
 
 void truncate_maxscale_logs(TestConnections *test)
 {

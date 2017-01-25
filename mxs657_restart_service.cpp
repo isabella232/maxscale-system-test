@@ -35,7 +35,8 @@ void sht_rst_service()
     int  iret1[threads_num];
     int i;
 
-    for (i = 0; i < threads_num; i++) {
+    for (i = 0; i < threads_num; i++)
+    {
         iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, NULL);
     }
 
@@ -44,14 +45,17 @@ void sht_rst_service()
     if (Test->smoke)
     {
         sleep(200);
-    } else {
+    }
+    else
+    {
         sleep(400);
     }
 
     Test->tprintf("Done, exiting threads\n\n");
 
     exit_flag = true;
-    for (int i = 0; i < threads_num; i++) {
+    for (int i = 0; i < threads_num; i++)
+    {
         pthread_join(thread1[i], NULL);
     }
 
@@ -89,7 +93,8 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
     Test->check_log_err((char *) "received fatal signal", false);
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 void *query_thread1( void *ptr )

@@ -13,6 +13,7 @@
  * @param rows number of rows to INSERT (executes INSERT stetament 'rows' times)
  * @return 0 in case of success
  */
-int test_longblob(TestConnections* Test, MYSQL * conn, char * blob_name, unsigned long chunk_size, int chunks, int rows);
+int test_longblob(TestConnections* Test, MYSQL * conn, char * blob_name, unsigned long chunk_size, int chunks,
+                  int rows);
 
 #endif // BLOB_TEST_H

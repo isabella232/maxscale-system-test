@@ -68,14 +68,20 @@ void compare_masters(TestConnections* Test, RDS * cluster)
             if (strcmp(maxadmin_status, "Master, Running"))
             {
                 Test->tprintf("Maxadmin reports node%03d is a Master as expected", i);
-            } else {
+            }
+            else
+            {
                 Test->add_result(1, "Server node%03d status is not 'Master, Running'', it is '%s'", i, maxadmin_status);
             }
-        } else {
+        }
+        else
+        {
             if (strcmp(maxadmin_status, "Slave, Running"))
             {
                 Test->tprintf("Maxadmin reports node%03d is a Slave as expected", i);
-            } else {
+            }
+            else
+            {
                 Test->add_result(1, "Server node%03d status is not 'Slave, Running'', it is '%s'", i, maxadmin_status);
             }
         }

@@ -24,7 +24,8 @@ int check_connection_count(TestConnections* test, int server)
     char cmd[1024];
     test->set_timeout(30);
     sprintf(cmd, "show server server%d", server);
-    test->add_result(test->get_maxadmin_param(cmd, (char*) "Current no. of conns:", result), "maxadmin command %s failed\n", cmd);
+    test->add_result(test->get_maxadmin_param(cmd, (char*) "Current no. of conns:", result),
+                     "maxadmin command %s failed\n", cmd);
     int result_d = 999;
     sscanf(result, "%d", &result_d);
     if (strlen(result) == 0)
@@ -39,30 +40,32 @@ void create_and_check_connections(TestConnections* test, int target)
 {
     MYSQL* stmt[CONNECTIONS];
 
-    for(int i=0;i<CONNECTIONS;i++)
+    for (int i = 0; i < CONNECTIONS; i++)
     {
         test->set_timeout(20);
-        switch(target)
+        switch (target)
         {
-            case 1:
+        case 1:
             stmt[i] = test->open_rwsplit_connection();
             break;
 
-            case 2:
+        case 2:
             stmt[i] = test->open_readconn_master_connection();
             break;
 
-            case 3:
+        case 3:
             stmt[i] = test->open_readconn_master_connection();
             break;
         }
     }
 
-    for(int i=0;i<CONNECTIONS;i++)
+    for (int i = 0; i < CONNECTIONS; i++)
     {
         test->set_timeout(20);
-        if(stmt[i])
+        if (stmt[i])
+        {
             mysql_close(stmt[i]);
+        }
     }
 
     test->stop_timeout();
@@ -71,7 +74,7 @@ void create_and_check_connections(TestConnections* test, int target)
 
     for (int j = 1; j < test->repl->N + 1; j++)
     {
-        if((result_d = check_connection_count(test, j)))
+        if ((result_d = check_connection_count(test, j)))
         {
             test->tprintf("Waiting 5 seconds and testing again.");
             sleep(5);
@@ -106,5 +109,5 @@ int main(int argc, char *argv[])
     Test->repl->flush_hosts();
 
     Test->copy_all_logs();
-    return(Test->global_result);
+    return Test->global_result;
 }

@@ -1,22 +1,27 @@
 #include "big_load.h"
 #include <pthread.h>
 
-void load(long int *new_inserts, long int *new_selects, long int *selects, long int *inserts, int threads_num, TestConnections * Test, long int *i1, long int *i2, int rwsplit_only, bool galera, bool report_errors)
+void load(long int *new_inserts, long int *new_selects, long int *selects, long int *inserts, int threads_num,
+          TestConnections * Test, long int *i1, long int *i2, int rwsplit_only, bool galera, bool report_errors)
 {
     char sql[1000000];
     thread_data data;
     Mariadb_nodes * nodes;
-    if (galera) {
+    if (galera)
+    {
         nodes = Test->galera;
-    } else {
+    }
+    else
+    {
         nodes = Test->repl;
     }
 
     int sql_l = 20000;
-    int run_time=100;
-    if (Test->smoke) {
+    int run_time = 100;
+    if (Test->smoke)
+    {
         sql_l = 500;
-        run_time=10;
+        run_time = 10;
     }
 
     nodes->connect();
@@ -29,16 +34,23 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
     data.rwsplit_only = rwsplit_only;
     // connect to the MaxScale server (rwsplit)
 
-    if (Test->conn_rwsplit == NULL ) {
-        if (report_errors) { Test->add_result(1, "Can't connect to MaxScale\n");}
+    if (Test->conn_rwsplit == NULL )
+    {
+        if (report_errors)
+        {
+            Test->add_result(1, "Can't connect to MaxScale\n");
+        }
         Test->copy_all_logs();
         exit(1);
-    } else {
+    }
+    else
+    {
         create_t1(Test->conn_rwsplit);
         create_insert_string(sql, sql_l, 1);
         Test->tprintf("Waiting for the table to replicate\n");
         sleep(30);
-        if ((execute_query(Test->conn_rwsplit, sql) != 0) && (report_errors)) {
+        if ((execute_query(Test->conn_rwsplit, sql) != 0) && (report_errors))
+        {
             Test->add_result(1, "Query %s failed\n", sql);
         }
         // close connections
@@ -51,11 +63,13 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
 
         Test->tprintf("COM_INSERT and COM_SELECT before executing test\n");
 
-        Test->add_result(get_global_status_allnodes(&selects[0], &inserts[0], nodes, 0), "get_global_status_allnodes failed\n");
+        Test->add_result(get_global_status_allnodes(&selects[0], &inserts[0], nodes, 0),
+                         "get_global_status_allnodes failed\n");
 
         data.exit_flag = 0;
         /* Create independent threads each of them will execute function */
-        for (int i = 0; i < threads_num; i++) {
+        for (int i = 0; i < threads_num; i++)
+        {
             iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, &data);
             iret2[i] = pthread_create( &thread2[i], NULL, query_thread2, &data);
         }
@@ -64,7 +78,8 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
         data.exit_flag = 1;
         Test->tprintf("Waiting for all threads to exit\n");
         Test->set_timeout(100);
-        for (int i = 0; i < threads_num; i++) {
+        for (int i = 0; i < threads_num; i++)
+        {
             pthread_join( thread1[i], NULL);
             pthread_join( thread2[i], NULL);
         }
@@ -88,45 +103,59 @@ void *query_thread1( void *ptr )
     int conn_err = 0;
     thread_data * data = (thread_data *) ptr;
     conn1 = open_conn_db_timeout(data->Test->rwsplit_port,
-                         data->Test->maxscale_IP,
-                         (char *) "test",
-                         data->Test->maxscale_user,
-                         data->Test->maxscale_password,
-                         20,
-                         data->Test->ssl);
+                                 data->Test->maxscale_IP,
+                                 (char *) "test",
+                                 data->Test->maxscale_user,
+                                 data->Test->maxscale_password,
+                                 20,
+                                 data->Test->ssl);
     //conn1 = data->Test->open_rwsplit_connection();
-    if (mysql_errno(conn1) != 0) { conn_err++; }
-    if (data->rwsplit_only == 0) {
+    if (mysql_errno(conn1) != 0)
+    {
+        conn_err++;
+    }
+    if (data->rwsplit_only == 0)
+    {
         //conn2 = data->Test->open_readconn_master_connection();
         conn2 = open_conn_db_timeout(data->Test->readconn_master_port,
-                             data->Test->maxscale_IP,
-                             (char *) "test",
-                             data->Test->maxscale_user,
-                             data->Test->maxscale_password,
-                             20,
-                             data->Test->ssl);
-        if (mysql_errno(conn2) != 0) { conn_err++; }
+                                     data->Test->maxscale_IP,
+                                     (char *) "test",
+                                     data->Test->maxscale_user,
+                                     data->Test->maxscale_password,
+                                     20,
+                                     data->Test->ssl);
+        if (mysql_errno(conn2) != 0)
+        {
+            conn_err++;
+        }
         //conn3 = data->Test->open_readconn_slave_connection();
         conn3 = open_conn_db_timeout(data->Test->readconn_slave_port,
-                             data->Test->maxscale_IP,
-                             (char *) "test",
-                             data->Test->maxscale_user,
-                             data->Test->maxscale_password,
-                             20,
-                             data->Test->ssl);
-        if (mysql_errno(conn3) != 0) { conn_err++; }
+                                     data->Test->maxscale_IP,
+                                     (char *) "test",
+                                     data->Test->maxscale_user,
+                                     data->Test->maxscale_password,
+                                     20,
+                                     data->Test->ssl);
+        if (mysql_errno(conn3) != 0)
+        {
+            conn_err++;
+        }
     }
-    if (conn_err == 0) {
-        while (data->exit_flag == 0) {
+    if (conn_err == 0)
+    {
+        while (data->exit_flag == 0)
+        {
             execute_query_silent(conn1, (char *) "SELECT * FROM t1;");
-            if (data->rwsplit_only == 0) {
+            if (data->rwsplit_only == 0)
+            {
                 execute_query_silent(conn2, (char *) "SELECT * FROM t1;");
                 execute_query_silent(conn3, (char *) "SELECT * FROM t1;");
             }
             data->i1++;
         }
         mysql_close(conn1);
-        if (data->rwsplit_only == 0) {
+        if (data->rwsplit_only == 0)
+        {
             mysql_close(conn2);
             mysql_close(conn3);
         }
@@ -142,44 +171,48 @@ void *query_thread2(void *ptr )
     thread_data * data = (thread_data *) ptr;
     //conn1 = data->Test->open_rwsplit_connection();
     conn1 = open_conn_db_timeout(data->Test->rwsplit_port,
-                         data->Test->maxscale_IP,
-                         (char *) "test",
-                         data->Test->maxscale_user,
-                         data->Test->maxscale_password,
-                         20,
-                         data->Test->ssl);
-    if (data->rwsplit_only == 0) {
+                                 data->Test->maxscale_IP,
+                                 (char *) "test",
+                                 data->Test->maxscale_user,
+                                 data->Test->maxscale_password,
+                                 20,
+                                 data->Test->ssl);
+    if (data->rwsplit_only == 0)
+    {
         //conn2 = data->Test->open_readconn_master_connection();
         //conn3 = data->Test->open_readconn_slave_connection();
 
         conn2 = open_conn_db_timeout(data->Test->readconn_master_port,
-                             data->Test->maxscale_IP,
-                             (char *) "test",
-                             data->Test->maxscale_user,
-                             data->Test->maxscale_password,
-                             20,
-                             data->Test->ssl);
+                                     data->Test->maxscale_IP,
+                                     (char *) "test",
+                                     data->Test->maxscale_user,
+                                     data->Test->maxscale_password,
+                                     20,
+                                     data->Test->ssl);
         //if (mysql_errno(conn2) != 0) { conn_err++; }
         conn3 = open_conn_db_timeout(data->Test->readconn_slave_port,
-                             data->Test->maxscale_IP,
-                             (char *) "test",
-                             data->Test->maxscale_user,
-                             data->Test->maxscale_password,
-                             20,
-                             data->Test->ssl);
+                                     data->Test->maxscale_IP,
+                                     (char *) "test",
+                                     data->Test->maxscale_user,
+                                     data->Test->maxscale_password,
+                                     20,
+                                     data->Test->ssl);
         //if (mysql_errno(conn3) != 0) { conn_err++; }
     }
-    while (data->exit_flag == 0) {
+    while (data->exit_flag == 0)
+    {
         sleep(1);
         execute_query_silent(conn1, (char *) "SELECT * FROM t1;");
-        if (data->rwsplit_only == 0) {
+        if (data->rwsplit_only == 0)
+        {
             execute_query_silent(conn2, (char *) "SELECT * FROM t1;");
             execute_query_silent(conn3, (char *) "SELECT * FROM t1;");
         }
         data->i2++;
     }
     mysql_close(conn1);
-    if (data->rwsplit_only == 0) {
+    if (data->rwsplit_only == 0)
+    {
         mysql_close(conn2);
         mysql_close(conn3);
     }

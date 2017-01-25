@@ -4,7 +4,7 @@ int big_transaction(MYSQL * conn, int N)
 {
     int local_result = 0;
     char sql[1000000];
-    local_result +=create_t1(conn);
+    local_result += create_t1(conn);
     local_result += execute_query(conn, (char *) "START TRANSACTION");
     local_result += execute_query(conn, (char *) "SET autocommit = 0");
 
@@ -19,5 +19,5 @@ int big_transaction(MYSQL * conn, int N)
     }
 
     local_result += execute_query(conn, (char *) "COMMIT");
-    return(local_result);
+    return local_result;
 }

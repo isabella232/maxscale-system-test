@@ -53,8 +53,10 @@ int main(int argc, char *argv[])
 
     Test->repl->connect();
 
-    for (i = 0; i < Test->repl->N; i++) { //nodes
-        for (j = 0; j < Test->repl->N; j++) { //users
+    for (i = 0; i < Test->repl->N; i++)   //nodes
+    {
+        for (j = 0; j < Test->repl->N; j++)   //users
+        {
             Test->set_timeout(30);
             execute_query(Test->repl->nodes[i], "DROP USER 'user%d'@'%%';", j);
             execute_query(Test->repl->nodes[i], "CREATE USER 'user%d'@'%%' IDENTIFIED BY 'pass%d';", j, j);
@@ -67,33 +69,39 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
 
     sleep(10);
-    for (i = 0; i < Test->repl->N; i++) { //nodes
+    for (i = 0; i < Test->repl->N; i++)   //nodes
+    {
         Test->set_timeout(30);
         Test->tprintf("Node %d\t", i);
         Test->tprintf("Creating shard_db\t");
         execute_query(Test->repl->nodes[i], "CREATE DATABASE shard_db");
-        Test->add_result(execute_query(Test->repl->nodes[i], "GRANT SELECT,USAGE,CREATE ON shard_db.* TO 'user%d'@'%%'", i), "Query should succeed.");
+        Test->add_result(execute_query(Test->repl->nodes[i],
+                                       "GRANT SELECT,USAGE,CREATE ON shard_db.* TO 'user%d'@'%%'", i), "Query should succeed.");
     }
 
     Test->repl->close_connections();
     Test->stop_timeout();
     sleep(30);
     MYSQL * conn;
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->set_timeout(30);
         sprintf(user_str, "user%d", i);
         sprintf(pass_str, "pass%d", i);
         Test->tprintf("Open connection to Sharding router using %s %s\n", user_str, pass_str);
-        conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "shard_db", user_str, pass_str, Test->ssl);
+        conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, (char *) "shard_db", user_str, pass_str,
+                            Test->ssl);
         Test->add_result(execute_query(conn, "CREATE TABLE table%d (x1 int, fl int);", i), "Query should succeed.");
     }
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->set_timeout(30);
         sprintf(user_str, "user%d", i);
         sprintf(pass_str, "pass%d", i);
         Test->tprintf("Open connection to Sharding router using %s %s\n", user_str, pass_str);
-        conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP,  (char *) "shard_db", user_str, pass_str, Test->ssl);
+        conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP,  (char *) "shard_db", user_str, pass_str,
+                            Test->ssl);
 
         sprintf(str, "SHOW TABLES;");
         Test->tprintf("%s\n", str);
@@ -109,7 +117,8 @@ int main(int argc, char *argv[])
     Test->tprintf("Trying USE shard_db\n");
     execute_query(Test->conn_rwsplit, "USE shard_db");
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->add_result(execute_query(Test->conn_rwsplit, "USE shard_db%d", i), "Query should succeed.");
     }
 
@@ -125,8 +134,10 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "query string allocation failed", false);
 
     /** Cleanup */
-    for (i = 0; i < Test->repl->N; i++) {
-        for (j = 0; j < Test->repl->N; j++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
+        for (j = 0; j < Test->repl->N; j++)
+        {
             Test->set_timeout(30);
             execute_query(Test->repl->nodes[i], "DROP USER 'user%d'@'%%';", j);
             execute_query(Test->repl->nodes[i], "DROP DATABASE IF EXISTS shard_db");
@@ -135,5 +146,6 @@ int main(int argc, char *argv[])
         execute_query(Test->repl->nodes[i], "DROP DATABASE IF EXISTS shard_db%d", i);
     }
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

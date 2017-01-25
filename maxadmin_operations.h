@@ -26,18 +26,18 @@
 /**
  * @brief Connect to the MaxScale server
  *
- * @param hostname	The hostname to connect to
- * @param port		The port to use for the connection
- * @return		The connected socket or -1 on error
+ * @param hostname  The hostname to connect to
+ * @param port      The port to use for the connection
+ * @return      The connected socket or -1 on error
  */
 int connectMaxScale(char *hostname, char *port);
 
 /**
  * @brief Set IP address in socket structure in_addr
  *
- * @param a	Pointer to a struct in_addr into which the address is written
- * @param p	The hostname to lookup
- * @return	1 on success, 0 on failure
+ * @param a Pointer to a struct in_addr into which the address is written
+ * @param p The hostname to lookup
+ * @return  1 on success, 0 on failure
  */
 int setipaddress(struct in_addr *a, char *p);
 
@@ -45,10 +45,10 @@ int setipaddress(struct in_addr *a, char *p);
 /**
  * @brief Perform authentication using the maxscaled protocol conventions
  *
- * @param so		The socket connected to MaxScale
- * @param user		The username to authenticate
- * @param password	The password to authenticate with
- * @return		Non-zero of succesful authentication
+ * @param so        The socket connected to MaxScale
+ * @param user      The username to authenticate
+ * @param password  The password to authenticate with
+ * @return      Non-zero of succesful authentication
  */
 int authMaxScale(int so, char *user, char *password);
 
@@ -57,9 +57,9 @@ int authMaxScale(int so, char *user, char *password);
  *
  * Input terminates with a lien containing just the text OK
  *
- * @param so	The socket connect to MaxScale
- * @param cmd	The command to send
- * @return	0 if the connection was closed
+ * @param so    The socket connect to MaxScale
+ * @param cmd   The command to send
+ * @return  0 if the connection was closed
  */
 int sendCommand(int so, char *cmd, char *buf);
 
@@ -69,24 +69,25 @@ int sendCommand(int so, char *cmd, char *buf);
  *
  * Input terminates with a lien containing just the text OK
  *
- * @param user		The username to authenticate
- * @param password	The password to authenticate with
+ * @param user      The username to authenticate
+ * @param password  The password to authenticate with
  * @param cmd       The command to send
  * @param param     Parameter to find
  * @param result    Value of found parameter
- * @return	0 if parameter is found
+ * @return  0 if parameter is found
  */
-int get_maxadmin_param_tcp(char *hostname, char *user, char *password, char *command, char *param, char *result);
+int get_maxadmin_param_tcp(char *hostname, char *user, char *password, char *command, char *param,
+                           char *result);
 
 /**
  * @brief Send a comamnd using the MaxScaled protocol
  *
  * Input terminates with a line containing just the text OK
  *
- * @param user		The username to authenticate
- * @param password	The password to authenticate with
+ * @param user      The username to authenticate
+ * @param password  The password to authenticate with
  * @param cmd       The command to send
- * @return	0 if parameter is found
+ * @return  0 if parameter is found
  */
 int execute_maxadmin_command_tcp(char * hostname, char *user, char *password, char * cmd);
 
@@ -95,10 +96,10 @@ int execute_maxadmin_command_tcp(char * hostname, char *user, char *password, ch
  *
  * Input terminates with a line containing just the text OK
  *
- * @param user		The username to authenticate
- * @param password	The password to authenticate with
+ * @param user      The username to authenticate
+ * @param password  The password to authenticate with
  * @param cmd       The command to send
- * @return	0 if parameter is found
+ * @return  0 if parameter is found
  */
 int execute_maxadmin_command_print_pcp(char * hostname, char *user, char *password, char * cmd);
 

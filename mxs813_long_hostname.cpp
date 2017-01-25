@@ -22,12 +22,14 @@ int main(int argc, char *argv[])
 
     Test->start_binlog();
 
-    MYSQL * binlog = open_conn_no_db(Test->binlog_port, Test->maxscale_IP, Test->repl->user_name, Test->repl->password, Test->ssl);
+    MYSQL * binlog = open_conn_no_db(Test->binlog_port, Test->maxscale_IP, Test->repl->user_name,
+                                     Test->repl->password, Test->ssl);
 
     Test->tprintf("stop slave\n");
     Test->try_query(binlog, "stop slave");
     Test->tprintf("change master to..\n");
-    Test->try_query(binlog, "change master to master_host='12345678901234567890123456789012345678901234567890123456789012345678900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.com';");
+    Test->try_query(binlog,
+                    "change master to master_host='12345678901234567890123456789012345678901234567890123456789012345678900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.com';");
     Test->tprintf("start slave\n");
     Test->try_query(binlog, "start slave");
     Test->tprintf("show slave status\n");
@@ -39,5 +41,6 @@ int main(int argc, char *argv[])
     mysql_close(binlog);
 
     Test->check_maxscale_processes(1);
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

@@ -236,19 +236,22 @@ int main(int argc, char *argv[])
     Test->add_result(Test->connect_maxscale(), "Error connecting to Maxscale\n");
 
     Test->tprintf("executing sql 100 times (ReadConn Slave)\n");
-    for (i = 0; i < 100; i++)  {
+    for (i = 0; i < 100; i++)
+    {
         Test->set_timeout(15);
         execute_query_silent(Test->conn_slave, bug670_sql);
     }
 
     Test->tprintf("executing sql 100 times (ReadConn Master)\n");
-    for (i = 0; i < 100; i++)  {
+    for (i = 0; i < 100; i++)
+    {
         Test->set_timeout(15);
         execute_query_silent(Test->conn_master, bug670_sql);
     }
 
     Test->tprintf("executing sql 100 times (RWSplit)\n");
-    for (i = 0; i < 100; i++)  {
+    for (i = 0; i < 100; i++)
+    {
         Test->set_timeout(15);
         execute_query_silent(Test->conn_rwsplit, bug670_sql);
     }
@@ -258,5 +261,6 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

@@ -22,18 +22,21 @@ int main(int argc, char *argv[])
 
     Test->galera->connect();
 
-    tolerance=0;
+    tolerance = 0;
 
     // connect to the MaxScale server (rwsplit)
     Test->connect_rwsplit();
 
     Test->execute_maxadmin_command((char *) "shutdown monitor \"Galera Monitor\"");
 
-    if (Test->conn_rwsplit == NULL ) {
+    if (Test->conn_rwsplit == NULL )
+    {
         Test->add_result(1, "Can't connect to MaxScale\n");
         Test->copy_all_logs();
         exit(1);
-    } else {
+    }
+    else
+    {
 
         Test->try_query(Test->conn_rwsplit, "DROP TABLE IF EXISTS t1;");
         Test->try_query(Test->conn_rwsplit, "create table t1 (x1 int);");
@@ -52,5 +55,6 @@ int main(int argc, char *argv[])
     }
     Test->galera->close_connections();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

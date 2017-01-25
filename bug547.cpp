@@ -60,9 +60,12 @@ int main(int argc, char *argv[])
     sleep(15);
     Test->check_log_err((char *) "fatal signal 11", false);
     Test->check_log_err((char *) "Failed to create new router session for service 'RW Split Router'", true);
-    Test->check_log_err((char *) "Failed to create new router session for service 'Read Connection Router Master'", true);
-    Test->check_log_err((char *) "Failed to create new router session for service 'Read Connection Router Slave'", true);
+    Test->check_log_err((char *)
+                        "Failed to create new router session for service 'Read Connection Router Master'", true);
+    Test->check_log_err((char *) "Failed to create new router session for service 'Read Connection Router Slave'",
+                        true);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

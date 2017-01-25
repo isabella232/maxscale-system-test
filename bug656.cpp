@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
 
     //printf("Trying query to RWSplit, expecting failure, but not a crash\n"); fflush(stdout);
     //execute_query(Test->conn_rwsplit, (char *) "show processlist;");
-    execute_maxadmin_command_print(Test->maxscale_IP, (char *) "admin", Test->maxadmin_password, (char *) "show servers");
+    execute_maxadmin_command_print(Test->maxscale_IP, (char *) "admin", Test->maxadmin_password,
+                                   (char *) "show servers");
 
     Test->tprintf("Setup firewall back to allow mysql and wait\n");
     Test->repl->unblock_node(0);
@@ -33,7 +34,8 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 

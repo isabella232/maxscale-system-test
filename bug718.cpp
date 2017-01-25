@@ -48,26 +48,35 @@ int main(int argc, char *argv[])
     pthread_t thread_v1[ThreadsNum];
 
     int iret1[ThreadsNum];
-    for (i = 0; i < ThreadsNum; i ++) { iret1[i] = pthread_create( &thread_v1[i], NULL, thread1, NULL); }
+    for (i = 0; i < ThreadsNum; i ++)
+    {
+        iret1[i] = pthread_create( &thread_v1[i], NULL, thread1, NULL);
+    }
 
     create_t1(Test->conn_rwsplit);
-    for (i = 0; i < iterations; i++) {
+    for (i = 0; i < iterations; i++)
+    {
         Test->set_timeout(200);
         insert_into_t1(Test->conn_rwsplit, 4);
         printf("i=%d\n", i);
     }
     Test->set_timeout(300);
-    for (i = 0; i < ThreadsNum; i ++) { pthread_join( thread_v1[i], NULL); }
+    for (i = 0; i < ThreadsNum; i ++)
+    {
+        pthread_join( thread_v1[i], NULL);
+    }
 
     Test->close_maxscale_connections();
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 void *thread1( void *ptr )
 {
-    MYSQL * conn = open_conn(Test->rwsplit_port , Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, Test->ssl);
+    MYSQL * conn = open_conn(Test->rwsplit_port , Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password,
+                             Test->ssl);
     MYSQL * g_conn = open_conn(4016 , Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, Test->ssl);
     char sql[1034];
 
@@ -78,11 +87,14 @@ void *thread1( void *ptr )
 
     create_t1(conn);
     create_t1(g_conn);
-    for (int i = 0; i < iterations; i++) {
+    for (int i = 0; i < iterations; i++)
+    {
         insert_into_t1(conn, 4);
         insert_into_t1(g_conn, 4);
-        if ((i / 100) * 100 == i) {
-            printf("Iteration %d\n", i); fflush(stdout);
+        if ((i / 100) * 100 == i)
+        {
+            printf("Iteration %d\n", i);
+            fflush(stdout);
         }
     }
     return NULL;

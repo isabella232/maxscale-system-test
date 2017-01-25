@@ -22,30 +22,35 @@ int main(int argc, char *argv[])
     string query = "select 1";
 
     TestConnections * Test = new TestConnections(argc, argv);
-    if (Test->smoke) {iterations = 500;}
+    if (Test->smoke)
+    {
+        iterations = 500;
+    }
     Test->set_timeout(50);
 
     Test->connect_maxscale();
 
     stmt = mysql_stmt_init(Test->conn_rwsplit);
 
-    for(int i = 0;i<start;i++)
+    for (int i = 0; i < start; i++)
+    {
         query += ",1";
+    }
 
     Test->tprintf("Query: %s\n", query.c_str());
 
-    for(int i = start; i < iterations; i++)
+    for (int i = start; i < iterations; i++)
     {
         Test->set_timeout(30);
         Test->tprintf("%d\t", i);
-        if(mysql_stmt_prepare(stmt,query.c_str(),query.length()))
+        if (mysql_stmt_prepare(stmt, query.c_str(), query.length()))
         {
             Test->add_result(1, "Error: %s\n", mysql_error(Test->conn_rwsplit));
             Test->add_result(1, "Failed at %d\n", i);
 //            Test->copy_all_logs();
 //            return 1;
         }
-        if(mysql_stmt_reset(stmt))
+        if (mysql_stmt_reset(stmt))
         {
             Test->add_result(1, "Error: %s\n", mysql_error(Test->conn_rwsplit));
             Test->add_result(1, "Failed at %d\n", i);
@@ -53,7 +58,7 @@ int main(int argc, char *argv[])
 //            return 1;
         }
         query += ",1";
-        if(i - p > 5)
+        if (i - p > 5)
         {
             p = i;
             cout << endl;
@@ -64,5 +69,5 @@ int main(int argc, char *argv[])
     mysql_stmt_close(stmt);
     Test->close_maxscale_connections();
     Test->copy_all_logs();
-    return(Test->global_result);
+    return Test->global_result;
 }

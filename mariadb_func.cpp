@@ -4,8 +4,8 @@
  * @verbatim
  * Revision History
  *
- * Date		Who		Description
- * 17/11/14	Timofey Turenko	Initial implementation
+ * Date     Who     Description
+ * 17/11/14 Timofey Turenko Initial implementation
  *
  * @endverbatim
  */
@@ -20,98 +20,112 @@ int set_ssl(MYSQL * conn)
     char client_cert[1024];
     char ca[1024];
     char * test_dir;
-    test_dir=getenv("test_dir");
+    test_dir = getenv("test_dir");
     if (test_dir == NULL)
     {
         sprintf(client_key, "./ssl-cert/client-key.pem");
         sprintf(client_cert, "./ssl-cert/client-cert.pem");
         sprintf(ca, "./ssl-cert/ca.pem");
-    } else {
+    }
+    else
+    {
         sprintf(client_key, "%s/ssl-cert/client-key.pem", test_dir);
         sprintf(client_cert, "%s/ssl-cert/client-cert.pem", test_dir);
         sprintf(ca, "%s/ssl-cert/ca.pem", test_dir);
     }
-    return(mysql_ssl_set(conn, client_key, client_cert, ca, NULL, NULL));
+    return mysql_ssl_set(conn, client_key, client_cert, ca, NULL, NULL);
 }
 
-MYSQL * open_conn_db_flags(int port, const char* ip, const char* db, const char* User, const char* Password, unsigned long flag, bool ssl)
+MYSQL * open_conn_db_flags(int port, const char* ip, const char* db, const char* User, const char* Password,
+                           unsigned long flag, bool ssl)
 {
     MYSQL * conn = mysql_init(NULL);
 
-    if(conn == NULL)
+    if (conn == NULL)
     {
         fprintf(stdout, "Error: can't create MySQL-descriptor\n");
-        return(NULL);
+        return NULL;
     }
 
-    if (ssl) {set_ssl(conn);}
+    if (ssl)
+    {
+        set_ssl(conn);
+    }
 
-    if(!mysql_real_connect(conn,
-                           ip,
-                           User,
-                           Password,
-                           db,
-                           port,
-                           NULL,
-                           flag
+    if (!mysql_real_connect(conn,
+                            ip,
+                            User,
+                            Password,
+                            db,
+                            port,
+                            NULL,
+                            flag
                            ))
     {
         //printf("Error: can't connect to database, error is %s:\n", mysql_error(conn));
-        return(conn);
+        return conn;
     }
 
-    return(conn);
+    return conn;
 }
 
-MYSQL * open_conn_db_timeout(int port, const char* ip, const char* db, const char* User, const char* Password, unsigned long timeout, bool ssl)
+MYSQL * open_conn_db_timeout(int port, const char* ip, const char* db, const char* User, const char* Password,
+                             unsigned long timeout, bool ssl)
 {
     MYSQL * conn = mysql_init(NULL);
 
-    if(conn == NULL)
+    if (conn == NULL)
     {
         fprintf(stdout, "Error: can't create MySQL-descriptor\n");
-        return(NULL);
+        return NULL;
     }
 
-    unsigned int conn_timeout=timeout;
-    unsigned int read_timeout=timeout;
-    unsigned int write_timeout=timeout;
+    unsigned int conn_timeout = timeout;
+    unsigned int read_timeout = timeout;
+    unsigned int write_timeout = timeout;
     mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &conn_timeout);
     mysql_options(conn, MYSQL_OPT_READ_TIMEOUT, &read_timeout);
     mysql_options(conn, MYSQL_OPT_WRITE_TIMEOUT, &write_timeout);
 
-    if (ssl) {if (ssl) {set_ssl(conn);}}
+    if (ssl)
+    {
+        if (ssl)
+        {
+            set_ssl(conn);
+        }
+    }
 
-    if(!mysql_real_connect(conn,
-                           ip,
-                           User,
-                           Password,
-                           db,
-                           port,
-                           NULL,
-                           CLIENT_MULTI_STATEMENTS
+    if (!mysql_real_connect(conn,
+                            ip,
+                            User,
+                            Password,
+                            db,
+                            port,
+                            NULL,
+                            CLIENT_MULTI_STATEMENTS
                            ))
     {
         //printf("Error: can't connect to database, error is %s:\n", mysql_error(conn));
-        return(conn);
+        return conn;
     }
 
-    return(conn);
+    return conn;
 }
 
-MYSQL * open_conn_db(int port, const char* ip, const char* db, const char* User, const char* Password, bool ssl)
+MYSQL * open_conn_db(int port, const char* ip, const char* db, const char* User, const char* Password,
+                     bool ssl)
 {
-    return(open_conn_db_flags(port, ip, db, User, Password, CLIENT_MULTI_STATEMENTS, ssl));
+    return open_conn_db_flags(port, ip, db, User, Password, CLIENT_MULTI_STATEMENTS, ssl);
 }
 
 MYSQL * open_conn(int port, const char* ip, const char* User, const char* Password, bool ssl)
 {
-    return(open_conn_db(port, ip, "test", User, Password, ssl));
+    return open_conn_db(port, ip, "test", User, Password, ssl);
 }
 
 MYSQL * open_conn_no_db(int port, const char* ip, const char*User, const char*Password, bool ssl)
 {
-    return(open_conn_db_flags(port, ip, NULL, User, Password, CLIENT_MULTI_STATEMENTS, ssl));
+    return open_conn_db_flags(port, ip, NULL, User, Password, CLIENT_MULTI_STATEMENTS, ssl);
 }
 
 int execute_query(MYSQL *conn, const char *format, ...)
@@ -128,7 +142,7 @@ int execute_query(MYSQL *conn, const char *format, ...)
     vsnprintf(sql, sizeof(sql), format, valist);
     va_end(valist);
 
-    return(execute_query1(conn, sql, false));
+    return execute_query1(conn, sql, false);
 }
 
 int execute_query_from_file(MYSQL *conn, FILE *file)
@@ -169,30 +183,42 @@ int execute_query_from_file(MYSQL *conn, FILE *file)
 
 int execute_query_silent(MYSQL *conn, const char *sql)
 {
-    return(execute_query1(conn, sql, true));
+    return execute_query1(conn, sql, true);
 }
 
 int execute_query1(MYSQL *conn, const char *sql, bool silent)
 {
     MYSQL_RES *res;
-    if (conn != NULL) {
-        if(mysql_query(conn, sql) != 0) {
-            if (!silent) {
+    if (conn != NULL)
+    {
+        if (mysql_query(conn, sql) != 0)
+        {
+            if (!silent)
+            {
                 int len = strlen(sql);
                 printf("Error: can't execute SQL-query: %.*s\n", len < 60 ? len : 60, sql);
                 printf("%s\n\n", mysql_error(conn));
             }
-            return(1);
-        } else {
-            do {
+            return 1;
+        }
+        else
+        {
+            do
+            {
                 res = mysql_store_result(conn);
                 mysql_free_result(res);
-            } while ( mysql_next_result(conn) == 0 );
-            return(0);
+            }
+            while ( mysql_next_result(conn) == 0 );
+            return 0;
         }
-    } else {
-        if (!silent) {printf("Connection is broken\n");}
-        return(1);
+    }
+    else
+    {
+        if (!silent)
+        {
+            printf("Connection is broken\n");
+        }
+        return 1;
     }
 }
 
@@ -211,7 +237,7 @@ int execute_query_check_one(MYSQL *conn, const char *sql, const char *expected)
                 sleep(1);
             }
 
-            if(mysql_query(conn, sql) != 0)
+            if (mysql_query(conn, sql) != 0)
             {
                 printf("Error: can't execute SQL-query: %s\n", sql);
                 printf("%s\n\n", mysql_error(conn));
@@ -269,41 +295,55 @@ int execute_query_check_one(MYSQL *conn, const char *sql, const char *expected)
 int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * affected_rows)
 {
     MYSQL_RES *res;
-    if (conn != NULL) {
-        if(mysql_query(conn, sql) != 0) {
+    if (conn != NULL)
+    {
+        if (mysql_query(conn, sql) != 0)
+        {
             printf("Error: can't execute SQL-query: %s\n", sql);
             printf("%s\n\n", mysql_error(conn));
-            return(1);
-        } else {
-            do {
+            return 1;
+        }
+        else
+        {
+            do
+            {
                 *affected_rows = mysql_affected_rows(conn);
                 res = mysql_store_result(conn);
                 mysql_free_result(res);
-            } while ( mysql_next_result(conn) == 0 );
-            return(0);
+            }
+            while ( mysql_next_result(conn) == 0 );
+            return 0;
         }
-    } else {
+    }
+    else
+    {
         printf("Connection is broken\n");
-        return(1);
+        return 1;
     }
 }
 
-int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_rows[], unsigned long long * i)
+int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_rows[],
+                              unsigned long long * i)
 {
     MYSQL_RES *res;
     my_ulonglong N;
 
 
     printf("%s\n", sql);
-    if (conn != NULL) {
-        if(mysql_query(conn, sql) != 0) {
+    if (conn != NULL)
+    {
+        if (mysql_query(conn, sql) != 0)
+        {
             printf("Error: can't execute SQL-query: %s\n", sql);
             printf("%s\n\n", mysql_error(conn));
             * i = 0;
-            return(1);
-        } else {
+            return 1;
+        }
+        else
+        {
             *i = 0;
-            do {
+            do
+            {
                 res = mysql_store_result(conn);
                 if (res != NULL)
                 {
@@ -316,13 +356,16 @@ int execute_query_num_of_rows(MYSQL *conn, const char *sql, my_ulonglong num_of_
                 }
                 num_of_rows[*i] = N;
                 *i = *i + 1;
-            } while ( mysql_next_result(conn) == 0 );
-            return(0);
+            }
+            while ( mysql_next_result(conn) == 0 );
+            return 0;
         }
-    } else {
+    }
+    else
+    {
         printf("Connection is broken\n");
         * i = 0;
-        return(1);
+        return 1;
     }
 }
 
@@ -354,14 +397,18 @@ int execute_stmt_num_of_rows(MYSQL_STMT * stmt, my_ulonglong num_of_rows[], unsi
     bind[1].error = &error[0];
     */
 
-    if(mysql_stmt_execute(stmt) != 0) {
+    if (mysql_stmt_execute(stmt) != 0)
+    {
         printf("Error: can't execute prepared statement\n");
         printf("%s\n\n", mysql_stmt_error(stmt));
         * i = 0;
-        return(1);
-    } else {
+        return 1;
+    }
+    else
+    {
         *i = 0;
-        do {
+        do
+        {
             mysql_stmt_store_result(stmt);
             N = mysql_stmt_num_rows(stmt);
             /* This is debug hack; compatible only with t1 from t1_sql.h
@@ -375,10 +422,11 @@ int execute_stmt_num_of_rows(MYSQL_STMT * stmt, my_ulonglong num_of_rows[], unsi
             num_of_rows[*i] = N;
             *i = *i + 1;
 
-        } while ( mysql_stmt_next_result(stmt) == 0 );
-        return(0);
+        }
+        while ( mysql_stmt_next_result(stmt) == 0 );
+        return 0;
     }
-    return(1);
+    return 1;
 }
 
 int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
@@ -390,31 +438,46 @@ int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
     unsigned long long int rows;
     unsigned long long int i;
     unsigned int conn_num = 0;
-    if (conn != NULL) {
-        if(mysql_query(conn, "show processlist;") != 0) {
+    if (conn != NULL)
+    {
+        if (mysql_query(conn, "show processlist;") != 0)
+        {
             printf("Error: can't execute SQL-query: show processlist\n");
             printf("%s\n\n", mysql_error(conn));
             conn_num = 0;
-        } else {
+        }
+        else
+        {
             res = mysql_store_result(conn);
-            if(res == NULL) {
+            if (res == NULL)
+            {
                 printf("Error: can't get the result description\n");
                 conn_num = -1;
-            } else {
+            }
+            else
+            {
                 num_fields = mysql_num_fields(res);
                 rows = mysql_num_rows(res);
-                for (i = 0; i < rows; i++) {
+                for (i = 0; i < rows; i++)
+                {
                     row = mysql_fetch_row(res);
-                    if ( (row[2] != NULL ) && (row[3] != NULL) ) {
-                        if ((strstr(row[2], ip) != NULL) && (strstr(row[3], db) != NULL)) {conn_num++;}
-                        if ((strstr(row[2], hostname) != NULL) && (strstr(row[3], db) != NULL)) {conn_num++;}
+                    if ( (row[2] != NULL ) && (row[3] != NULL) )
+                    {
+                        if ((strstr(row[2], ip) != NULL) && (strstr(row[3], db) != NULL))
+                        {
+                            conn_num++;
+                        }
+                        if ((strstr(row[2], hostname) != NULL) && (strstr(row[3], db) != NULL))
+                        {
+                            conn_num++;
+                        }
                     }
                 }
             }
             mysql_free_result(res);
         }
     }
-    return(conn_num);
+    return conn_num;
 }
 
 int find_field(MYSQL *conn, const char *sql, const char *field_name, char * value)
@@ -427,48 +490,63 @@ int find_field(MYSQL *conn, const char *sql, const char *field_name, char * valu
     unsigned long long int filed_i = 0;
     unsigned long long int i = 0;
 
-    if (conn != NULL ) {
-        if(mysql_query(conn, sql) != 0) {
+    if (conn != NULL )
+    {
+        if (mysql_query(conn, sql) != 0)
+        {
             printf("Error: can't execute SQL-query: %s\n", sql);
             printf("%s\n\n", mysql_error(conn));
-        } else {
+        }
+        else
+        {
             res = mysql_store_result(conn);
-            if(res == NULL) {
+            if (res == NULL)
+            {
                 printf("Error: can't get the result description\n");
-            } else {
+            }
+            else
+            {
                 num_fields = mysql_num_fields(res);
 
-                while((field = mysql_fetch_field(res)))
+                while ((field = mysql_fetch_field(res)))
                 {
-                    if (strstr(field->name, field_name) != NULL) {filed_i = i; ret = 0;}
+                    if (strstr(field->name, field_name) != NULL)
+                    {
+                        filed_i = i;
+                        ret = 0;
+                    }
                     i++;
                 }
-                if (mysql_num_rows(res) > 0) {
+                if (mysql_num_rows(res) > 0)
+                {
                     row = mysql_fetch_row(res);
                     sprintf(value, "%s", row[filed_i]);
                 }
             }
             mysql_free_result(res);
-            do {
+            do
+            {
                 res = mysql_store_result(conn);
                 mysql_free_result(res);
-            } while ( mysql_next_result(conn) == 0 );
+            }
+            while ( mysql_next_result(conn) == 0 );
         }
     }
-    return(ret);
+    return ret;
 }
 
 unsigned int get_seconds_behind_master(MYSQL *conn)
 {
     char SBM_str[16];
-    unsigned int SBM=0;
+    unsigned int SBM = 0;
     if (find_field(
-                conn, (char *) "show slave status;",
-                (char *) "Seconds_Behind_Master", &SBM_str[0]
-                ) != 1) {
+            conn, (char *) "show slave status;",
+            (char *) "Seconds_Behind_Master", &SBM_str[0]
+        ) != 1)
+    {
         sscanf(SBM_str, "%u", &SBM);
     }
-    return(SBM);
+    return SBM;
 }
 
 int read_log(char * name, char ** err_log_content_p)
@@ -476,15 +554,17 @@ int read_log(char * name, char ** err_log_content_p)
     FILE *f;
     *err_log_content_p = NULL;
     char * err_log_content;
-    f = fopen(name,"rb");
-    if (f != NULL) {
+    f = fopen(name, "rb");
+    if (f != NULL)
+    {
 
-        int prev=ftell(f);
+        int prev = ftell(f);
         fseek(f, 0L, SEEK_END);
-        long int size=ftell(f);
+        long int size = ftell(f);
         fseek(f, prev, SEEK_SET);
-        err_log_content = (char *)malloc(size+2);
-        if (err_log_content != NULL) {
+        err_log_content = (char *)malloc(size + 2);
+        if (err_log_content != NULL)
+        {
             fread(err_log_content, 1, size, f);
             for (int i = 0; i < size; i++)
             {
@@ -495,18 +575,21 @@ int read_log(char * name, char ** err_log_content_p)
                 }
             }
             //printf("s=%ld\n", strlen(err_log_content));
-            err_log_content[size]='\0';
+            err_log_content[size] = '\0';
             //printf("s=%ld\n", strlen(err_log_content));
             * err_log_content_p = err_log_content;
-            return(0);
-        } else {
+            return 0;
+        }
+        else
+        {
             printf("Error allocationg memory for the log\n");
-            return(1);
+            return 1;
         }
     }
-    else {
+    else
+    {
         printf ("Error reading log %s \n", name);
-        return(1);
+        return 1;
     }
 
 }

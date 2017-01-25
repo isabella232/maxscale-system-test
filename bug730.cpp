@@ -47,17 +47,21 @@ int main(int argc, char *argv[])
 
     Test->connect_maxscale();
 
-    Test->tprintf("RWSplit: \n"); fflush(stdout);
+    Test->tprintf("RWSplit: \n");
+    fflush(stdout);
     Test->try_query(Test->conn_rwsplit, (char *) "SET OPTION SQL_QUOTE_SHOW_CREATE = 1;");
-    Test->tprintf("ReadConn master: \n"); fflush(stdout);
+    Test->tprintf("ReadConn master: \n");
+    fflush(stdout);
     Test->try_query(Test->conn_master, (char *) "SET OPTION SQL_QUOTE_SHOW_CREATE = 1;");
-    Test->tprintf("readConn slave: \n"); fflush(stdout);
+    Test->tprintf("readConn slave: \n");
+    fflush(stdout);
     Test->try_query(Test->conn_slave, (char *) "SET OPTION SQL_QUOTE_SHOW_CREATE = 1;");
 
     Test->close_maxscale_connections();
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

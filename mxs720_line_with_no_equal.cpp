@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Failed to pre-parse configuration file", true);
 
     Test->check_maxscale_processes(0);
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

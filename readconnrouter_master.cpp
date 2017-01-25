@@ -28,15 +28,17 @@ int check_connnections_only_to_master(TestConnections * Test, int master)
     int res = 0;
     int conn_num;
     printf("Checking number of connections to each node\n");
-    for (int i = 0; i < Test->repl->N; i++) {
+    for (int i = 0; i < Test->repl->N; i++)
+    {
         conn_num = get_conn_num(Test->repl->nodes[i], Test->maxscale_IP, Test->maxscale_hostname, (char *) "test");
         printf("Connections to node %d (%s):\t%d\n", i, Test->repl->IP[i], conn_num);
-        if (((i == master) && (conn_num != 1)) || ((i != master) && (conn_num != 0))) {
+        if (((i == master) && (conn_num != 1)) || ((i != master) && (conn_num != 0)))
+        {
             res++;
             printf("FAILED: number of connections to node %d is wrong\n", i);
         }
     }
-    return(res);
+    return res;
 }
 
 int main(int argc, char *argv[])
@@ -76,6 +78,6 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "The service 'CLI' is missing a definition of the servers", false);
 
     Test->copy_all_logs();
-    return(Test->global_result);
+    return Test->global_result;
 }
 

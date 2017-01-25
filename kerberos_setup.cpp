@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
     sprintf(str, "%s/krb5.conf", Test->test_dir);
     for (i = 0; i < Test->repl->N; i++)
     {
-        Test->repl->ssh_node(i, (char *) "yum install -y MariaDB-gssapi-server MariaDB-gssapi-client krb5-workstation pam_krb5", true);
+        Test->repl->ssh_node(i, (char *)
+                             "yum install -y MariaDB-gssapi-server MariaDB-gssapi-client krb5-workstation pam_krb5", true);
         Test->repl->copy_to_node(str, (char *) "~/", i);
         Test->repl->ssh_node(i, (char *) "cp ~/krb5.conf /etc/", true);
 
@@ -52,7 +53,8 @@ int main(int argc, char *argv[])
     Test->ssh_maxscale(true, (char *) "yum install rng-tools -y");
     Test->ssh_maxscale(true, (char *) "rngd -r /dev/urandom -o /dev/random");
 
-    Test->ssh_maxscale(true, (char *) "yum install -y MariaDB-gssapi-server MariaDB-gssapi-client krb5-server krb5-workstation pam_krb5");
+    Test->ssh_maxscale(true, (char *)
+                       "yum install -y MariaDB-gssapi-server MariaDB-gssapi-client krb5-server krb5-workstation pam_krb5");
 
 
     Test->tprintf("Configuring Kerberos server\n");
@@ -72,16 +74,19 @@ int main(int argc, char *argv[])
     Test->ssh_maxscale(true, (char *) "service kadmin start");
 
     Test->tprintf("Creating principal\n");
-    Test->ssh_maxscale(true, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey mariadb/maxscale.test\"");
+    Test->ssh_maxscale(true, (char *)
+                       "echo \"skysql\" | sudo kadmin -p admin/admin -q \"addprinc -randkey mariadb/maxscale.test\"");
 
     Test->tprintf("Creating keytab file\n");
-    Test->ssh_maxscale(true, (char *) "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd mariadb/maxscale.test\"");
+    Test->ssh_maxscale(true, (char *)
+                       "echo \"skysql\" | sudo kadmin -p admin/admin -q \"ktadd mariadb/maxscale.test\"");
 
     Test->tprintf("Making keytab file readable for all\n");
     Test->ssh_maxscale(true, (char *) "chmod a+r /etc/krb5.keytab;");
 
     Test->ssh_maxscale(false, (char *) "kinit mariadb/maxscale.test@MAXSCALE.TEST -k -t /etc/krb5.keytab");
-    Test->ssh_maxscale(true, (char *) "su maxscale --login -s /bin/sh -c \"kinit mariadb/maxscale.test@MAXSCALE.TEST -k -t /etc/krb5.keytab\"");
+    Test->ssh_maxscale(true, (char *)
+                       "su maxscale --login -s /bin/sh -c \"kinit mariadb/maxscale.test@MAXSCALE.TEST -k -t /etc/krb5.keytab\"");
 
     Test->tprintf("Coping keytab file from Maxscale node\n");
     Test->copy_from_maxscale((char *) "/etc/krb5.keytab", (char *) ".");
@@ -92,7 +97,7 @@ int main(int argc, char *argv[])
         sprintf(str, "%s/kerb.cnf", Test->test_dir);
         Test->repl->copy_to_node(str, (char *) "~/", i);
         Test->repl->ssh_node(i, (char *) "cp ~/kerb.cnf /etc/my.cnf.d/", true);
-        
+
         Test->repl->copy_to_node((char *) "krb5.keytab", (char *) "~/", i);
         Test->repl->ssh_node(i, (char *) "cp ~/krb5.keytab /etc/", true);
 
@@ -106,23 +111,28 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating usr1 user\n");
     Test->repl->connect();
-    Test->try_query(Test->repl->nodes[0], (char *) "CREATE USER usr1 IDENTIFIED VIA gssapi AS 'mariadb/maxscale.test@MAXSCALE.TEST'");
+    Test->try_query(Test->repl->nodes[0],
+                    (char *) "CREATE USER usr1 IDENTIFIED VIA gssapi AS 'mariadb/maxscale.test@MAXSCALE.TEST'");
     Test->try_query(Test->repl->nodes[0], (char *) "grant all privileges on  *.* to 'usr1'");
     Test->repl->close_connections();
 
     Test->tprintf("Trying use usr1 to execute query: RW Split\n");
     Test->add_result(
-                Test->repl->ssh_node(1, "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4006",false),
-                "Error executing query against RW Split\n");
+        Test->repl->ssh_node(1,
+                             "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4006", false),
+        "Error executing query against RW Split\n");
     Test->tprintf("Trying use usr1 to execute query: Read Connection Master\n");
     Test->add_result(
-                Test->repl->ssh_node(1, "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4008", false),
-                "Error executing query against Read Connection Master\n");
+        Test->repl->ssh_node(1,
+                             "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4008", false),
+        "Error executing query against Read Connection Master\n");
     Test->tprintf("Trying use usr1 to execute query: Read Connection Slave\n");
     Test->add_result(
-                Test->repl->ssh_node(1, "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4009", false),
-                "Error executing query against Read Connection Slave\n");
+        Test->repl->ssh_node(1,
+                             "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4009", false),
+        "Error executing query against Read Connection Slave\n");
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

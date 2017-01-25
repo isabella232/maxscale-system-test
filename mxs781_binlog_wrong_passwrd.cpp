@@ -13,7 +13,7 @@
 #include "test_binlog_fnc.h"
 
 const char * setup_binlog_wrong_passwrd =
-        "change master to MASTER_HOST='%s',\
+    "change master to MASTER_HOST='%s',\
          MASTER_USER='repl',\
          MASTER_PASSWORD='wrong_password',\
          MASTER_LOG_FILE='mar-bin.000001',\
@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Connecting to MaxScale binlog router (with any DB)\n");
     Test->set_timeout(30);
-    MYSQL * binlog = open_conn_no_db(Test->binlog_port, Test->maxscale_IP, Test->repl->user_name, Test->repl->password, Test->ssl);
+    MYSQL * binlog = open_conn_no_db(Test->binlog_port, Test->maxscale_IP, Test->repl->user_name,
+                                     Test->repl->password, Test->ssl);
 
     Test->add_result(mysql_errno(binlog), "Error connection to binlog router %s\n", mysql_error(binlog));
 
@@ -63,8 +64,10 @@ int main(int argc, char *argv[])
 
     Test->set_timeout(10);
     find_field(binlog, (char *) "show slave status", (char *) "Last_Error", str);
-    Test->add_result(strcasecmp(str, "#28000 Authentication with master server failed"), "Wrong slave state: %s\n", str);
+    Test->add_result(strcasecmp(str, "#28000 Authentication with master server failed"),
+                     "Wrong slave state: %s\n", str);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

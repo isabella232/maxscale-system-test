@@ -34,17 +34,21 @@ int main(int argc, char *argv[])
     Test->tprintf("Connecting to Maxscale %s\n", Test->maxscale_IP);
     Test->connect_maxscale();
 
-    printf("Setup firewall to block mysql on master\n"); fflush(stdout);
+    printf("Setup firewall to block mysql on master\n");
+    fflush(stdout);
     Test->repl->block_node(0);
 
     sleep(1);
 
     Test->tprintf("Trying query to RWSplit, expecting failure, but not a crash\n");
-    execute_query(Test->conn_rwsplit, (char *) "show processlist;");fflush(stdout);
+    execute_query(Test->conn_rwsplit, (char *) "show processlist;");
+    fflush(stdout);
     Test->tprintf("Trying query to ReadConn master, expecting failure, but not a crash\n");
-    execute_query(Test->conn_master, (char *) "show processlist;");fflush(stdout);
+    execute_query(Test->conn_master, (char *) "show processlist;");
+    fflush(stdout);
     Test->tprintf("Trying query to ReadConn slave, expecting failure, but not a crash\n");
-    execute_query(Test->conn_slave, (char *) "show processlist;");fflush(stdout);
+    execute_query(Test->conn_slave, (char *) "show processlist;");
+    fflush(stdout);
 
     sleep(1);
 
@@ -58,28 +62,37 @@ int main(int argc, char *argv[])
 
     Test->set_timeout(20);
 
-    Test->tprintf("Connecting to Maxscale %s to check its behaviour in case of blocking all bacxkends\n", Test->maxscale_IP);
+    Test->tprintf("Connecting to Maxscale %s to check its behaviour in case of blocking all bacxkends\n",
+                  Test->maxscale_IP);
     Test->connect_maxscale();
 
-    if (!Test->smoke) {
-        for (i = 0; i < Test->repl->N; i++) {
+    if (!Test->smoke)
+    {
+        for (i = 0; i < Test->repl->N; i++)
+        {
             Test->tprintf("Setup firewall to block mysql on node %d\n", i);
-            Test->repl->block_node(i); fflush(stdout);
+            Test->repl->block_node(i);
+            fflush(stdout);
         }
         sleep(1);
 
         Test->tprintf("Trying query to RWSplit, expecting failure, but not a crash\n");
-        execute_query(Test->conn_rwsplit, (char *) "show processlist;");fflush(stdout);
+        execute_query(Test->conn_rwsplit, (char *) "show processlist;");
+        fflush(stdout);
         Test->tprintf("Trying query to ReadConn master, expecting failure, but not a crash\n");
-        execute_query(Test->conn_master, (char *) "show processlist;");fflush(stdout);
+        execute_query(Test->conn_master, (char *) "show processlist;");
+        fflush(stdout);
         Test->tprintf("Trying query to ReadConn slave, expecting failure, but not a crash\n");
-        execute_query(Test->conn_slave, (char *) "show processlist;");fflush(stdout);
+        execute_query(Test->conn_slave, (char *) "show processlist;");
+        fflush(stdout);
 
         sleep(1);
 
-        for (i = 0; i < Test->repl->N; i++) {
+        for (i = 0; i < Test->repl->N; i++)
+        {
             Test->tprintf("Setup firewall back to allow mysql on node %d\n", i);
-            Test->repl->unblock_node(i); fflush(stdout);
+            Test->repl->unblock_node(i);
+            fflush(stdout);
         }
     }
     Test->stop_timeout();
@@ -92,5 +105,6 @@ int main(int argc, char *argv[])
     Test->tprintf("Checking Maxscale is alive\n");
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

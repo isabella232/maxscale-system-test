@@ -29,13 +29,13 @@ Call stack:
 
 Failing point:
 
-1114	                        else if (hint->type == HINT_PARAMETER)
-1115	                        {
-1116	                                if (strncasecmp(
-1117	                                        (char *)hint->data,
-1118	                                        "max_slave_replication_lag",
-1119	                                        strlen("max_slave_replication_lag")) == 0)
-1120	                                {
+1114                            else if (hint->type == HINT_PARAMETER)
+1115                            {
+1116                                    if (strncasecmp(
+1117                                            (char *)hint->data,
+1118                                            "max_slave_replication_lag",
+1119                                            strlen("max_slave_replication_lag")) == 0)
+1120                                    {
 
 
 Value of hint:
@@ -66,26 +66,32 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id; -- maxscale route to server =:");
     Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id; -- maxscale route to server =a");
     Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id; -- maxscale route to server = a");
-    Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id; -- maxscale route to server = кириллица åäö");
+    Test->try_query(Test->conn_rwsplit,
+                    (char *) "select @@server_id; -- maxscale route to server = кириллица åäö");
 
     // bug472
     Test->tprintf("Trying queries that caused crashes before fix: bug472\n");
-    Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id; -- maxscale s1 begin route to server server3");
+    Test->try_query(Test->conn_rwsplit,
+                    (char *) "select @@server_id; -- maxscale s1 begin route to server server3");
     Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id; -- maxscale end");
     Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id; -- maxscale s1 begin");
 
     // bug470
-    Test->tprintf("Trying queries that caused crashes before fix: bug470\n"); fflush(stdout);
+    Test->tprintf("Trying queries that caused crashes before fix: bug470\n");
+    fflush(stdout);
     Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id; -- maxscale named begin route to master");
     Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id;");
-    Test->try_query(Test->conn_rwsplit, (char *) "select @@server_id; -- maxscale named begin route to master; select @@server_id;");
+    Test->try_query(Test->conn_rwsplit,
+                    (char *) "select @@server_id; -- maxscale named begin route to master; select @@server_id;");
 
 
     Test->close_maxscale_connections();
 
-    Test->tprintf("Checking if Maxscale is alive\n"); fflush(stdout);
+    Test->tprintf("Checking if Maxscale is alive\n");
+    fflush(stdout);
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

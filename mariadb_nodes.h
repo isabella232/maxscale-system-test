@@ -7,8 +7,8 @@
  * @verbatim
  * Revision History
  *
- * Date		Who		Description
- * 17/11/14	Timofey Turenko	Initial implementation
+ * Date     Who     Description
+ * 17/11/14 Timofey Turenko Initial implementation
  *
  * @endverbatim
  */
@@ -155,7 +155,7 @@ public:
     /**
     * @brief test_dir path to test application
     */
-   char test_dir[4096];
+    char test_dir[4096];
 
 
     /**
@@ -452,7 +452,7 @@ class Galera_nodes : public Mariadb_nodes
 public:
 
     Galera_nodes(const char *pref, const char *test_cwd, bool verbose) :
-    Mariadb_nodes(pref, test_cwd, verbose) { }
+        Mariadb_nodes(pref, test_cwd, verbose) { }
 
     int start_galera();
 

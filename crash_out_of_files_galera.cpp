@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
 
     Test->set_timeout(20);
     Test->galera->connect();
-    for (int i = 0; i < Test->galera->N; i++) {
+    for (int i = 0; i < Test->galera->N; i++)
+    {
         execute_query(Test->galera->nodes[i], (char *) "flush hosts;");
         execute_query(Test->galera->nodes[i], (char *) "set global max_connections = 151;");
     }
@@ -46,6 +47,7 @@ int main(int argc, char *argv[])
     Test->galera->execute_query_all_nodes((char *) "set global max_connections = 100;");
 
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

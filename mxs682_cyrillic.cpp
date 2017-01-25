@@ -21,7 +21,7 @@ void check_val(MYSQL* conn, TestConnections* Test)
 
     Test->tprintf("result: %s\n", val);
 
-    if (strcmp("Кот", val) !=0 )
+    if (strcmp("Кот", val) != 0 )
     {
         Test->add_result(1, "Wrong SELECT result: %s\n", val);
     }
@@ -33,10 +33,13 @@ int main(int argc, char *argv[])
     Test->set_timeout(10);
 
     Mariadb_nodes * nodes;
-    if (strstr(Test->test_name, "galera") != NULL) {
+    if (strstr(Test->test_name, "galera") != NULL)
+    {
         nodes = Test->galera;
         Test->tprintf("Galera!\n");
-    } else {
+    }
+    else
+    {
         nodes = Test->repl;
     }
 
@@ -89,7 +92,8 @@ int main(int argc, char *argv[])
     //execute_query_silent(conn, (char *) "DROP TABLE t2;");
 
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 

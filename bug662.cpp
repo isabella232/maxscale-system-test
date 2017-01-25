@@ -38,12 +38,15 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Connecting to Maxscale %s\n", Test->maxscale_IP);
 
-    Test->tprintf("Connecting to Maxscale %s to check its behaviour in case of blocking all backends\n", Test->maxscale_IP);
+    Test->tprintf("Connecting to Maxscale %s to check its behaviour in case of blocking all backends\n",
+                  Test->maxscale_IP);
     Test->connect_maxscale();
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->tprintf("Setup firewall to block mysql on node %d\n", i);
-        Test->repl->block_node(i); fflush(stdout);
+        Test->repl->block_node(i);
+        fflush(stdout);
     }
 
     Test->set_timeout(100);
@@ -53,9 +56,11 @@ int main(int argc, char *argv[])
     Test->tprintf("Checking if MaxScale is alive by connecting to MaxAdmin\n");
     Test->add_result(Test->execute_maxadmin_command((char* ) "show servers"), "Maxadmin execution failed.\n");
 
-    for (i = 0; i < Test->repl->N; i++) {
+    for (i = 0; i < Test->repl->N; i++)
+    {
         Test->tprintf("Setup firewall back to allow mysql on node %d\n", i);
-        Test->repl->unblock_node(i);fflush(stdout);
+        Test->repl->unblock_node(i);
+        fflush(stdout);
     }
 
     Test->stop_timeout();
@@ -67,6 +72,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Checking Maxscale is alive\n");
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
     //}
 }

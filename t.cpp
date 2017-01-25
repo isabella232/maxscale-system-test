@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-char time_str[100];
+    char time_str[100];
     time_t curr_time = time(NULL);
     time_t end_time = curr_time + 120;
 
@@ -20,8 +20,9 @@ char time_str[100];
     struct tm * timeinfo2 = localtime (&end_time);
     printf("%02d:%02d:%02d\n", timeinfo2->tm_hour, timeinfo2->tm_min, timeinfo2->tm_sec);
 
-    sprintf(time_str, "%02d:%02d:%02d-%02d:%02d:%02d", timeinfo1->tm_hour, timeinfo1->tm_min, timeinfo1->tm_sec, timeinfo2->tm_hour, timeinfo2->tm_min, timeinfo2->tm_sec);
+    sprintf(time_str, "%02d:%02d:%02d-%02d:%02d:%02d", timeinfo1->tm_hour, timeinfo1->tm_min, timeinfo1->tm_sec,
+            timeinfo2->tm_hour, timeinfo2->tm_min, timeinfo2->tm_sec);
 
-printf("%s\n", time_str);
+    printf("%s\n", time_str);
 
 }

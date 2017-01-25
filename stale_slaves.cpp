@@ -37,10 +37,10 @@ int main(int argc, char **argv)
     for (int i = 0; i < test->repl->N; i++)
     {
         if (strcmp(server_id[i], first_slave) == 0)
-	{
-	    found = i;
-	    break;
-	}
+        {
+            found = i;
+            break;
+        }
     }
 
     test->add_result(found < 0, "No server with ID '%s' found.", first_slave);
@@ -54,8 +54,8 @@ int main(int argc, char **argv)
     char second_slave[1024];
     find_field(test->conn_slave, "SELECT @@server_id", "@@server_id", second_slave);
     test->add_result(strcmp(first_slave, second_slave) == 0,
-		      "Server IDs match when they shouldn't: %s - %s",
-		      first_slave, second_slave);
+                     "Server IDs match when they shouldn't: %s - %s",
+                     first_slave, second_slave);
 
     test->tprintf("Unblocking the slave that replied\n");
     test->repl->unblock_node(found);
@@ -65,8 +65,8 @@ int main(int argc, char **argv)
     test->connect_readconn_slave();
     find_field(test->conn_slave, "SELECT @@server_id", "@@server_id", second_slave);
     test->add_result(strcmp(first_slave, second_slave) == 0,
-		      "Server IDs match when they shouldn't: %s - %s",
-		      first_slave, second_slave);
+                     "Server IDs match when they shouldn't: %s - %s",
+                     first_slave, second_slave);
 
     test->tprintf("Unblocking all nodes\n");
     test->repl->unblock_all_nodes();
@@ -76,8 +76,8 @@ int main(int argc, char **argv)
     test->connect_readconn_slave();
     find_field(test->conn_slave, "SELECT @@server_id", "@@server_id", second_slave);
     test->add_result(strcmp(first_slave, second_slave) != 0,
-		      "Server IDs don't match when they should: %s - %s",
-		      first_slave, second_slave);
+                     "Server IDs don't match when they should: %s - %s",
+                     first_slave, second_slave);
 
     test->tprintf("Stopping replication on node %d\n", found + 1);
     execute_query(test->repl->nodes[found], "stop slave");
@@ -87,8 +87,8 @@ int main(int argc, char **argv)
     test->connect_readconn_slave();
     find_field(test->conn_slave, "SELECT @@server_id", "@@server_id", second_slave);
     test->add_result(strcmp(first_slave, second_slave) == 0,
-		      "Server IDs match when they shouldn't: %s - %s",
-		      first_slave, second_slave);
+                     "Server IDs match when they shouldn't: %s - %s",
+                     first_slave, second_slave);
 
     test->tprintf("Starting replication on node %d\n", found + 1);
     execute_query(test->repl->nodes[found], "start slave");
@@ -98,8 +98,8 @@ int main(int argc, char **argv)
     test->connect_readconn_slave();
     find_field(test->conn_slave, "SELECT @@server_id", "@@server_id", second_slave);
     test->add_result(strcmp(first_slave, second_slave) != 0,
-		      "Server IDs don't match when they should: %s - %s",
-		      first_slave, second_slave);
+                     "Server IDs don't match when they should: %s - %s",
+                     first_slave, second_slave);
 
     test->copy_all_logs();
     return rval;

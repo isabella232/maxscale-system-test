@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
     int  iret1[threads_num];
 
     int i;
-    for (i = 0; i < threads_num; i++) {
+    for (i = 0; i < threads_num; i++)
+    {
         iret1[i] = pthread_create( &thread1[i], NULL, maxinfo_thread, NULL);
     }
 
@@ -52,7 +53,8 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 void *maxinfo_thread( void *ptr )
@@ -68,7 +70,9 @@ void *maxinfo_thread( void *ptr )
         {
             Test->tprintf("Query %s, result: \n%s\n", resources[ind], result);
             free(result);
-        } else {
+        }
+        else
+        {
             Test->add_result(1, "Can't get result from maxinfo, query %s\n", resources[ind]);
         }
     }

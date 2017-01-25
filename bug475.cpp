@@ -38,11 +38,13 @@ int main(int argc, char *argv[])
 
     Test->connect_maxscale();
 
-    Test->try_query(Test->conn_rwsplit, (char *) "select /* maxscale hintname prepare route to master */ @@server_id;");
+    Test->try_query(Test->conn_rwsplit,
+                    (char *) "select /* maxscale hintname prepare route to master */ @@server_id;");
     Test->try_query(Test->conn_rwsplit, (char *) "select /* maxscale hintname begin */ @@server_id;");
     Test->try_query(Test->conn_rwsplit, (char *) "select /* maxscale route to master*/ @@server_id;");
 
     Test->check_log_err((char *) "Syntax error in hint", false);
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

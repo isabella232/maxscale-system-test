@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
 
     /** Create a database on each node */
-    for (int i = 0; i < Test->repl->N; i++) {
+    for (int i = 0; i < Test->repl->N; i++)
+    {
         Test->set_timeout(20);
         sprintf(str, "DROP DATABASE IF EXISTS shard_db%d", i);
         Test->tprintf("%s\n", str);
@@ -40,17 +41,18 @@ int main(int argc, char *argv[])
 
     Test->repl->close_connections();
 
-    for(int j = 0;j < iterations && Test->global_result == 0; j++)
+    for (int j = 0; j < iterations && Test->global_result == 0; j++)
     {
-        for (int i = 0; i < Test->repl->N; i++) {        
+        for (int i = 0; i < Test->repl->N; i++)
+        {
             sprintf(str, "shard_db%d", i);
             Test->set_timeout(15);
-            MYSQL *conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP, 
+            MYSQL *conn = open_conn_db(Test->rwsplit_port, Test->maxscale_IP,
                                        str, Test->maxscale_user,
                                        Test->maxscale_password, Test->ssl);
             Test->set_timeout(15);
             Test->tprintf("Trying DB %d\n", i);
-            if(execute_query(conn, "SELECT 1"))
+            if (execute_query(conn, "SELECT 1"))
             {
                 Test->add_result(1, "Failed at %d\n", j);
                 break;
@@ -59,5 +61,5 @@ int main(int argc, char *argv[])
         }
     }
     Test->copy_all_logs();
-    return(Test->global_result);
+    return Test->global_result;
 }

@@ -2,7 +2,7 @@
 #define BUG670_SQL_H
 
 const char * bug670_sql =
-        "set autocommit=0;\
+    "set autocommit=0;\
         use mysql;\
         set autocommit=1;\
         use test;\

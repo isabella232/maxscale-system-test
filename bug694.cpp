@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
     const int iter = Test->smoke ? 10 : 100;
     Test->tprintf("Creating and inserting %d rows into a table\n", iter);
 
-    for (int i=0; i < iter; i++) {
+    for (int i = 0; i < iter; i++)
+    {
         Test->set_timeout(30);
         execute_query(Test->conn_rwsplit, "insert into test value(2);");
         Test->stop_timeout();
@@ -59,7 +60,8 @@ int main(int argc, char *argv[])
     Test->set_timeout(200);
 
     Test->tprintf("Trying SELECT @a:=@a+1 as a, test.b FROM test\n");
-    if (execute_query(Test->conn_rwsplit, "SELECT @a:=@a+1 as a, test.b FROM test;") == 0) {
+    if (execute_query(Test->conn_rwsplit, "SELECT @a:=@a+1 as a, test.b FROM test;") == 0)
+    {
         Test->add_result(1, "Query succeded, but expected to fail.\n");
     }
     Test->tprintf("Trying USE test\n");
@@ -71,10 +73,15 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
 
     Test->tprintf("Checking logs\n");
-    Test->check_log_err((char *) "The query can't be routed to all backend servers because it includes SELECT and SQL variable modifications which is not supported", true);
-    Test->check_log_err((char *) "SELECT with session data modification is not supported if configuration parameter use_sql_variables_in=all", true);
+    Test->check_log_err((char *)
+                        "The query can't be routed to all backend servers because it includes SELECT and SQL variable modifications which is not supported",
+                        true);
+    Test->check_log_err((char *)
+                        "SELECT with session data modification is not supported if configuration parameter use_sql_variables_in=all",
+                        true);
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

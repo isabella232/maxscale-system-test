@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
     Test->galera->connect();
     Test->connect_maxscale();
 
-    if (Test->galera->N < 3) {
+    if (Test->galera->N < 3)
+    {
         Test->tprintf("There is not enoght nodes for test\n");
         Test->copy_all_logs();
         exit(1);
@@ -57,7 +58,8 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Creating table\n");
     Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE IF EXISTS t2;");
-    Test->try_query(Test->conn_rwsplit, (char *) "CREATE TABLE t2 (id INT(10) NOT NULL AUTO_INCREMENT, x int,  PRIMARY KEY (id));");
+    Test->try_query(Test->conn_rwsplit,
+                    (char *) "CREATE TABLE t2 (id INT(10) NOT NULL AUTO_INCREMENT, x int,  PRIMARY KEY (id));");
     Test->tprintf("Doing INSERTs\n");
     Test->try_query(Test->conn_rwsplit, (char *) "insert into t2 (x) values (1);");
 
@@ -87,28 +89,33 @@ int main(int argc, char *argv[])
              find_field(
                  Test->conn_rwsplit, sel2,
                  "last_insert_id()", &last_insert_id2[0])
-             != 0 )) {
+             != 0 ))
+    {
         Test->tprintf("last_insert_id() fied not found!!\n");
         Test->copy_all_logs();
         exit(1);
-    } else {
+    }
+    else
+    {
         Test->tprintf("'%s' gave last_insert_id() %s\n", sel1, last_insert_id1);
         Test->tprintf("'%s' gave last_insert_id() %s\n", sel2, last_insert_id2);
-        Test->add_result(strcmp(last_insert_id1, last_insert_id2), "last_insert_id() are different depending in which order terms are in SELECT\n");
+        Test->add_result(strcmp(last_insert_id1, last_insert_id2),
+                         "last_insert_id() are different depending in which order terms are in SELECT\n");
     }
 
     char id_str[1024];
     char str1[1024];
     int iterations = 150;
 
-    for (int i = 100; i < iterations; i++) {
+    for (int i = 100; i < iterations; i++)
+    {
         Test->set_timeout(50);
         Test->add_result(execute_query(Test->conn_rwsplit, "insert into t2 (x) values (%d);", i), "Query failed");
 
         sprintf(str1, "select * from t2 where x=%d;", i);
 
         find_field(Test->conn_rwsplit, sel1, "last_insert_id()", &last_insert_id1[0]);
-        find_field(Test->conn_rwsplit, str1,"id", &id_str[0]);
+        find_field(Test->conn_rwsplit, str1, "id", &id_str[0]);
 
         int n = 0;
 
@@ -120,7 +127,8 @@ int main(int argc, char *argv[])
             n++;
         }
 
-        Test->add_result(strcmp(last_insert_id1, id_str), "last_insert_id is not equal to id even after waiting 5 seconds");
+        Test->add_result(strcmp(last_insert_id1, id_str),
+                         "last_insert_id is not equal to id even after waiting 5 seconds");
 
         if (i % 10 == 0)
         {

@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
     pthread_t threads;
     int  iret;
-    exit_flag=0;
+    exit_flag = 0;
     iret = pthread_create( &threads, NULL, disconnect_thread, NULL);
 
     Test->repl->connect();
@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
     }
     Test->repl->close_connections();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 void *disconnect_thread( void *ptr )
@@ -49,13 +50,21 @@ void *disconnect_thread( void *ptr )
     MYSQL * conn;
     char cmd[256];
     int i;
-    conn = open_conn(Test->binlog_port, Test->maxscale_IP, Test->repl->user_name, Test->repl->password, Test->repl->ssl);
+    conn = open_conn(Test->binlog_port, Test->maxscale_IP, Test->repl->user_name, Test->repl->password,
+                     Test->repl->ssl);
     Test->add_result(mysql_errno(conn), "Error connecting to Binlog router, error: %s\n", mysql_error(conn));
     i = 3;
-    while (exit_flag == 0) {
+    while (exit_flag == 0)
+    {
         sprintf(cmd, "DISCONNECT SERVER %d", i);
         execute_query(conn, cmd);
-        i++; if (i > Test->repl->N) {i = 3; sleep(30); execute_query(conn, (char *) "DISCONNECT SERVER ALL");}
+        i++;
+        if (i > Test->repl->N)
+        {
+            i = 3;
+            sleep(30);
+            execute_query(conn, (char *) "DISCONNECT SERVER ALL");
+        }
         sleep(5);
     }
     return NULL;

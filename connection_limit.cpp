@@ -14,21 +14,24 @@ using namespace std;
 
 int check_max_conn(int router, int max_conn, TestConnections * Test)
 {
-    MYSQL * conn[max_conn+1];
+    MYSQL * conn[max_conn + 1];
 
     int i;
     for (i = 0; i < max_conn; i++)
     {
-        conn[i] = open_conn(Test->ports[router], Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, Test->ssl);
+        conn[i] = open_conn(Test->ports[router], Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password,
+                            Test->ssl);
         if (mysql_errno(conn[i]) != 0)
         {
             Test->add_result(1, "Connection %d failed, error is %s\n", i, mysql_error(conn[i]));
         }
     }
-    conn[max_conn] = open_conn(Test->ports[router], Test->maxscale_IP, Test->maxscale_user, Test->maxscale_password, Test->ssl);
+    conn[max_conn] = open_conn(Test->ports[router], Test->maxscale_IP, Test->maxscale_user,
+                               Test->maxscale_password, Test->ssl);
     if (mysql_errno(conn[i]) != 1040)
     {
-        Test->add_result(1, "Max_xonnections reached, but error is not 1040, it is %d %s\n", mysql_errno(conn[i]), mysql_error(conn[i]));
+        Test->add_result(1, "Max_xonnections reached, but error is not 1040, it is %d %s\n", mysql_errno(conn[i]),
+                         mysql_error(conn[i]));
     }
     for (i = 0; i < max_conn; i++)
     {
@@ -50,6 +53,7 @@ int main(int argc, char *argv[])
     sleep(10);
 
     Test->check_maxscale_alive();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

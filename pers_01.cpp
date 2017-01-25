@@ -106,13 +106,16 @@ void check_pers_conn(TestConnections* Test, int pers_conn_expected[], char * ser
     char str[256];
     int pers_conn[4];
 
-    for (int i = 0; i < 4; i++) {
-        sprintf(str, "show server %s%d", server, i+1);
+    for (int i = 0; i < 4; i++)
+    {
+        sprintf(str, "show server %s%d", server, i + 1);
         Test->get_maxadmin_param(str, (char *) "Persistent measured pool size:", result);
         Test->tprintf("%s: %s\n", str, result);
         sscanf(result, "%d", &pers_conn[i]);
-        if (pers_conn[i] != pers_conn_expected[i]) {
-            Test->add_result(1, "Persistent measured pool size: %s%d has %d, but expected %d\n", server, i+1, pers_conn[i], pers_conn_expected[i]);
+        if (pers_conn[i] != pers_conn_expected[i])
+        {
+            Test->add_result(1, "Persistent measured pool size: %s%d has %d, but expected %d\n", server, i + 1,
+                             pers_conn[i], pers_conn_expected[i]);
         }
     }
 }
@@ -203,5 +206,6 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Galera: \n");
     check_pers_conn(Test, galera_pers_conn_expected, (char *) "gserver");
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

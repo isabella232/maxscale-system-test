@@ -17,7 +17,8 @@ int main(int argc, char *argv[])
     Test->connect_maxscale();
 
     Test->tprintf("RWSplit: Executing set @test=i 10000 times\n");
-    for (i = 0; i < 10000; i++) {
+    for (i = 0; i < 10000; i++)
+    {
         Test->set_timeout(5);
         sprintf(sql, "set @test=%d", i);
         Test->try_query(Test->conn_rwsplit, sql);
@@ -25,7 +26,8 @@ int main(int argc, char *argv[])
     Test->tprintf("done!\n");
 
     printf("ReadConn Master: Executing set @test=i 10000 times\n");
-    for (i = 0; i < 10000; i++) {
+    for (i = 0; i < 10000; i++)
+    {
         Test->set_timeout(5);
         sprintf(sql, "set @test=%d", i);
         Test->try_query(Test->conn_master, sql);
@@ -33,7 +35,8 @@ int main(int argc, char *argv[])
     Test->tprintf("done!\n");
 
     Test->tprintf("ReadConn Slave: Executing set @test=i 10000 times\n");
-    for (i = 0; i < 10000; i++) {
+    for (i = 0; i < 10000; i++)
+    {
         Test->set_timeout(5);
         sprintf(sql, "set @test=%d", i);
         Test->try_query(Test->conn_slave, sql);
@@ -41,6 +44,7 @@ int main(int argc, char *argv[])
     Test->tprintf("done!\n");
 
     Test->close_maxscale_connections();
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

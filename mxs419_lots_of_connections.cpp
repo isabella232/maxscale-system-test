@@ -19,7 +19,8 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
 
     Test->tprintf("Trying %d connections\n", connections);
-    Test->add_result(Test->create_connections(connections, true, true, true, false), "Error creating connections\n");
+    Test->add_result(Test->create_connections(connections, true, true, true, false),
+                     "Error creating connections\n");
 
     Test->set_timeout(30);
     Test->tprintf("set global max_connections = 100");

@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     sleep(10);
     Test->check_log_err("fatal signal 11", false);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

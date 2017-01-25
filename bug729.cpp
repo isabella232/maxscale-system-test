@@ -58,12 +58,14 @@ int main(int argc, char *argv[])
     Test->set_timeout(30);
     char str[1024];
 
-    sprintf(str, "php %s/bug729.php %s %d %s %s", Test->test_dir, Test->maxscale_IP, Test->rwsplit_port, Test->maxscale_user, Test->maxscale_password);
+    sprintf(str, "php %s/bug729.php %s %d %s %s", Test->test_dir, Test->maxscale_IP, Test->rwsplit_port,
+            Test->maxscale_user, Test->maxscale_password);
 
     Test->tprintf("Executing PHP script: %s\n", str);
     Test->add_result(system(str), "PHP script FAILED!\n");
 
     Test->check_log_err((char *) "Can't route MYSQL_COM_STMT_PREPARE", false);
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

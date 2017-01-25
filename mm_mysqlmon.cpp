@@ -32,8 +32,10 @@ void check_status(TestConnections *Test, const char *server, const char *status)
         Test->add_result(1, "maxadmin execution error\n");
         return;
     }
-    if (strstr(maxadmin_result, status)  == NULL ) {
-        Test->add_result(1, "Test failed, server '%s' status is '%s', expected '%s'\n", server, maxadmin_result, status);
+    if (strstr(maxadmin_result, status)  == NULL )
+    {
+        Test->add_result(1, "Test failed, server '%s' status is '%s', expected '%s'\n", server, maxadmin_result,
+                         status);
     }
 }
 
@@ -209,5 +211,6 @@ int main(int argc, char *argv[])
 
     Test->repl->execute_query_all_nodes("STOP SLAVE; RESET SLAVE ALL; RESET MASTER;SET GLOBAL read_only='OFF';");
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }

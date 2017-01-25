@@ -18,7 +18,10 @@ int main(int argc, char *argv[])
     Test->tprintf("Test object initialized\n");
     Test->set_timeout(3000);
     int options_set = 3;
-    if (Test->smoke) {options_set = 1;}
+    if (Test->smoke)
+    {
+        options_set = 1;
+    }
     Test->tprintf("Trying to connect to backend\n");
     if (Test->repl->connect() == 0)
     {
@@ -31,12 +34,14 @@ int main(int argc, char *argv[])
         sleep(5);
 
 
-        for (int option = 0; option < options_set; option++) {
+        for (int option = 0; option < options_set; option++)
+        {
             Test->binlog_cmd_option = option;
             Test->start_binlog();
             Test->repl->connect();
             Test->tprintf("install semisync plugin\n");
-            execute_query(Test->repl->nodes[0], (char *) "INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';");
+            execute_query(Test->repl->nodes[0],
+                          (char *) "INSTALL PLUGIN rpl_semi_sync_master SONAME 'semisync_master.so';");
             //sleep(10);
             Test->tprintf("Reconnect\n");
             Test->repl->close_connections();
@@ -73,10 +78,13 @@ int main(int argc, char *argv[])
             Test->repl->close_connections();
             test_binlog(Test);
         }
-    } else {
+    }
+    else
+    {
         Test->add_result(1, "Can't connect to backend\n");
     }
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

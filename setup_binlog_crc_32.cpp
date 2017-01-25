@@ -16,7 +16,8 @@ int main(int argc, char *argv[])
 
     TestConnections * Test = new TestConnections(argc, argv);
 
-    if (!Test->smoke) {
+    if (!Test->smoke)
+    {
         Test->set_timeout(1000);
 
         Test->binlog_cmd_option = 1;
@@ -29,7 +30,8 @@ int main(int argc, char *argv[])
         Test->tprintf("Sleeping to let replication happen\n");
         sleep(30);
 
-        for (int i = 0; i < Test->repl->N; i++) {
+        for (int i = 0; i < Test->repl->N; i++)
+        {
             Test->tprintf("Checking data from node %d (%s)\n", i, Test->repl->IP[i]);
             Test->add_result(select_from_t1(Test->repl->nodes[i], 4), "error SELECT for t1\n");
         }
@@ -37,6 +39,7 @@ int main(int argc, char *argv[])
         Test->repl->close_connections();
     }
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 

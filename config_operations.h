@@ -6,7 +6,7 @@
 
 class Config
 {
-    public:
+public:
     Config(TestConnections* parent);
     ~Config();
 
@@ -135,7 +135,7 @@ class Config
      */
     void reset();
 
-    private:
+private:
     TestConnections *test_;
     std::set<int> created_servers_;
     std::set<std::string> created_monitors_;

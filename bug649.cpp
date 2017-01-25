@@ -71,7 +71,8 @@ int main(int argc, char *argv[])
 
     create_insert_string(sql, 65000, 1);
     Test->tprintf("Creating query threads\n", time_to_run);
-    for (int j = 0; j < threads_num; j++) {
+    for (int j = 0; j < threads_num; j++)
+    {
         Test->set_timeout(20);
         check_iret[j] = pthread_create( &parall_traffic1[j], NULL, parall_traffic, NULL);
     }
@@ -81,7 +82,8 @@ int main(int argc, char *argv[])
     sleep(time_to_run);
 
     Test->tprintf("Setup firewall to block mysql on master\n");
-    Test->repl->block_node(0); fflush(stdout);
+    Test->repl->block_node(0);
+    fflush(stdout);
 
     Test->tprintf("Waiting %d seconds\n", time_to_run);
     sleep(time_to_run);
@@ -97,7 +99,8 @@ int main(int argc, char *argv[])
     sleep(time_to_run);
 
     Test->tprintf("Setup firewall back to allow mysql\n");
-    Test->repl->unblock_node(0); fflush(stdout);
+    Test->repl->unblock_node(0);
+    fflush(stdout);
     Test->stop_timeout();
     sleep(time_to_run);
     exit_flag = 1;
@@ -121,7 +124,8 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, (char *) "show processlist;");
     Test->close_rwsplit();
 
-    Test->copy_all_logs(); return(Test->global_result);
+    Test->copy_all_logs();
+    return Test->global_result;
 }
 
 
@@ -137,10 +141,15 @@ void *parall_traffic( void *ptr )
             execute_query_silent(conn, sql);
             fflush(stdout);
         }
-    } else {
+    }
+    else
+    {
         Test->tprintf("Error opening connection");
     }
 
-    if (conn != NULL ) {mysql_close(conn);}
+    if (conn != NULL )
+    {
+        mysql_close(conn);
+    }
     return NULL;
 }
