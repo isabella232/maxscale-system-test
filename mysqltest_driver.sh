@@ -3,10 +3,12 @@
 # First argument is the name of the test
 # Second argument is the directory name where tests are found
 # Third argument defines the MaxScale port
+# Fourth OPTIONAL argument defines the user to be used.
+# Fifth OPTIONAL argument defines the password to be used.
 
 if [ $# -lt 3 ]
 then
-    echo "Usage: NAME TESTDIR PORT"
+    echo "Usage: NAME TESTDIR PORT [USER] [PASSWORD]"
     exit 1
 fi
 
@@ -16,10 +18,22 @@ then
     exit 1
 fi
 
+if [ $# -ge 5 ]
+then
+    password=$5
+else
+    password=skysql
+fi
+
+if [ $# -ge 4 ]
+then
+    user=$4
+else
+    user=skysql
+fi
+
 # Prepare the test environment
 test_dir=`pwd`
-user=skysql
-password=skysql
 port=$3
 
 $test_dir/non_native_setup $1
