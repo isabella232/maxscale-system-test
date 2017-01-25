@@ -353,10 +353,9 @@ int Mariadb_nodes::stop_nodes()
     connect();
     for (i = 0; i < N; i++)
     {
-        printf("Stopping slave %d\n", i);
+        printf("Stopping node %d\n", i);
         fflush(stdout);
         local_result += execute_query(nodes[i], (char *) "stop slave;");
-        printf("Stopping %d\n", i);
         fflush(stdout);
         local_result += stop_node(i);
         fflush(stdout);
