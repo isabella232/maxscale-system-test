@@ -440,6 +440,8 @@ add_test_executable(mxs1071_maxrows.cpp mxs1071_maxrows maxrows LABELS maxrowsfi
 # Test of Masking filter
 add_test_script(masking_mysqltest masking_mysqltest_driver.sh masking_mysqltest LABELS maskingfilter REPL_BACKEND)
 
+add_test_script(masking_user masking_user.sh masking_mysqltest LABELS maskingfilter REPL_BACKEND)
+
 # Set utf8mb4 in the backend and restart Maxscale
 add_test_executable(mxs951_utfmb4.cpp mxs951_utfmb4 replication LABELS REPL_BACKEND)
 
