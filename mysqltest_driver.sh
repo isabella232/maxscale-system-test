@@ -49,7 +49,7 @@ mkdir log || exit 1
 echo
 
 # Run the test
-for t in ` ls ./t/*.test`
+for t in ` ls ./t/`
 do
     printf "$t:"
     test_name=${t%%.test}
