@@ -486,7 +486,7 @@ public:
      * @param dest Destination file on the MaxScale machine's file system
      * @return exit code of the system command
      */
-    int copy_to_maxscale(char* src, char* dest);
+    int copy_to_maxscale(const char* src, const char* dest);
 
     /**
      * @brief Copy a remote file from the MaxScale machine

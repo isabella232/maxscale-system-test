@@ -1189,7 +1189,7 @@ int  TestConnections::ssh_maxscale(bool sudo, const char* format, ...)
     return rc;
 }
 
-int TestConnections::copy_to_maxscale(char* src, char* dest)
+int TestConnections::copy_to_maxscale(const char* src, const char* dest)
 {
     char sys[strlen(src) + strlen(dest) + 1024];
 
