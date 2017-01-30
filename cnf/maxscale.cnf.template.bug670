@@ -1,6 +1,5 @@
 [maxscale]
 threads=###threads###
-log_warning=1
 
 [MySQL Monitor]
 type=monitor
@@ -8,8 +7,6 @@ module=mysqlmon
 ###repl51###
 monitor_interval=10000
 servers=server1,server2,server3,server4
-detect_replication_lag=1
-detect_stale_master=1
 user=maxuser
 passwd=maxpwd
 
@@ -43,16 +40,14 @@ service=RW Split2
 type=service
 router=readwritesplit
 servers=server1,server2,server3,server4
-#servers=server1
+
 max_slave_connections=100%
 use_sql_variables_in=all
-#use_sql_variables_in=master
+
 user=maxuser
 passwd=maxpwd
 filters=typo|qla|regex|hints|regex|hints
 enable_root_user=1
-#filters=typo|hints|testfi|duplicate
-#filters=duplicate
 
 [RW Split2]
 type=service
@@ -62,7 +57,6 @@ max_slave_connections=100%
 use_sql_variables_in=all
 user=maxuser
 passwd=maxpwd
-#filters=tests|hints
 
 [Read Connection Router]
 type=service
@@ -77,12 +71,17 @@ filters=duplicate
 type=service
 router=cli
 
+[CLI Listener]
+type=listener
+service=CLI
+protocol=maxscaled
+socket=default
+
 [RW Split Listener]
 type=listener
 service=RW Split Router
 protocol=MySQLClient
 port=4006
-#socket=/tmp/rwsplit.sock
 
 [RW Split Listener2]
 type=listener
@@ -95,7 +94,6 @@ type=listener
 service=Read Connection Router
 protocol=MySQLClient
 port=4008
-#socket=/tmp/readconn.sock
 
 [Read Connection Router Slave]
 type=service
@@ -110,7 +108,6 @@ type=listener
 service=Read Connection Router Slave
 protocol=MySQLClient
 port=4009
-
 
 [server1]
 type=server
@@ -135,4 +132,3 @@ type=server
 address=###node_server_IP_4###
 port=###node_server_port_4###
 protocol=MySQLBackend
-
