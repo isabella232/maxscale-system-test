@@ -31,6 +31,10 @@ DROP USER 'skysql'@'%';
 CREATE USER 'skysql'@'%' IDENTIFIED BY 'skysql';
 GRANT ALL PRIVILEGES ON *.* TO 'skysql'@'%' WITH GRANT OPTION;
 
+DROP USER 'skysql'@'localhost';
+CREATE USER 'skysql'@'localhost' IDENTIFIED BY 'skysql';
+GRANT ALL PRIVILEGES ON *.* TO 'skysql'@'localhost' WITH GRANT OPTION;
+
 DROP DATABASE IF EXISTS test;
 CREATE DATABASE test;
 EOF
