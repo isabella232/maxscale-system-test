@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[])
 {
-
+    TestConnections::skip_maxscale_start(true);
     TestConnections *Test = new TestConnections(argc, argv);
     char sql[4096];
     char pass_file[4096];
