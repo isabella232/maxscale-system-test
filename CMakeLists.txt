@@ -442,6 +442,9 @@ add_test_script(masking_mysqltest masking_mysqltest_driver.sh masking_mysqltest 
 
 add_test_script(masking_user masking_user.sh masking_mysqltest LABELS maskingfilter REPL_BACKEND)
 
+# Test of Cache filter
+add_test_script(cache_basic cache_basic.sh cache_basic LABELS cachefilter REPL_BACKEND)
+
 # Set utf8mb4 in the backend and restart Maxscale
 add_test_executable(mxs951_utfmb4.cpp mxs951_utfmb4 replication LABELS REPL_BACKEND)
 
