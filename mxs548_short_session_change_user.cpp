@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
     Test->set_timeout(20);
 
     int threads_num = 40;
-    openclose_thread_data data[threads_num];
+    openclose_thread_data data[threads_num] = {};
 
     int master_load_threads_num = 3;
-    openclose_thread_data data_master[master_load_threads_num];
+    openclose_thread_data data_master[master_load_threads_num] = {};
 
     int i;
 
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     Test->repl->sync_slaves();
 
     Test->tprintf("Creating user 'user' \n");
-    execute_query_silent(Test->conn_rwsplit, (char *) "DROP USER user@'%%'");
+    execute_query(Test->conn_rwsplit, (char *) "DROP USER user@'%%'");
     execute_query(Test->conn_rwsplit, (char *) "CREATE USER user@'%%' IDENTIFIED BY 'pass2'");
     execute_query(Test->conn_rwsplit, (char *) "GRANT SELECT ON test.* TO user@'%%'");
     execute_query(Test->conn_rwsplit, (char *) "DROP TABLE IF EXISTS test.t1");
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < threads_num; i++)
     {
         data[i].exit_flag = 1;
-        pthread_join(iret1[i], NULL);
+        pthread_join(thread1[i], NULL);
     }
 
     Test->tprintf("Waiting for all master load threads exit\n");
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < master_load_threads_num; i++)
     {
         data_master[i].exit_flag = 1;
-        pthread_join(iret_master[i], NULL);
+        pthread_join(thread_master[i], NULL);
     }
 
     Test->tprintf("Flushing backend hosts\n");
@@ -207,6 +207,7 @@ void *query_thread1(void *ptr)
         if (data->conn1 != NULL)
         {
             mysql_close(data->conn1);
+            data->conn1 = NULL;
         }
 
         if (data->rwsplit_only == 0)
@@ -214,11 +215,13 @@ void *query_thread1(void *ptr)
             if (data->conn2 != NULL)
             {
                 mysql_close(data->conn2);
+                data->conn2 = NULL;
             }
 
             if (data->conn3 != NULL)
             {
                 mysql_close(data->conn3);
+                data->conn3 = NULL;
             }
         }
 
