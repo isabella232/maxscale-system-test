@@ -19,7 +19,7 @@
 --event=synced_up --initiator=gserver2_IP:port --nodelist=gserver1_IP:port,gserver2_IP:port,gserver3_IP:port,gserver4_IP:port
  @endverbatim
  * - make script non-executable
- * - block and unblocm node1
+ * - block and unblock node1
  * - check error log for 'The file cannot be executed: /home/$maxscale_access_user/script.sh' error
  * - check if Maxscale still alive
  */
@@ -30,56 +30,48 @@
 
 void test_script_monitor(TestConnections* Test, Mariadb_nodes* nodes, char * expected_filename)
 {
-    char str[1024];
     Test->set_timeout(200);
+    Test->ssh_maxscale(true, "cd %s;"
+                       "truncate -s 0 script_output;"
+                       "chown maxscale:maxscale script_output",
+                       Test->maxscale_access_homedir);
+    sleep(10);
 
-    system(str);
-    Test->ssh_maxscale(false, "rm -f %s/script_output", Test->maxscale_access_homedir);
-
-    Test->tprintf("%s\n", str);
-    fflush(stdout);
-    Test->ssh_maxscale(false, "%s touch %s/script_output; %s chown maxscale:maxscale %s/script_output",
-                       Test->maxscale_access_sudo, Test->maxscale_access_homedir,
-                       Test->maxscale_access_sudo, Test->maxscale_access_homedir);
-
-    sleep(30);
-
-    Test->tprintf("Block master node\n");
+    Test->tprintf("Block master node");
     nodes->block_node(0);
 
-    Test->tprintf("Sleeping\n");
-    sleep(30);
+    Test->tprintf("Sleeping");
+    sleep(10);
 
-    Test->tprintf("Unblock master node\n");
+    Test->tprintf("Unblock master node");
     nodes->unblock_node(0);
 
-    Test->tprintf("Sleeping\n");
-    sleep(30);
+    Test->tprintf("Sleeping");
+    sleep(10);
 
-    Test->tprintf("Block node1\n");
+    Test->tprintf("Block node1");
     nodes->block_node(1);
 
-    Test->tprintf("Sleeping\n");
-    sleep(30);
+    Test->tprintf("Sleeping");
+    sleep(10);
 
-    Test->tprintf("Unblock node1\n");
+    Test->tprintf("Unblock node1");
     nodes->unblock_node(1);
 
-    Test->tprintf("Sleeping\n");
-    sleep(30);
+    Test->tprintf("Sleeping");
+    sleep(10);
 
-    Test->tprintf("Printf results\n");
-    Test->ssh_maxscale(false, "cat %s/script_output", Test->maxscale_access_homedir);
+    Test->tprintf("Comparing results");
 
-    Test->tprintf("Comparing results\n");
     if (Test->ssh_maxscale(false, "diff %s/script_output %s", Test->maxscale_access_homedir,
                            expected_filename) != 0)
     {
-        Test->add_result(1, "Wrong script output!\n");
+        Test->ssh_maxscale(true, "cat %s/script_output", Test->maxscale_access_homedir);
+        Test->add_result(1, "Wrong script output!");
     }
     else
     {
-        Test->tprintf("Script output is OK!\n");
+        Test->tprintf("Script output is OK!");
     }
 }
 
@@ -88,7 +80,7 @@ int main(int argc, char *argv[])
     TestConnections * Test = new TestConnections(argc, argv);
     Test->set_timeout(100);
 
-    Test->tprintf("Creating script on Maxscale machine\n");
+    Test->tprintf("Creating script on Maxscale machine");
 
 
     Test->ssh_maxscale(false,
@@ -148,7 +140,7 @@ int main(int argc, char *argv[])
             Test->galera->IP_private[3], Test->galera->port[3]);
     fclose(f);
 
-    Test->tprintf("Copying expected script output to Maxscale machine\n");
+    Test->tprintf("Copying expected script output to Maxscale machine");
     char str[2048];
     sprintf(str,
             "scp -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet script_output_expected* %s@%s:%s/",
@@ -162,27 +154,26 @@ int main(int argc, char *argv[])
 
     Test->set_timeout(200);
 
-    Test->tprintf("Making script non-executable\n");
+    Test->tprintf("Making script non-executable");
     Test->ssh_maxscale(true, "chmod a-x %s/script/script.sh", Test->maxscale_access_homedir);
 
     sleep(3);
 
-    Test->tprintf("Block node1\n");
+    Test->tprintf("Block node1");
     Test->repl->block_node(1);
 
-    Test->tprintf("Sleeping\n");
+    Test->tprintf("Sleeping");
     sleep(10);
 
-    Test->tprintf("Unblock node1\n");
+    Test->tprintf("Unblock node1");
     Test->repl->unblock_node(1);
 
     sleep(15);
 
-    Test->tprintf("Cheching Maxscale logs\n");
+    Test->tprintf("Cheching Maxscale logs");
     Test->check_log_err((char *) "Cannot execute file" , true);
-    //Test->check_log_err((char *) "Missing execution permissions" , true);fflush(stdout);
 
-    Test->tprintf("checking if Maxscale is alive\n");
+    Test->tprintf("checking if Maxscale is alive");
     Test->check_maxscale_alive();
 
     Test->copy_all_logs();
