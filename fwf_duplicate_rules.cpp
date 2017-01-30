@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     TestConnections::skip_maxscale_start(true);
     TestConnections test(argc, argv);
 
-    test.ssh_maxscale(true, "mkdir -p /home/vagrant/rules/; chown vagrant:vagrant /home/vagrant/rules/");
+    test.ssh_maxscale(true, "mkdir -p /home/vagrant/rules/; chown -R vagrant:vagrant /home/vagrant/rules/");
     test.copy_to_maxscale((char*)"rules.txt", (char*)"~/rules/rules.txt");
     test.ssh_maxscale(true, "chmod a+r /home/vagrant/rules/rules.txt;");
 
