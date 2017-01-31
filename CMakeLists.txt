@@ -130,6 +130,7 @@ add_test_executable(fwf.cpp fwf fwf LABELS dbfwfilter)
 add_test_executable(fwf2.cpp fwf2 fwf LABELS dbfwfilter)
 add_test_executable(fwf_actions.cpp fwf_actions fwf_action LABELS dbfwfilter)
 add_test_executable(fwf_logging.cpp fwf_logging fwf_logging LABELS dbfwfilter)
+add_test_executable(fwf_com_ping.cpp fwf_com_ping fwf_com_ping LABELS dbfwfilter)
 # Disabled for 2.0
 #add_test_executable(fwf_reload.cpp fwf_reload fwf LABELS dbfwfilter)
 add_test_executable(fwf_syntax.cpp fwf_syntax fwf_syntax LABELS dbfwfilter)
