@@ -1,8 +1,6 @@
 #ifndef BIG_TRANSACTION_H
 #define BIG_TRANSACTION_H
 
-
-#include <my_global.h>
 #include <mysql.h>
 #include <stdio.h>
 #include <stdlib.h>
