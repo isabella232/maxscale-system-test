@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
     Test->set_timeout(20);
 
     int threads_num = 40;
-    openclose_thread_data data[threads_num] = {};
+    openclose_thread_data data[threads_num];
 
     int master_load_threads_num = 3;
-    openclose_thread_data data_master[master_load_threads_num] = {};
+    openclose_thread_data data_master[master_load_threads_num];
 
     int i;
 
@@ -55,6 +55,9 @@ int main(int argc, char *argv[])
         data[i].Test = Test;
         data[i].rwsplit_only = 1;
         data[i].thread_id = i;
+        data[i].conn1 = NULL;
+        data[i].conn2 = NULL;
+        data[i].conn3 = NULL;
     }
 
 
@@ -65,6 +68,9 @@ int main(int argc, char *argv[])
         data_master[i].Test = Test;
         data_master[i].rwsplit_only = 1;
         data_master[i].thread_id = i;
+        data_master[i].conn1 = NULL;
+        data_master[i].conn2 = NULL;
+        data_master[i].conn3 = NULL;
     }
 
     pthread_t thread1[threads_num];
