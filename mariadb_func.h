@@ -23,6 +23,7 @@
 #include <time.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <string>
 
 /**
  * Opens connection to DB: wropper over mysql_real_connect
@@ -54,6 +55,10 @@ MYSQL * open_conn_db_flags(int port, const char* ip, const char* db, const char*
  */
 MYSQL * open_conn_db_timeout(int port, const char* ip, const char* db, const char* User, const char* Password,
                              unsigned long timeout, bool ssl);
+
+MYSQL* open_conn_db_timeout(int port, std::string ip, std::string db,
+                            std::string user, std::string password,
+                            unsigned long timeout, bool ssl);
 
 /**
  * Opens connection to DB with default flags

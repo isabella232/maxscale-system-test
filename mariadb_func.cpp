@@ -111,6 +111,12 @@ MYSQL * open_conn_db_timeout(int port, const char* ip, const char* db, const cha
 
     return conn;
 }
+MYSQL* open_conn_db_timeout(int port, std::string ip, std::string db,
+                            std::string user, std::string password,
+                            unsigned long timeout, bool ssl)
+{
+    return open_conn_db_timeout(port, ip.c_str(), db.c_str(), user.c_str(), password.c_str(), timeout, ssl);
+}
 
 MYSQL * open_conn_db(int port, const char* ip, const char* db, const char* User, const char* Password,
                      bool ssl)
