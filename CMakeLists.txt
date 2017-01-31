@@ -446,6 +446,9 @@ add_test_script(masking_user masking_user.sh masking_mysqltest LABELS maskingfil
 # Test of Cache filter
 add_test_script(cache_basic cache_basic.sh cache_basic LABELS cachefilter REPL_BACKEND)
 
+  # This is only for providing a name - template mapping.
+add_test_script(cache_oltp dummy_success.sh cache_oltp LABELS HEADY REPL_BACKEND)
+
 # Set utf8mb4 in the backend and restart Maxscale
 add_test_executable(mxs951_utfmb4.cpp mxs951_utfmb4 replication LABELS REPL_BACKEND)
 
