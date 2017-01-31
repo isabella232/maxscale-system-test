@@ -437,6 +437,9 @@ int Galera_nodes::start_galera()
 
     printf("Starting new Galera cluster\n");
     fflush(stdout);
+    ssh_node(0, "echo [mysqld] > cluster_address.cnf", false);
+    ssh_node(0, "echo wsrep_cluster_address=gcomm:// >>  cluster_address.cnf", false);
+    ssh_node(0, "cp cluster_address.cnf /etc/my.cnf.d/", true);
     local_result += start_node(0, (char *) " --wsrep-cluster-address=gcomm://");
 
     sprintf(str, "%s/create_user_galera.sh", test_dir);
@@ -450,6 +453,11 @@ int Galera_nodes::start_galera()
     {
         printf("Starting node %d\n", i);
         fflush(stdout);
+        ssh_node(i, "echo [mysqld] > cluster_address.cnf", true);
+        sprintf(str, "echo wsrep_cluster_address=gcomm://%s >>  cluster_address.cnf", IP_private[0]);
+        ssh_node(i, str, true);
+        ssh_node(i, "cp cluster_address.cnf /etc/my.cnf.d/", true);
+
         sprintf(&sys1[0], " --wsrep-cluster-address=gcomm://%s", IP_private[0]);
         if (this->verbose)
         {
