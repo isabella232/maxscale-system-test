@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     /* Create independent threads each of them will execute function */
     for (int i = 0; i < threads_num; i++)
     {
-        pthread_create( &thread1[i], NULL, query_thread1, &data[i]);
+        pthread_create(&thread1[i], NULL, query_thread1, &data[i]);
     }
 
     Test->tprintf("Threads are running %d seconds \n", run_time);

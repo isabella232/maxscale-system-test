@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < load_threads_num; i++)
     {
         Test->tprintf("Thread %d\n", i);
-        iret_master[i] = pthread_create( &thread_master[i], NULL, disconnect_thread, &data_master[i]);
+        iret_master[i] = pthread_create(&thread_master[i], NULL, disconnect_thread, &data_master[i]);
     }
 
     Test->stop_timeout();
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < load_threads_num; i++)
     {
         data_master[i].exit_flag = 1;
-        pthread_join(iret_master[i], NULL);
+        pthread_join(thread_master[i], NULL);
     }
 
     Test->stop_timeout();

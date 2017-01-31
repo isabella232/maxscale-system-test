@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     /* Create independent threads each of them will execute function */
     for (i = 0; i < threads_num; i++)
     {
-        iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, &data[i]);
+        iret1[i] = pthread_create(&thread1[i], NULL, query_thread1, &data[i]);
     }
     Test->tprintf("Threads are running %d seconds \n", run_time);
 
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
     }
     for (i = 0; i < threads_num; i++)
     {
-        iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, &data[i]);
+        iret1[i] = pthread_create(&thread1[i], NULL, query_thread1, &data[i]);
     }
 
     Test->set_timeout(3 * run_time + 60);

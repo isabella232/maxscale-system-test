@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     for (int j = 0; j < threads_num; j++)
     {
         Test->set_timeout(20);
-        check_iret[j] = pthread_create( &parall_traffic1[j], NULL, parall_traffic, NULL);
+        check_iret[j] = pthread_create(&parall_traffic1[j], NULL, parall_traffic, NULL);
     }
 
     Test->stop_timeout();

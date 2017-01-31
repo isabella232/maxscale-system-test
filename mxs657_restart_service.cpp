@@ -37,7 +37,7 @@ void sht_rst_service()
 
     for (i = 0; i < threads_num; i++)
     {
-        iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, NULL);
+        iret1[i] = pthread_create(&thread1[i], NULL, query_thread1, NULL);
     }
 
     Test->tprintf("Trying to shutdown and restart RW Split router in the loop\n");

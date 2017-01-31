@@ -86,7 +86,6 @@ int main(int argc, char *argv[])
     Test->repl->execute_query_all_nodes((char *) "STOP SLAVE");
     Test->repl->execute_query_all_nodes((char *) "RESET SLAVE ALL");
     Test->repl->execute_query_all_nodes((char *) "RESET MASTER");
-    //Test->repl->close_connections();
 
     Test->tprintf("Starting binlog configuration\n");
     Test->start_binlog();
@@ -98,8 +97,8 @@ int main(int argc, char *argv[])
 
     exit_flag = 0;
     Test->tprintf("Starting query thread\n");
-    //disconnect_iret = pthread_create( &disconnec_thread_t, NULL, disconnect_thread, NULL);
-    transaction_iret = pthread_create( &transaction_thread_t, NULL, transaction_thread, NULL);
+
+    transaction_iret = pthread_create(&transaction_thread_t, NULL, transaction_thread, NULL);
 
     Test->tprintf("Sleeping\n");
     Test->stop_timeout();
