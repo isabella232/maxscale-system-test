@@ -1,7 +1,33 @@
 #!/bin/bash
 
-echo "DROP USER '$node_user'@'%'" | sudo mysql
-echo "grant all privileges on *.*  to '$node_user'@'%' identified by '$node_password' WITH GRANT OPTION" 
-echo "grant all privileges on *.*  to '$node_user'@'%' identified by '$node_password' WITH GRANT OPTION" | sudo mysql
+mysql -u root --force <<EOF >& /dev/null
 
-echo "grant all privileges on *.*  to 'maxskysql'@'%' identified by 'skysql' WITH GRANT OPTION" | sudo mysql
+DROP USER '$node_user'@'%';
+CREATE USER '$node_user'@'%' IDENTIFIED BY '$node_password';
+GRANT ALL PRIVILEGES ON *.* TO '$node_user'@'%' WITH GRANT OPTION;
+
+DROP USER 'repl'@'%';
+CREATE USER 'repl'@'%' IDENTIFIED BY 'repl';
+GRANT ALL ON *.* TO 'repl'@'%' WITH GRANT OPTION;
+
+DROP USER 'repl'@'localhost';
+CREATE USER 'repl'@'localhost' IDENTIFIED BY 'repl';
+GRANT ALL ON *.* TO 'repl'@'localhost' WITH GRANT OPTION;
+
+DROP USER 'skysql'@'%';
+CREATE USER 'skysql'@'%' IDENTIFIED BY 'skysql';
+GRANT ALL ON *.* TO 'skysql'@'%' WITH GRANT OPTION;
+
+DROP USER 'skysql'@'localhost';
+CREATE USER 'skysql'@'localhost' IDENTIFIED BY 'skysql';
+GRANT ALL ON *.* TO 'skysql'@'localhost' WITH GRANT OPTION;
+
+DROP USER 'maxskysql'@'%';
+CREATE USER 'maxskysql'@'%' IDENTIFIED BY 'skysql';
+GRANT ALL ON *.* TO 'maxskysql'@'%' WITH GRANT OPTION;
+
+DROP USER 'maxskysql'@'localhost';
+CREATE USER 'maxskysql'@'localhost' IDENTIFIED BY 'skysql';
+GRANT ALL ON *.* TO 'maxskysql'@'localhost' WITH GRANT OPTION;
+
+EOF
