@@ -30,10 +30,8 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
     Test->check_maxscale_alive();
 
-    Test->tprintf("Maxscale_full_version_start:");
-    Test->ssh_maxscale(false, "maxscale --version-full");
-    fflush(stdout);
-    Test->tprintf("Maxscale_full_version_end:");
+    char * ver = Test->ssh_maxscale_output(false, "maxscale --version-full");
+    Test->tprintf("Maxscale_full_version_start:\n%s\nMaxscale_full_version_end\n", ver);
 
     if ((Test->global_result == 0) && (Test->use_snapshots))
     {
