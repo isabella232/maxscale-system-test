@@ -192,28 +192,6 @@ int Mariadb_nodes::read_env()
                 sprintf(start_db_command[i], "%s", "service mysql stop");
             }
 
-            sprintf(env_name, "%s_%03d_kill_vm_command", prefix, i);
-            env = getenv(env_name);
-            if (env != NULL)
-            {
-                sprintf(kill_vm_command[i], "%s", env);
-            }
-            else
-            {
-                sprintf(kill_vm_command[i], "exit 1");
-            }
-
-            sprintf(env_name, "%s_%03d_start_vm_command", prefix, i);
-            env = getenv(env_name);
-            if (env != NULL)
-            {
-                sprintf(start_vm_command[i], "%s", env);
-            }
-            else
-            {
-                sprintf(start_vm_command[i], "exit 1");
-            }
-
             sprintf(env_name, "%s_%03d_whoami", prefix, i);
             env = getenv(env_name);
             if (env != NULL)
@@ -541,17 +519,7 @@ int Mariadb_nodes::unblock_all_nodes()
     return rval;
 }
 
-int Mariadb_nodes::check_and_restart_nodes_vm()
-{
-    int res = 0;
-    for (int i = 0; i < N; i++)
-    {
-        res += check_and_restart_node_vm(i);
-    }
-    return res;
-}
-
-int Mariadb_nodes::check_node_vm(int node)
+int Mariadb_nodes::check_node_ssh(int node)
 {
     int res = 0;
     printf("Checking node %d\n", node);
@@ -571,26 +539,14 @@ int Mariadb_nodes::check_node_vm(int node)
     return res;
 }
 
-int Mariadb_nodes::restart_node_vm(int node)
+int Mariadb_nodes::check_nodes()
 {
     int res = 0;
-    printf("stopping node %d: %s\n", node, kill_vm_command[node]);
-    system(kill_vm_command[node]);
-    printf("starting node %d: %s\n", node, start_vm_command[node]);
-    res += system(start_vm_command[node]);
+    for (int i = 0; i < N; i++)
+    {
+        res += check_node_ssh(i);
+    }
     return res;
-}
-
-int Mariadb_nodes::check_and_restart_node_vm(int node)
-{
-    if (check_node_vm(node) != 0)
-    {
-        return restart_node_vm(node);
-    }
-    else
-    {
-        return 0;
-    }
 }
 
 int Mariadb_nodes::check_replication()
@@ -720,7 +676,7 @@ bool Mariadb_nodes::fix_replication()
     {
         unblock_all_nodes();
 
-        if (check_and_restart_nodes_vm())
+        if (check_nodes())
         {
             printf("****** VMS ARE BROKEN! Exiting *****\n");
             return false;
@@ -805,55 +761,6 @@ int Galera_nodes::check_galera()
     }
 
     return res1;
-}
-
-int Mariadb_nodes::wait_all_vm()
-{
-    int i = 0;
-
-    while ((check_and_restart_nodes_vm() != 0) && (i < 20))
-    {
-        sleep(10);
-    }
-    return check_and_restart_nodes_vm();
-}
-
-int Mariadb_nodes::kill_all_vm()
-{
-    int res = 0;
-    char sys[1024];
-    for (int i = 0; i < N; i++)
-    {
-        sprintf(sys, "%s", kill_vm_command[i]);
-        if (system(sys) != 0)
-        {
-            res = 1;
-        }
-    }
-    return res;
-}
-
-int Mariadb_nodes::start_all_vm()
-{
-    int res = 0;
-    char sys[1024];
-    for (int i = 0; i < N; i++)
-    {
-        printf("starting node %d\n", i);
-        sprintf(sys, "%s", start_vm_command[i]);
-        if (system(sys) != 0)
-        {
-            res = 1;
-        }
-    }
-    return res;
-}
-
-int Mariadb_nodes::restart_all_vm()
-{
-    kill_all_vm();
-    start_all_vm();
-    return wait_all_vm();
 }
 
 int Mariadb_nodes::set_slave(MYSQL * conn, char master_host[], int master_port, char log_file[],

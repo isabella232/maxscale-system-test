@@ -85,7 +85,6 @@ int main(int argc, char *argv[])
     test.stop_timeout();
     test.tprintf("Make sure that replication works");
     test.repl->flush_hosts();
-    test.repl->check_and_restart_nodes_vm();
     test.repl->fix_replication();
 
     sleep(5);

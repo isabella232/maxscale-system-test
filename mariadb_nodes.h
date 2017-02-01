@@ -79,14 +79,6 @@ public:
      */
     char prefix[16];
     /**
-     * @brief     command to kill node virtual machine
-     */
-    char kill_vm_command[256][4096];
-    /**
-     * @brief     command to start node virtual machine
-     */
-    char start_vm_command[256][4096];
-    /**
      * @brief start_db_command Command to start DB server
      */
     char start_db_command[256][4096];
@@ -213,30 +205,6 @@ public:
     int stop_slaves();
 
     /**
-     * @brief kill_all_vm kills all VMs using kill_vm_command
-     * @return  0 in case of success
-     */
-    int kill_all_vm();
-
-    /**
-     * @brief start_all_vm starts all VMs using start_vm_command
-     * @return  0 in case of success
-     */
-    int start_all_vm();
-
-    /**
-     * @brief wait_all_vm waits until all nodes are available
-     * @return  0 in case of success
-     */
-    int wait_all_vm();
-
-    /**
-     * @brief restart_all_vm kills and start again all VMs
-     * @return  0 in case of success
-     */
-    int restart_all_vm();
-
-    /**
      * @brief configures nodes and starts Master/Slave replication
      * @return  0 in case of success
      */
@@ -271,19 +239,6 @@ public:
     int clean_iptables(int node);
 
     /**
-     * @brief Check if all nodes are avaliable (via ssh) and restart nodes that are not available
-     * @return 0 if everything is ok
-     */
-    int check_and_restart_nodes_vm();
-
-    /**
-     * @brief Check if all node is avaliable (via ssh)
-     * @param node Node index
-     * @return 0 if node is ok, 1 if broken
-     */
-    int check_node_vm(int node);
-
-    /**
      * @brief Stop DB server on the node
      * @param node Node index
      * @return 0 if success
@@ -299,18 +254,11 @@ public:
     int start_node(int node, char * param);
 
     /**
-     * @brief Execute kill and start command agains node
-     * @param node Node index
-     * @return 0 if node is ok, 1 if start failed
-     */
-    int restart_node_vm(int node);
-
-    /**
      * @brief Check node via ssh and restart it if it is not resposible
      * @param node Node index
      * @return 0 if node is ok, 1 if start failed
      */
-    int check_and_restart_node_vm(int node);
+    int check_nodes();
 
     /**
      * @brief Check if all slaves have "Slave_IO_Running" set to "Yes" and master has N-1 slaves
@@ -445,6 +393,10 @@ public:
      * @brief Check and fix replication
      */
     bool fix_replication();
+
+private:
+
+    int check_node_ssh(int node);
 };
 
 class Galera_nodes : public Mariadb_nodes
