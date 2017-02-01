@@ -56,8 +56,8 @@ MYSQL * open_conn_db_flags(int port, const char* ip, const char* db, const char*
 MYSQL * open_conn_db_timeout(int port, const char* ip, const char* db, const char* User, const char* Password,
                              unsigned long timeout, bool ssl);
 
-MYSQL* open_conn_db_timeout(int port, std::string ip, std::string db,
-                            std::string user, std::string password,
+MYSQL* open_conn_db_timeout(int port, const std::string& ip, const std::string& db,
+                            const std::string& user, const std::string& password,
                             unsigned long timeout, bool ssl);
 
 /**
