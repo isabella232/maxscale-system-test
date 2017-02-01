@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     int i;
     for (i = 0; i < threads_num; i++)
     {
-        iret1[i] = pthread_create( &thread1[i], NULL, maxinfo_thread, NULL);
+        iret1[i] = pthread_create(&thread1[i], NULL, maxinfo_thread, NULL);
     }
 
     sleep(sleep_time);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
     for (i = 0; i < threads_num; i++)
     {
-        pthread_join(iret1[i], NULL);
+        pthread_join(thread1[i], NULL);
     }
 
 

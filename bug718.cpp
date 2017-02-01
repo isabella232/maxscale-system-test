@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     int iret1[ThreadsNum];
     for (i = 0; i < ThreadsNum; i ++)
     {
-        iret1[i] = pthread_create( &thread_v1[i], NULL, thread1, NULL);
+        iret1[i] = pthread_create(&thread_v1[i], NULL, thread1, NULL);
     }
 
     create_t1(Test->conn_rwsplit);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     Test->set_timeout(300);
     for (i = 0; i < ThreadsNum; i ++)
     {
-        pthread_join( thread_v1[i], NULL);
+        pthread_join(thread_v1[i], NULL);
     }
 
     Test->close_maxscale_connections();

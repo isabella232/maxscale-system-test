@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
     Test->set_timeout(120);
 
     pthread_t thread;
-    pthread_create( &thread, NULL, query_thread, NULL);
+    pthread_create(&thread, NULL, query_thread, NULL);
 
     Test->add_result(!cdc_com(Test), "Failed to execute test");
 

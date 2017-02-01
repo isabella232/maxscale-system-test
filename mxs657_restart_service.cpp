@@ -29,7 +29,7 @@ char *monitor_rst = (char *) "restart service \"MySQL Monitor\"";
 
 void sht_rst_service()
 {
-    int threads_num = 1000;
+    int threads_num = 5;
     pthread_t thread1[threads_num];
 
     int  iret1[threads_num];
@@ -37,19 +37,12 @@ void sht_rst_service()
 
     for (i = 0; i < threads_num; i++)
     {
-        iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, NULL);
+        iret1[i] = pthread_create(&thread1[i], NULL, query_thread1, NULL);
     }
 
     Test->tprintf("Trying to shutdown and restart RW Split router in the loop\n");
 
-    if (Test->smoke)
-    {
-        sleep(200);
-    }
-    else
-    {
-        sleep(400);
-    }
+    sleep(10);
 
     Test->tprintf("Done, exiting threads\n\n");
 
@@ -65,8 +58,6 @@ void sht_rst_service()
 int main(int argc, char *argv[])
 {
     Test = new TestConnections(argc, argv);
-
-    Test->set_timeout(3000);
 
     Test->tprintf("Shutdown and restart Router\n");
 
@@ -88,8 +79,6 @@ int main(int argc, char *argv[])
     restart_cmd = monitor_rst;
 
     sht_rst_service();
-
-    sleep(5);
 
     Test->check_maxscale_alive();
     Test->check_log_err((char *) "received fatal signal", false);

@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
     for (int j = 0; j < 25; j++)
     {
-        check_iret[j] = pthread_create( &parall_traffic1[j], NULL, parall_traffic, NULL);
+        check_iret[j] = pthread_create(&parall_traffic1[j], NULL, parall_traffic, NULL);
     }
 
     Test->tprintf("Doing change_user in the loop");
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     for (int j = 0; j < 25; j++)
     {
         Test->set_timeout(30);
-        pthread_join(check_iret[j], NULL);
+        pthread_join(parall_traffic1[j], NULL);
     }
     Test->tprintf("All threads are finished");
     Test->repl->flush_hosts();

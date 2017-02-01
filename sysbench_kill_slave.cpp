@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     port[2] = Test->readconn_slave_port;
 
     Test->tprintf("Connecting to RWSplit %s\n", Test->maxscale_IP);
-    //Test->ConnectRWSplit();
+
     if (Test->smoke)
     {
         sprintf(&sys1[0], sysbench_prepare1, Test->sysbench_dir, Test->sysbench_dir, Test->maxscale_IP);
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     {
         sprintf(&sys1[0], sysbench_prepare, Test->sysbench_dir, Test->sysbench_dir, Test->maxscale_IP);
     }
-    //Test->CloseRWSplit();
+
     Test->tprintf("Preparing sysbench tables\n%s\n", sys1);
     Test->set_timeout(5000);
     Test->add_result(system(sys1), "Error executing sysbench prepare\n");
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     {
         Test->tprintf("Trying test with port %d\n", port[k]);
         check_iret = pthread_create( &kill_vm_thread1, NULL, kill_vm_thread, NULL);
-        //    pthread_join(kill_vm_thread1, NULL);
+
         if (port[k] == Test->readconn_slave_port )
         {
             readonly = ro_on;
@@ -77,7 +77,6 @@ int main(int argc, char *argv[])
         if (system(sys1) != 0)
         {
             Test->tprintf("Error executing sysbench test\n");
-            //global_result++;
         }
 
         Test->tprintf("Starting VM back\n");
@@ -103,8 +102,6 @@ int main(int argc, char *argv[])
         Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE sbtest3");
         Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE sbtest4");
     }
-
-    //global_result += execute_query(Test->conn_rwsplit, (char *) "DROP TABLE sbtest");
 
     printf("closing connections to MaxScale!\n");
     fflush(stdout);
@@ -145,8 +142,6 @@ void *kill_vm_thread( void *ptr )
     char sys1[4096];
     printf("Killing VM %s\n", Test->repl->IP[old_slave]);
     fflush(stdout);
-    //sprintf(&sys1[0], "%s %s", Test->kill_vm_command, Test->repl->IP[old_slave]);
-    //system(sys1);
     Test->repl->block_node(old_slave);
     return NULL;
 }

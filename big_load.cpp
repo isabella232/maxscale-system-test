@@ -70,8 +70,8 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
         /* Create independent threads each of them will execute function */
         for (int i = 0; i < threads_num; i++)
         {
-            iret1[i] = pthread_create( &thread1[i], NULL, query_thread1, &data);
-            iret2[i] = pthread_create( &thread2[i], NULL, query_thread2, &data);
+            iret1[i] = pthread_create(&thread1[i], NULL, query_thread1, &data);
+            iret2[i] = pthread_create(&thread2[i], NULL, query_thread2, &data);
         }
         Test->tprintf("Threads are running %d seconds \n", run_time);
         sleep(run_time);
@@ -80,8 +80,8 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
         Test->set_timeout(100);
         for (int i = 0; i < threads_num; i++)
         {
-            pthread_join( thread1[i], NULL);
-            pthread_join( thread2[i], NULL);
+            pthread_join(thread1[i], NULL);
+            pthread_join(thread2[i], NULL);
         }
         sleep(1);
 

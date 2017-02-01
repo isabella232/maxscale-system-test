@@ -13,150 +13,113 @@
 
 #include "testconnections.h"
 #include "sql_t1.h"
+#include <string>
 
 typedef struct
 {
+    int port;
+    std::string ip;
+    std::string user;
+    std::string password;
+    bool ssl;
     int exit_flag;
-    int thread_id;
-    long i;
-    int rwsplit_only;
-    TestConnections * Test;
-    MYSQL * conn1;
-    MYSQL * conn2;
-    MYSQL * conn3;
 } openclose_thread_data;
 
-void *disconnect_thread( void *ptr );
+void *disconnect_thread(void *ptr);
+
 int main(int argc, char *argv[])
 {
-    TestConnections * Test = new TestConnections(argc, argv);
-    Test->set_timeout(20);
+    TestConnections test(argc, argv);
 
-    int load_threads_num = 25;
+    test.set_timeout(60);
+    test.connect_maxscale();
+    create_t1(test.conn_rwsplit);
+    execute_query(test.conn_rwsplit, "set global max_connections=1000");
+    test.close_maxscale_connections();
+
+    test.tprintf("Create query load");
+    int load_threads_num = 10;
     openclose_thread_data data_master[load_threads_num];
-
-    int i;
-
-    int iterations = 10;
-    int t_iterations = 3;
-    int tt[t_iterations];
-
-    tt[0] = 3;
-    tt[1] = 5;
-    tt[2] = 10;
-
-    if (Test->smoke)
-    {
-        iterations = 5;
-        t_iterations = 1;
-    }
-
-    for (i = 0; i < load_threads_num; i++)
-    {
-        data_master[i].i = 0;
-        data_master[i].exit_flag = 0;
-        data_master[i].Test = Test;
-        data_master[i].rwsplit_only = 1;
-        data_master[i].thread_id = i;
-    }
-
     pthread_t thread_master[load_threads_num];
-    int  iret_master[load_threads_num];
 
-    Test->repl->flush_hosts();
-
-    Test->repl->connect();
-    Test->connect_maxscale();
-
-    Test->tprintf("Create t1\n");
-    create_t1(Test->conn_rwsplit);
-    Test->tprintf("set max_connections t1\n");
-    execute_query(Test->conn_rwsplit, (char*) "set global max_connections=1000");
-    Test->close_maxscale_connections();
-
-    Test->tprintf("Create threads\n");
-    for (i = 0; i < load_threads_num; i++)
+    /* Create independent threads each of them will create some load on Master */
+    for (int i = 0; i < load_threads_num; i++)
     {
-        data_master[i].rwsplit_only = 1;
-    }
-    /* Create independent threads each of them will create some load on Mastet */
-    for (i = 0; i < load_threads_num; i++)
-    {
-        Test->tprintf("Thread %d\n", i);
-        iret_master[i] = pthread_create( &thread_master[i], NULL, disconnect_thread, &data_master[i]);
+        data_master[i].exit_flag = 0;
+        data_master[i].ip = test.maxscale_IP;
+        data_master[i].port = test.rwsplit_port;
+        data_master[i].user = test.maxscale_user;
+        data_master[i].password = test.maxscale_password;
+        data_master[i].ssl = test.ssl;
+        pthread_create(&thread_master[i], NULL, disconnect_thread, &data_master[i]);
     }
 
-    Test->stop_timeout();
-    sleep(30);
-    for (int j = 0; j < t_iterations; j++)
+    int iterations = 5;
+    int sleep_interval = 10;
+
+    for (int i = 0; i < iterations; i++)
     {
-        for (i = 0; i < iterations; i++)
-        {
-            Test->set_timeout(30 + tt[j] * 10);
-            Test->tprintf("Block master\n");
-            Test->repl->block_node(0);
-            Test->stop_timeout();
-            sleep(tt[j]);
-            Test->set_timeout(30 + tt[j] * 10);
-            Test->tprintf("Unlock master\n");
-            Test->repl->unblock_node(0);
-            Test->stop_timeout();
-            sleep(tt[j]);
-            Test->set_timeout(30 + tt[j] * 10);
-        }
+        test.stop_timeout();
+        sleep(sleep_interval);
+
+        test.set_timeout(60);
+        test.tprintf("Block master");
+        test.repl->block_node(0);
+
+        test.stop_timeout();
+        sleep(sleep_interval);
+
+        test.set_timeout(60);
+        test.tprintf("Unblock master");
+        test.repl->unblock_node(0);
     }
 
-    Test->set_timeout(240);
-
-    Test->tprintf("Waiting for all master load threads exit\n");
-    for (i = 0; i < load_threads_num; i++)
+    test.tprintf("Waiting for all master load threads exit");
+    for (int i = 0; i < load_threads_num; i++)
     {
+        test.set_timeout(240);
         data_master[i].exit_flag = 1;
-        pthread_join(iret_master[i], NULL);
+        pthread_join(thread_master[i], NULL);
     }
 
-    Test->stop_timeout();
-    sleep(10);
-    Test->tprintf("flush hosts\n");
-    Test->repl->flush_hosts();
-    Test->repl->check_and_restart_nodes_vm();
-    Test->repl->fix_replication();
-    sleep(5);
-    Test->tprintf("Drop t1\n");
-    Test->connect_maxscale();
-    Test->try_query(Test->conn_rwsplit, (char *) "DROP TABLE IF EXISTS t1;");
-    Test->close_maxscale_connections();
-    Test->tprintf("Checking if Maxscale alive\n");
-    Test->check_maxscale_alive();
-    Test->tprintf("Checking log for unwanted errors\n");
-    Test->check_log_err((char *) "due to authentication failure", false);
-    Test->check_log_err((char *) "fatal signal 11", false);
-    Test->check_log_err((char *) "due to handshake failure", false);
-    Test->check_log_err((char *) "Refresh rate limit exceeded for load of users' table", false);
+    test.stop_timeout();
+    test.tprintf("Make sure that replication works");
+    test.repl->flush_hosts();
+    test.repl->check_and_restart_nodes_vm();
+    test.repl->fix_replication();
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    sleep(5);
+    test.set_timeout(60);
+    test.connect_maxscale();
+    test.try_query(test.conn_rwsplit, "DROP TABLE IF EXISTS t1");
+    test.close_maxscale_connections();
+
+    test.check_maxscale_alive();
+    test.check_log_err("due to authentication failure", false);
+    test.check_log_err("fatal signal 11", false);
+    test.check_log_err("due to handshake failure", false);
+    test.check_log_err("Refresh rate limit exceeded for load of users' table", false);
+
+    return test.global_result;
 }
 
 
 void *disconnect_thread( void *ptr )
 {
-    openclose_thread_data * data = (openclose_thread_data *) ptr;
+    openclose_thread_data *data = (openclose_thread_data*) ptr;
     char sql[1000000];
 
-    sleep(data->thread_id);
+    sleep(3);
     create_insert_string(sql, 50000, 2);
 
     while (data->exit_flag == 0)
     {
-        //data->conn1 = data->Test->open_rwsplit_connection();
-        data->conn1 = open_conn_db_timeout(data->Test->rwsplit_port, data->Test->maxscale_IP, (char*) "test",
-                                           data->Test->maxscale_user, data->Test->maxscale_password, 10, data->Test->ssl);
-        execute_query_silent(data->conn1, sql);
-        mysql_close(data->conn1);
-        data->i++;
+        MYSQL *conn = open_conn_db_timeout(data->port, data->ip, "test",
+                                           data->user, data->password,
+                                           10, data->ssl);
+        execute_query_silent(conn, sql);
+        mysql_close(conn);
     }
-
 
     return NULL;
 }

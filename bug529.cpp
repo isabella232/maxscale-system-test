@@ -203,8 +203,6 @@ int main(int argc, char *argv[])
     Test->tprintf("Opening more connection to ReadConn slave in parallel thread\n");
 
     check_iret = pthread_create( &parall_traffic1, NULL, parall_traffic, NULL);
-    //pthread_join(parall_traffic1, NULL);
-
 
     for (i = 0; i < Test->repl->N; i++)
     {
