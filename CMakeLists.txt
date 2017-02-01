@@ -266,6 +266,9 @@ add_test_executable(galera_priority.cpp galera_priority galera_priority LABELS g
 # Block and unblock Master and check that Maxscale survived
 add_test_executable(kill_master.cpp kill_master replication LABELS readwritesplit LIGHT REPL_BACKEND)
 
+# Test insertstream filter
+add_test_script(insertstream insertstream.sh insertstream LABELS insertstream REPL_BACKEND)
+
 # Check load balancing
 add_test_executable(load_balancing.cpp load_balancing load LABELS readwritesplit LIGHT REPL_BACKEND)
 
