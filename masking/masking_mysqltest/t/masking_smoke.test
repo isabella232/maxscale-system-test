@@ -16,7 +16,9 @@
 #     ]
 # }
 
+--disable_warnings
 drop database if exists maskingdb;
+--enable_warnings
 
 create database maskingdb;
 use maskingdb;
