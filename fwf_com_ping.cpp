@@ -16,6 +16,7 @@ int main(int argc, char** argv)
     fwrite(rules, 1, strlen(rules), file);
     fclose(file);
 
+    TestConnections::skip_maxscale_start(true);
     TestConnections test(argc, argv);
 
     test.ssh_maxscale(true, "mkdir -p /home/vagrant/rules/; chown -R vagrant:vagrant /home/vagrant/rules/");
