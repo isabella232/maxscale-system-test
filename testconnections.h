@@ -328,34 +328,19 @@ public:
      * @brief ConnectRWSplit    Opens connections to RWSplit and store MYSQL struct in conn_rwsplit
      * @return 0 in case of success
      */
-    int connect_rwsplit()
-    {
-        conn_rwsplit = open_conn(rwsplit_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
-        routers[0] = conn_rwsplit;
-        return (mysql_errno(conn_rwsplit));
-    }
+    int connect_rwsplit();
 
     /**
      * @brief ConnectReadMaster Opens connections to ReadConn master and store MYSQL struct in conn_master
      * @return 0 in case of success
      */
-    int connect_readconn_master()
-    {
-        conn_master = open_conn(readconn_master_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
-        routers[1] = conn_master;
-        return (mysql_errno(conn_master));
-    }
+    int connect_readconn_master();
 
     /**
      * @brief ConnectReadSlave Opens connections to ReadConn slave and store MYSQL struct in conn_slave
      * @return 0 in case of success
      */
-    int connect_readconn_slave()
-    {
-        conn_slave = open_conn(readconn_slave_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
-        routers[2] = conn_slave;
-        return (mysql_errno(conn_slave));
-    }
+    int connect_readconn_slave();
 
     /**
      * @brief OpenRWSplitConn   Opens new connections to RWSplit and returns MYSQL struct

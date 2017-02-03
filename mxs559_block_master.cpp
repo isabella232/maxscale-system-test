@@ -85,11 +85,18 @@ int main(int argc, char *argv[])
     test.stop_timeout();
     test.tprintf("Make sure that replication works");
     test.repl->flush_hosts();
-    test.repl->fix_replication();
+    if (!test.repl->fix_replication())
+    {
+        test.tprintf("Replication is broken!");
+    }
 
     sleep(5);
     test.set_timeout(60);
+
+    test.verbose = true;
     test.connect_maxscale();
+    test.verbose = false;
+
     test.try_query(test.conn_rwsplit, "DROP TABLE IF EXISTS t1");
     test.close_maxscale_connections();
 

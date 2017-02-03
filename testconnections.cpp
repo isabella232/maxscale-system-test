@@ -564,11 +564,9 @@ int TestConnections::init_maxscale()
 
 int TestConnections::connect_maxscale()
 {
-    return (
-               connect_rwsplit() +
-               connect_readconn_master() +
-               connect_readconn_slave()
-           );
+    return connect_rwsplit() +
+        connect_readconn_master() +
+        connect_readconn_slave();
 }
 
 int TestConnections::close_maxscale_connections()
@@ -1826,4 +1824,64 @@ bool TestConnections::test_bad_config(const char *config)
 
     return ssh_maxscale(true, "cp maxscale.cnf /etc/maxscale.cnf; service maxscale stop; "
                         "maxscale -U maxscale -lstdout &> /dev/null && sleep 1 && pkill -9 maxscale") == 0;
+}
+
+int TestConnections::connect_rwsplit()
+{
+    conn_rwsplit = open_conn(rwsplit_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    routers[0] = conn_rwsplit;
+
+    int rc = 0;
+    int my_errno = mysql_errno(conn_rwsplit);
+
+    if (my_errno)
+    {
+        if (verbose)
+        {
+            tprintf("Failed to connect to readwritesplit: %d, %s", my_errno, mysql_error(conn_rwsplit));
+        }
+        rc = my_errno;
+    }
+
+    return rc;
+}
+
+int TestConnections::connect_readconn_master()
+{
+    conn_master = open_conn(readconn_master_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    routers[1] = conn_master;
+
+    int rc = 0;
+    int my_errno = mysql_errno(conn_master);
+
+    if (my_errno)
+    {
+        if (verbose)
+        {
+            tprintf("Failed to connect to readwritesplit: %d, %s", my_errno, mysql_error(conn_master));
+        }
+        rc = my_errno;
+    }
+
+    return rc;
+}
+
+int TestConnections::connect_readconn_slave()
+{
+    conn_slave = open_conn(readconn_slave_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    routers[2] = conn_slave;
+
+    int rc = 0;
+    int my_errno = mysql_errno(conn_slave);
+
+    if (my_errno)
+    {
+        if (verbose)
+        {
+            tprintf("Failed to connect to readwritesplit: %d, %s", my_errno, mysql_error(conn_slave));
+        }
+        rc = my_errno;
+    }
+
+    return rc;
 }
