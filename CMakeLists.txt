@@ -465,7 +465,11 @@ add_test_executable(namedserverfilter.cpp namedserverfilter namedserverfilter LA
 add_test_executable(open_close_connections.cpp open_close_connections replication LABELS maxscale REPL_BACKEND)
 
 # Open and immediatelly close a big number of connections, ssl is in use
-add_test_script(open_close_connections_ssl open_close_connections ssl LABELS maxscale REPL_BACKEND)
+#
+# The test is broken due to some problem in the connector. It crashes with a
+# double free error somewhere deep inside the connector/SSL libraries.
+#
+# add_test_script(open_close_connections_ssl open_close_connections ssl LABELS maxscale REPL_BACKEND)
 
 # Persistant connection test
 add_test_executable(pers_01.cpp pers_01 pers_01 LABELS maxscale REPL_BACKEND GALERA_BACKEND)
@@ -598,10 +602,13 @@ set_tests_properties(binlog_semisync_txs0_ss0 PROPERTIES TIMEOUT 3600)
 set_tests_properties(binlog_semisync_txs0_ss1 PROPERTIES TIMEOUT 3600)
 set_tests_properties(binlog_semisync_txs1_ss0 PROPERTIES TIMEOUT 3600)
 
+#
+# The encryption tests don't work as they require the file key management plugin
+#
 # Binlog encription test (aes_cbr encryption)
-add_test_executable(mxs1073_binlog_enc.cpp mxs1073_binlog_enc binlog_enc_aes_cbc LABELS binlogrouter 10.1 BREAKS_REPL)
+#add_test_executable(mxs1073_binlog_enc.cpp mxs1073_binlog_enc binlog_enc_aes_cbc LABELS binlogrouter 10.1 BREAKS_REPL)
 # Binlog encription test (aes_ctr encryption)
-add_test_script(mxs1073_binlog_enc_aes_ctr mxs1073_binlog_enc binlog_enc_aes_ctr LABELS binlogrouter 10.1 BREAKS_REPL)
+#add_test_script(mxs1073_binlog_enc_aes_ctr mxs1073_binlog_enc binlog_enc_aes_ctr LABELS binlogrouter 10.1 BREAKS_REPL)
 
 # Test of CDC protocol (avro listener)
 add_test_executable(cdc_client.cpp cdc_client avro LABELS avrorouter binlogrouter BREAKS_REPL)
