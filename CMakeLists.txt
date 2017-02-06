@@ -458,6 +458,10 @@ add_test_executable(mxs957.cpp mxs957 replication LABELS readwritesplit REPL_BAC
 # Regression case for the bug "Defunct processes after maxscale have executed script during failover"
 add_test_executable(mxs1045.cpp mxs1045 mxs1045 LABELS maxscale REPL_BACKEND)
 
+# MXS-1123: connect_timeout setting causes frequent disconnects
+# https://jira.mariadb.org/browse/MXS-1123
+add_test_executable(mxs1123.cpp mxs1123 mxs1123 LABELS maxscale REPL_BACKEND)
+
 # 'namedserverfilter' test
 add_test_executable(namedserverfilter.cpp namedserverfilter namedserverfilter LABELS namedserverfilter LIGHT REPL_BACKEND)
 
