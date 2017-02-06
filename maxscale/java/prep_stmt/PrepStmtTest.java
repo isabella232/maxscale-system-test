@@ -36,77 +36,86 @@ public class PrepStmtTest {
             MaxScaleConfiguration config = new MaxScaleConfiguration("java_prep_stmt");
             MaxScaleConnection maxscale = new MaxScaleConnection();
 
-            test_iter = ITERATIONS_SMOKE;
+            try {
+                test_iter = ITERATIONS_SMOKE;
 
-            // Prepare test database
-            System.out.println("Creating databases and tables..");
-            maxscale.query(maxscale.getConnMaster(), "DROP DATABASE IF EXISTS " + DATABASE_NAME);
-            maxscale.query(maxscale.getConnMaster(), "CREATE DATABASE " + DATABASE_NAME);
-            maxscale.query(maxscale.getConnMaster(), "CREATE TABLE " + DATABASE_NAME
-                           + "." + TABLE_NAME + "(id int primary key auto_increment, data varchar(128))");
+                // Prepare test database
+                System.out.println("Creating databases and tables..");
+                maxscale.query(maxscale.getConnMaster(), "DROP DATABASE IF EXISTS " + DATABASE_NAME);
+                maxscale.query(maxscale.getConnMaster(), "CREATE DATABASE " + DATABASE_NAME);
+                maxscale.query(maxscale.getConnMaster(), "CREATE TABLE " + DATABASE_NAME
+                               + "." + TABLE_NAME + "(id int primary key auto_increment, data varchar(128))");
 
 
-            conn_str = "jdbc:mariadb://" + maxscale.getIp() + ":" +
-                MaxScaleConnection.READWRITESPLIT_PORT + "/test?";
-            user = maxscale.getUser();
-            password = maxscale.getPassword();
+                conn_str = "jdbc:mariadb://" + maxscale.getIp() + ":" +
+                    MaxScaleConnection.READWRITESPLIT_PORT + "/test?";
+                user = maxscale.getUser();
+                password = maxscale.getPassword();
 
-            ArrayList<Thread> threads = new ArrayList<>();
+                ArrayList<Thread> threads = new ArrayList<>();
 
-            for (int i = 0; i < THREADS; i++) {
-                threads.add(new Thread(){
-                        public void run() {
+                for (int i = 0; i < THREADS; i++) {
+                    threads.add(new Thread(){
+                            public void run() {
 
-                            try  {
-                                Connection conn = DriverManager.getConnection(conn_str, user, password);
-                                conn.setAutoCommit(false);
+                                try  {
+                                    Connection conn = DriverManager.getConnection(conn_str, user, password);
+                                    conn.setAutoCommit(false);
 
-                                for (int i = 0; i < test_iter; i++) {
-                                    conn.isValid(1);
+                                    for (int i = 0; i < test_iter; i++) {
+                                        conn.isValid(1);
 
-                                    PreparedStatement ps_insert = conn.prepareStatement(PrepStmtTest.INSERT_SQL);
+                                        PreparedStatement ps_insert = conn.prepareStatement(PrepStmtTest.INSERT_SQL);
 
-                                    ps_insert.setString(1, String.valueOf(i));
-                                    ps_insert.executeUpdate();
-                                    conn.commit();
+                                        ps_insert.setString(1, String.valueOf(i));
+                                        ps_insert.executeUpdate();
+                                        conn.commit();
 
-                                    conn.isValid(1);
+                                        conn.isValid(1);
 
-                                    PreparedStatement ps_select = conn.prepareStatement(PrepStmtTest.SELECT_SQL);
-                                    ps_select.setInt(1, i);
-                                    ResultSet rset = ps_select.executeQuery();
+                                        PreparedStatement ps_select = conn.prepareStatement(PrepStmtTest.SELECT_SQL);
+                                        ps_select.setInt(1, i);
+                                        ResultSet rset = ps_select.executeQuery();
 
-                                    conn.isValid(1);
+                                        conn.isValid(1);
 
-                                    while (rset.next()) {
-                                        int r = rset.getInt(1);
-                                        String s = rset.getString(2);
-                                        if (i % 10 == 0) {
-                                            System.out.println("Result: " + String.valueOf(r) + " " + s);
+                                        while (rset.next()) {
+                                            int r = rset.getInt(1);
+                                            String s = rset.getString(2);
+                                            if (i % 10 == 0) {
+                                                System.out.println("Result: " + String.valueOf(r) + " " + s);
+                                            }
                                         }
                                     }
+                                    conn.close();
+                                } catch (Exception ex) {
+                                    System.out.println("Error: " + ex.getMessage());
+                                    ex.printStackTrace();
+                                    System.exit(1);
                                 }
-                                conn.close();
-                            } catch (Exception ex) {
-                                System.out.println("Error: " + ex.getMessage());
-                                ex.printStackTrace();
-                                System.exit(1);
                             }
-                        }
-                    });
+                        });
+                }
+
+                System.out.println("Starting " + String.valueOf(threads.size()) + " threads");
+
+                for (Thread a: threads) {
+                    a.start();
+                }
+
+                for (Thread a: threads) {
+                    a.join();
+                }
+
+            } catch (Exception ex) {
+                error = true;
+                System.out.println("Error: " + ex.getMessage());
+                ex.printStackTrace();
             }
 
-            System.out.println("Starting " + String.valueOf(threads.size()) + " threads");
-
-            for (Thread a: threads) {
-                a.start();
-            }
-
-            for (Thread a: threads) {
-                a.join();
-            }
-
-        } catch (Exception ex) {
+            config.close();
+        }
+        catch (Exception ex) {
             error = true;
             System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
