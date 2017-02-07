@@ -1621,11 +1621,22 @@ int TestConnections::check_t1_table(bool presence, char * db)
     return global_result - start_result;
 }
 
-int TestConnections::try_query(MYSQL *conn, const char *sql)
+int TestConnections::try_query(MYSQL *conn, const char *format, ...)
 {
-    int res = execute_query(conn, sql);
-    int len = strlen(sql);
-    add_result(res, "Query '%.*s%s' failed!\n", len < 100 ? len : 100, sql, len < 100 ? "" : "...");
+    va_list valist;
+
+    va_start(valist, format);
+    int message_len = vsnprintf(NULL, 0, format, valist);
+    va_end(valist);
+
+    char sql[message_len + 1];
+
+    va_start(valist, format);
+    vsnprintf(sql, sizeof(sql), format, valist);
+    va_end(valist);
+
+    int res = execute_query1(conn, sql, false);
+    add_result(res, "Query '%.*s%s' failed!\n", message_len < 100 ? message_len : 100, sql, message_len < 100 ? "" : "...");
     return res;
 }
 

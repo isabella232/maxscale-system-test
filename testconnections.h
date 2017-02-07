@@ -600,7 +600,7 @@ public:
      * @param sql SQL string
      * @return 0 if ok
      */
-    int try_query(MYSQL *conn, const char *sql);
+    int try_query(MYSQL *conn, const char *sql, ...);
 
     /**
      * @brief try_query_all Executes SQL query on all MaxScale connections
