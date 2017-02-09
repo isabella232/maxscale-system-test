@@ -537,6 +537,10 @@ add_test_executable(sharding.cpp sharding sharding LABELS schemarouter BREAKS_RE
 # Do short sessions (open conn, short query, close conn) in the loop
 add_test_executable(short_sessions.cpp short_sessions replication LABELS readwritesplit readconnroute REPL_BACKEND)
 
+# Do short sessions (open conn, short query, close conn) in the loop from a number of threads
+add_test_executable(mxs619_short_sessions.cpp mxs619_short_sessions replication LABELS readwritesplit readconnroute REPL_BACKEND)
+
+
 # Do short sessions (open conn, short query, close conn) in the loop, client ssl is ON
 add_test_script(short_sessions_ssl short_sessions ssl LABELS readwritesplit readconnroute REPL_BACKEND)
 
