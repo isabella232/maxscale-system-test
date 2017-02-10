@@ -29,7 +29,7 @@ void TestConnections::skip_maxscale_start(bool value)
 TestConnections::TestConnections(int argc, char *argv[]):
     copy_logs(true), no_backend_log_copy(false), use_snapshots(false), verbose(false), rwsplit_port(4006),
     readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
-    global_result(0)
+    global_result(0), binlog_cmd_option(0)
 {
     gettimeofday(&start_time, NULL);
     ports[0] = rwsplit_port;

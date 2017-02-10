@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
     sleep(5);
 
 
-    Test->binlog_cmd_option = 0;
     Test->start_binlog();
 
     Test->set_timeout(120);
