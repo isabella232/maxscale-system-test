@@ -291,7 +291,7 @@ add_test_script(load_balancing_pers10 load_balancing load_pers10 LABELS readwrit
 add_test_executable(longblob.cpp longblob longblob LABELS readwritesplit readconnroute UNSTABLE HEAVY REPL_BACKEND)
 
 # Test with extremely big blob inserting/selecting with > 16 mb data blocks
-add_test_executable(mxs1110_16mb.cpp mxs1110_16mb longblob LABELS readwritesplit UNSTABLE HEAVY REPL_BACKEND)
+add_test_executable(mxs1110_16mb.cpp mxs1110_16mb longblob LABELS readwritesplit readconnroute HEAVY REPL_BACKEND)
 
 # INSERT extremelly big number of rows
 add_test_executable(lots_of_rows.cpp lots_of_rows galera LABELS readwritesplit HEAVY GALERA_BACKEND)

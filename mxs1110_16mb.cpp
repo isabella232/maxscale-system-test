@@ -1,6 +1,7 @@
 /**
  * @file mxs1110_16mb.cpp - trying to use LONGBLOB with > 16 mb data blocks
  * - try to insert large LONGBLOB via RWSplit in blocks > 16mb
+ * - read data via RWsplit, ReadConn master, ReadConn slave, compare with inserted data
  */
 
 
