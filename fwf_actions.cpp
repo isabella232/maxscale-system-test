@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     test->tprintf("Creating rules\n");
     test->stop_maxscale();
 
-    sprintf(rules_dir, "%s/fw/", test->test_dir);
+    sprintf(rules_dir, "%s/fw/", test_dir);
     copy_rules(test, (char*) "rules_actions", rules_dir);
 
     test->set_timeout(60);

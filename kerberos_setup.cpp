@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     fclose(f);
 
     Test->tprintf("Copying 'hosts' and krb5.conf files to all nodes, installing kerberos client and MariaDB plugins\n");
-    sprintf(str, "%s/krb5.conf", Test->test_dir);
+    sprintf(str, "%s/krb5.conf", test_dir);
     for (i = 0; i < Test->repl->N; i++)
     {
         Test->repl->ssh_node(i, (char *)
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Coping keytab and .cnf files to all nodes and executing knit for all nodes\n");
     for (i = 0; i < Test->repl->N; i++)
     {
-        sprintf(str, "%s/kerb.cnf", Test->test_dir);
+        sprintf(str, "%s/kerb.cnf", test_dir);
         Test->repl->copy_to_node(str, (char *) "~/", i);
         Test->repl->ssh_node(i, (char *) "cp ~/kerb.cnf /etc/my.cnf.d/", true);
 

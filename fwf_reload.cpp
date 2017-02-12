@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     char deny_file[4096];
     char rules_dir[4096];
 
-    sprintf(rules_dir, "%s/fw/", Test->test_dir);
+    sprintf(rules_dir, "%s/fw/", test_dir);
     int N = 10;
     int i;
 
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         Test->ssh_maxscale(true, "maxadmin call command dbfwfilter rules/reload \"Database Firewall\"");
 
         int local_result = 0;
-        sprintf(pass_file, "%s/fw/pass%d", Test->test_dir, i);
+        sprintf(pass_file, "%s/fw/pass%d", test_dir, i);
         FILE *file = fopen(pass_file, "r");
 
         if (file)
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
             break;
         }
 
-        sprintf(deny_file, "%s/fw/deny%d", Test->test_dir, i);
+        sprintf(deny_file, "%s/fw/deny%d", test_dir, i);
         file = fopen(deny_file, "r");
 
         if (file)

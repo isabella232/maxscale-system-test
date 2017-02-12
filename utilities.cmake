@@ -19,7 +19,7 @@ function(add_test_executable source name template)
   add_template(${name} ${template})
   add_executable(${name} ${source})
   target_link_libraries(${name} testcore)
-  add_test(${name} ${name} ${name})
+  add_test(NAME ${name} COMMAND ${name} ${name} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
   list(REMOVE_AT ARGV 0 1 2 3)
 
@@ -43,7 +43,7 @@ endfunction()
 function(add_test_script name script template labels)
   file(APPEND templates "${name} ${template}\n")
   add_template(${name} ${template})
-  add_test(${name} ${script} ${name})
+  add_test(NAME ${name} COMMAND ${script} ${name} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
   list(REMOVE_AT ARGV 0 1 2)
 

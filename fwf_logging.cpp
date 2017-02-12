@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     TestConnections *test = new TestConnections(argc, argv);
     test->stop_timeout();
 
-    sprintf(rules_dir, "%s/fw/", test->test_dir);
+    sprintf(rules_dir, "%s/fw/", test_dir);
 
     test->tprintf("Creating rules\n");
     test->stop_maxscale();

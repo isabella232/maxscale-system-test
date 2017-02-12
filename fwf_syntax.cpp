@@ -66,7 +66,7 @@ int main(int argc, char** argv)
         truncate(temp_rules, 0);
         add_rule(rules_failure[i]);
         add_rule(users_ok[0]);
-        copy_rules(test, (char*)temp_rules, (char*)test->test_dir);
+        copy_rules(test, (char*)temp_rules, (char*)test_dir);
 
         test->tprintf("Testing rule: %s\n", rules_failure[i]);
         test->start_maxscale();

@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     char rules_dir[4096];
     FILE* file;
 
-    sprintf(rules_dir, "%s/fw2/", Test->test_dir);
+    sprintf(rules_dir, "%s/fw2/", test_dir);
     int N = 4;
     int i;
 
@@ -81,8 +81,8 @@ int main(int argc, char *argv[])
         Test->start_maxscale();
         Test->connect_rwsplit();
 
-        sprintf(pass_file, "%s/fw2/pass%d", Test->test_dir, i);
-        sprintf(deny_file, "%s/fw2/deny%d", Test->test_dir, i);
+        sprintf(pass_file, "%s/fw2/pass%d", test_dir, i);
+        sprintf(deny_file, "%s/fw2/deny%d", test_dir, i);
 
         Test->tprintf("********** Trying queries that should be OK ********** \n");
         local_result += read_and_execute_queries(Test, pass_file, 0);

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
 
     char cmd [1024];
-    sprintf(cmd, "%s/utf64.cnf", Test->test_dir);
+    sprintf(cmd, "%s/utf64.cnf", test_dir);
     for (int i = 0; i < Test->repl->N; i++)
     {
         Test->repl->copy_to_node(cmd, (char *) "./", i);

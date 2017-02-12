@@ -1,14 +1,14 @@
-#include "testconnections.h"
-#include "sql_t1.h"
 #include <getopt.h>
-#include <time.h>
 #include <libgen.h>
-#include "maxadmin_operations.h"
-#include "templates.h"
-#include "mariadb_func.h"
+#include <pthread.h>
 #include <stdarg.h>
 #include <sys/time.h>
-#include <pthread.h>
+#include <time.h>
+
+#include "mariadb_func.h"
+#include "maxadmin_operations.h"
+#include "sql_t1.h"
+#include "testconnections.h"
 
 namespace maxscale
 {
@@ -31,6 +31,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
     readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
     global_result(0), binlog_cmd_option(0)
 {
+    chdir(test_dir);
     gettimeofday(&start_time, NULL);
     ports[0] = rwsplit_port;
     ports[1] = readconn_master_port;
@@ -119,10 +120,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
     }
 
     char short_path[1024];
-    strcpy(short_path, dirname(argv[0]));
-    realpath(short_path, test_dir);
     printf("test_dir is %s\n", test_dir);
-    setenv("test_dir", test_dir, 1);
     sprintf(get_logs_command, "%s/get_logs.sh", test_dir);
 
     sprintf(ssl_options, "--ssl-cert=%s/ssl-cert/client-cert.pem --ssl-key=%s/ssl-cert/client-key.pem",

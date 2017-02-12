@@ -2,8 +2,9 @@
 #define TESTCONNECTIONS_H
 
 #include "mariadb_nodes.h"
-#include <pthread.h>
+#include "templates.h"
 #include <fcntl.h>
+#include <pthread.h>
 #include <sys/time.h>
 
 /**
@@ -180,11 +181,6 @@ public:
       * @brief maxscale_lbinog_dir name of binlog files (for binlog router) directory
       */
     char maxscale_binlog_dir[4096];
-
-    /**
-     * @brief test_dir path to test application
-     */
-    char test_dir[4096];
 
     /**
      * @brief maxscale_access_user username to access test machines

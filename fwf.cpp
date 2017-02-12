@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     char rules_dir[4096];
     FILE* file;
 
-    sprintf(rules_dir, "%s/fw/", Test->test_dir);
+    sprintf(rules_dir, "%s/fw/", test_dir);
     int N = 10;
     int i;
 
@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
         Test->start_maxscale();
         Test->connect_rwsplit();
 
-        sprintf(pass_file, "%s/fw/pass%d", Test->test_dir, i);
-        sprintf(deny_file, "%s/fw/deny%d", Test->test_dir, i);
+        sprintf(pass_file, "%s/fw/pass%d", test_dir, i);
+        sprintf(deny_file, "%s/fw/deny%d", test_dir, i);
         Test->tprintf("Pass file: %s\n", pass_file);
         Test->tprintf("Deny file: %s\n", deny_file);
 
