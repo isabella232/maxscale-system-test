@@ -38,6 +38,8 @@ private:
     /** If false, logs are copied in the destructor */
     bool copy_logs;
 
+    /** Whether timeouts are enabled or not */
+    bool enable_timeouts;
 public:
     /**
      * @brief TestConnections constructor: reads environmental variables, copies MaxScale.cnf for MaxScale machine

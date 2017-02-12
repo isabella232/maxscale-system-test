@@ -29,7 +29,7 @@ void TestConnections::skip_maxscale_start(bool value)
 TestConnections::TestConnections(int argc, char *argv[]):
     copy_logs(true), no_backend_log_copy(false), use_snapshots(false), verbose(false), rwsplit_port(4006),
     readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
-    global_result(0), binlog_cmd_option(0)
+    global_result(0), binlog_cmd_option(0), enable_timeouts(true)
 {
     chdir(test_dir);
     gettimeofday(&start_time, NULL);
@@ -51,6 +51,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
         {"no-nodes-check", no_argument, 0, 'r'},
         {"quiet", no_argument, 0, 'q'},
         {"restart-galera", no_argument, 0, 'g'},
+        {"no-timeouts", no_argument, 0, 'z'},
         {0, 0, 0, 0}
     };
 
@@ -58,7 +59,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
     int option_index = 0;
     bool restart_galera = false;
 
-    while ((c = getopt_long(argc, argv, "vnqhsirg", long_options, &option_index)) != -1)
+    while ((c = getopt_long(argc, argv, "vnqhsirgz", long_options, &option_index)) != -1)
     {
         switch (c)
         {
@@ -81,7 +82,8 @@ TestConnections::TestConnections(int argc, char *argv[]):
                    "-q, --silent\n"
                    "-s, --no-maxscale-start\n"
                    "-i, --no-maxscale-init\n"
-                   "-g, --restart-galera\n");
+                   "-g, --restart-galera\n"
+                   "-z, --no-timeouts\n");
             exit(0);
             break;
 
@@ -103,6 +105,10 @@ TestConnections::TestConnections(int argc, char *argv[]):
             printf("Restarting Galera setup\n");
             restart_galera = true;
             break;
+
+            case 'z':
+                enable_timeouts = false;
+                break;
 
         default:
             printf("UNKNOWN OPTION: %c\n", c);
@@ -1420,7 +1426,10 @@ int TestConnections::get_client_ip(char * ip)
 
 int TestConnections::set_timeout(long int timeout_seconds)
 {
-    timeout = timeout_seconds;
+    if (enable_timeouts)
+    {
+        timeout = timeout_seconds;
+    }
     return 0;
 }
 
