@@ -53,7 +53,7 @@ add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
   sql_t1.cpp test_binlog_fnc.cpp get_my_ip.cpp big_load.cpp  get_com_select_insert.cpp
   different_size.cpp fw_copy_rules maxinfo_func.cpp config_operations.cpp rds_vpc.cpp execute_cmd.cpp
-  blob_test.cpp)
+  blob_test.cpp cdc_connector.cpp)
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
 
@@ -74,6 +74,8 @@ add_template(mxs720_line_with_no_equal mxs720_line_with_no_equal)
 add_template(mxs720_wierd_line mxs720_wierd_line)
 add_template(mxs710_bad_socket mxs799)
 add_test_executable(config_test.cpp config_test replication LABELS CONFIG)
+
+add_subdirectory(cdc_datatypes)
 
 # Repeatedly connect to maxscale while the backends reject all connections, expect no crash
 add_test_executable(backend_auth_fail.cpp backend_auth_fail replication LABELS readconnroute REPL_BACKEND)

@@ -538,8 +538,9 @@ int TestConnections::init_maxscale()
                  "chmod 664 %s/certs/*.pem;"
                  " chmod a+x %s;"
                  "killall -9 maxscale;"
+                 "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT;"
                  "rm -f %s/maxscale.log %s/maxscale1.log;"
-                 "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/;"
+                 "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/ /var/lib/maxscale/*;"
                  "%s",
                  maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
                  maxscale_log_dir, maxscale_log_dir, maxscale::start ? "service maxscale restart" : "");

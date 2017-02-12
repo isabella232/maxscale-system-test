@@ -14,7 +14,8 @@
 #include "sql_const.h"
 #include <string>
 
-Mariadb_nodes::Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose)
+Mariadb_nodes::Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose):
+v51(false)
 {
     strcpy(prefix, pref);
     memset(this->nodes, 0, sizeof(this->nodes));
