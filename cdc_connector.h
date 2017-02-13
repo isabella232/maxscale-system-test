@@ -23,22 +23,22 @@ public:
     void closeConnection();
     const std::string& getSchema() const
     {
-        return my_schema;
+        return m_schema;
     }
     const std::string& getError() const
     {
-        return my_error;
+        return m_error;
     }
 
 private:
-    int my_fd;
-    uint32_t my_flags;
-    uint16_t my_port;
-    std::string my_address;
-    std::string my_user;
-    std::string my_password;
-    std::string my_error;
-    std::string my_schema;
+    int m_fd;
+    uint32_t m_flags;
+    uint16_t m_port;
+    std::string m_address;
+    std::string m_user;
+    std::string m_password;
+    std::string m_error;
+    std::string m_schema;
 
     bool doAuth();
     bool doRegistration();

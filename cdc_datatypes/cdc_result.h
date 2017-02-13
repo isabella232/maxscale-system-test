@@ -11,45 +11,45 @@ extern "C"
 
 class TestOutput
 {
-private:
-    std::string my_value;
-
 public:
     TestOutput(const std::string& input, const std::string& name);
     const std::string& getValue() const;
+
+private:
+    std::string m_value;
 };
 
 class TestInput
 {
-private:
-    std::string my_value;
-    std::string my_type;
-    std::string my_name;
-
 public:
     TestInput(const std::string& value, const std::string& type, const std::string& name = "a");
     const std::string& getName() const
     {
-        return my_name;
+        return m_name;
     }
     const std::string& getValue() const
     {
-        return my_value;
+        return m_value;
     }
     const std::string& getType() const
     {
-        return my_type;
+        return m_type;
     }
 
     bool operator ==(const TestOutput& output) const
     {
-        return my_value == output.getValue();
+        return m_value == output.getValue();
     }
 
     bool operator !=(const TestOutput& output) const
     {
         return !(*this == output);
     }
+
+private:
+    std::string m_value;
+    std::string m_type;
+    std::string m_name;
 };
 
 #ifdef __cplusplus

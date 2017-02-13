@@ -577,7 +577,7 @@ int Mariadb_nodes::check_replication()
 
         if (mysql_errno(conn) != 0)
         {
-            printf("Error connectiong node %d\n", i);
+            printf("Error connecting to node %d: %s\n", i, mysql_error(conn));
             fflush(stdout);
             res1 = 1;
         }
@@ -606,7 +606,7 @@ int Mariadb_nodes::check_replication()
                         {
                             if (mysql_num_rows(res) != N - 1)
                             {
-                                printf("Number if slaves is not equal to N-1\n");
+                                printf("Number of slave hosts is not %d\n", N - 1);
                                 fflush(stdout);
                                 if (v51)
                                 {
@@ -635,7 +635,7 @@ int Mariadb_nodes::check_replication()
                 // checking slave
                 if (find_field(conn, (char *) "SHOW SLAVE STATUS;", (char *) "Slave_IO_Running", str) != 0)
                 {
-                    printf("Slave_IO_Running is not found in SHOW SLAVE STATUS results\n");
+                    printf("Node %d: Slave_IO_Running not found in SHOW SLAVE STATUS\n", i);
                     fflush(stdout);
                     res1 = 1;
                 }
@@ -643,7 +643,7 @@ int Mariadb_nodes::check_replication()
                 {
                     if (strcmp(str, "Yes") != 0 )
                     {
-                        printf("Slave_IO_Running is not Yes\n");
+                        printf("Node %d: Slave_IO_Running is '%s'\n", i, str);
                         fflush(stdout);
                         res1 = 1;
                     }
@@ -651,7 +651,7 @@ int Mariadb_nodes::check_replication()
 
                 if (find_field(conn, (char *) "SHOW SLAVE STATUS;", (char *) "Slave_SQL_Running", str) != 0)
                 {
-                    printf("Slave_SQL_Running is not found in SHOW SLAVE STATUS results\n");
+                    printf("Node %d: Slave_SQL_Running not found in SHOW SLAVE STATUS\n", i);
                     fflush(stdout);
                     res1 = 1;
                 }
@@ -659,7 +659,7 @@ int Mariadb_nodes::check_replication()
                 {
                     if (strcmp(str, "Yes") != 0 )
                     {
-                        printf("Slave_SQL_Running is not Yes\n");
+                        printf("Node %d: Slave_SQL_Running is '%s'\n", i, str);
                         fflush(stdout);
                         res1 = 1;
                     }

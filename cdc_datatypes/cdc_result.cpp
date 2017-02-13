@@ -7,12 +7,12 @@ using std::cout;
 using std::endl;
 
 TestInput::TestInput(const std::string& value, const std::string& type, const std::string& name) :
-    my_value(value), my_type(type), my_name(name)
+    m_value(value), m_type(type), m_name(name)
 {
-    if (my_value[0] == '"' || my_value[0] == '\'')
+    if (m_value[0] == '"' || m_value[0] == '\'')
     {
         /** Remove quotes from the value */
-        my_value = my_value.substr(1, my_value.length() - 2);
+        m_value = m_value.substr(1, m_value.length() - 2);
     }
 }
 
@@ -50,7 +50,7 @@ TestOutput::TestOutput(const std::string& input, const std::string& name)
                 cout << "Value '" << name << "' is not a primitive type: " << input << endl;
             }
 
-            my_value = ss.str();
+            m_value = ss.str();
         }
         else
         {
@@ -67,5 +67,5 @@ TestOutput::TestOutput(const std::string& input, const std::string& name)
 
 const std::string& TestOutput::getValue() const
 {
-    return my_value;
+    return m_value;
 }
