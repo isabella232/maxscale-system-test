@@ -104,12 +104,10 @@ int main(int argc, char *argv[])
 
     sleep(2);
 
-    Test->tprintf("Test 1 - checking status");
     check_status(Test, "server1", "Master, Running");
     check_status(Test, "server2", "Master, Running");
     check_status(Test, "server3", "Master, Running");
     check_status(Test, "server4", "Slave, Running");
-    Test->tprintf("Test 1 - checking groups");
     check_group(Test, "server1", "1");
     check_group(Test, "server2", "1");
     check_group(Test, "server3", "1");
@@ -210,6 +208,11 @@ int main(int argc, char *argv[])
     check_group(Test, "server4", "2");
 
     Test->repl->execute_query_all_nodes("STOP SLAVE; RESET SLAVE ALL; RESET MASTER;SET GLOBAL read_only='OFF';");
+    Test->repl->connect();
+    change_master(Test, 1, 0);
+    change_master(Test, 2, 0);
+    change_master(Test, 3, 0);
+    Test->repl->fix_replication();
 
     Test->copy_all_logs();
     return Test->global_result;

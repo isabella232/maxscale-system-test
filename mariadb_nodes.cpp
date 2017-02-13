@@ -550,6 +550,36 @@ int Mariadb_nodes::check_nodes()
     return res;
 }
 
+static bool bad_slave_thread_status(MYSQL *conn, const char *field, int node)
+{
+    char str[1024] = "";
+    bool rval = false;
+
+    for (int i = 0; i < 2; i++)
+    {
+        if (find_field(conn, "SHOW SLAVE STATUS;", field, str) != 0)
+        {
+            printf("Node %d: %s not found in SHOW SLAVE STATUS\n", node, field);
+            fflush(stdout);
+            break;
+        }
+        else if (strcmp(str, "Yes") == 0 || strcmp(str, "No") == 0)
+        {
+            break;
+        }
+
+        /** Any other state is transient and we should try again */
+        sleep(1);
+    }
+
+    if (strcmp(str, "Yes") != 0)
+    {
+        printf("Node %d: %s is '%s'\n", node, field, str);
+        fflush(stdout);
+        rval = true;
+    }
+}
+
 int Mariadb_nodes::check_replication()
 {
     int master = 0;
@@ -630,40 +660,10 @@ int Mariadb_nodes::check_replication()
                 }
 
             }
-            else
+            else if (bad_slave_thread_status(conn, "Slave_IO_Running", i) ||
+                     bad_slave_thread_status(conn, "Slave_SQL_Running", i))
             {
-                // checking slave
-                if (find_field(conn, (char *) "SHOW SLAVE STATUS;", (char *) "Slave_IO_Running", str) != 0)
-                {
-                    printf("Node %d: Slave_IO_Running not found in SHOW SLAVE STATUS\n", i);
-                    fflush(stdout);
-                    res1 = 1;
-                }
-                else
-                {
-                    if (strcmp(str, "Yes") != 0 )
-                    {
-                        printf("Node %d: Slave_IO_Running is '%s'\n", i, str);
-                        fflush(stdout);
-                        res1 = 1;
-                    }
-                }
-
-                if (find_field(conn, (char *) "SHOW SLAVE STATUS;", (char *) "Slave_SQL_Running", str) != 0)
-                {
-                    printf("Node %d: Slave_SQL_Running not found in SHOW SLAVE STATUS\n", i);
-                    fflush(stdout);
-                    res1 = 1;
-                }
-                else
-                {
-                    if (strcmp(str, "Yes") != 0 )
-                    {
-                        printf("Node %d: Slave_SQL_Running is '%s'\n", i, str);
-                        fflush(stdout);
-                        res1 = 1;
-                    }
-                }
+                res1 = 1;
             }
         }
     }
