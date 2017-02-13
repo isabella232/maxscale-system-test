@@ -139,13 +139,13 @@ int check_longblob_data(TestConnections* Test, MYSQL * conn, unsigned long chunk
     result[2].buffer         = data;
     result[2].buffer_length = chunk_size * chunks * sizeof(long int);
 
-/*
-    if (mysql_stmt_bind_param(stmt, param) != 0)
-    {
-        printf("Could not bind parameters\n");
-        return 1;
-    }
-*/
+    /*
+        if (mysql_stmt_bind_param(stmt, param) != 0)
+        {
+            printf("Could not bind parameters\n");
+            return 1;
+        }
+    */
     if (mysql_stmt_bind_result(stmt, result) != 0)
     {
         printf("Could not bind results\n");
@@ -189,6 +189,5 @@ int check_longblob_data(TestConnections* Test, MYSQL * conn, unsigned long chunk
 
     mysql_stmt_close(stmt);
 }
-
 
 
