@@ -395,7 +395,7 @@ int Mariadb_nodes::start_replication()
         ssh_node(i, "mysql -u root < /tmp/master_backup.sql", true);
         char query[512];
         sprintf(query, "mysql -u root -e \"CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
-                "MASTER_USER=\\\"repl\\\", MASTER_PASSWORD=\\\"repl\\\";"
+                "MASTER_USER=\\\"repl\\\", MASTER_PASSWORD=\\\"repl\\\", MASTER_USE_GTID=SLAVE_POS;"
                 "START SLAVE;\"", IP_private[0], port[0]);
         ssh_node(i, query, true);
     }
