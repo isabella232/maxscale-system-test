@@ -1,24 +1,22 @@
 #!/bin/bash
 
 function do_ssh() {
-    ssh -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet $maxscale_access_user@$maxscale_IP "$@"
+    ssh -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet $maxscale_access_user@$maxscale_IP
 }
 
 function do_scp() {
     scp -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet $1 $maxscale_access_user@$maxscale_IP:$2
 }
 
-do_ssh <<EOF
-command -v wget || sudo yum -y install wget
-command -v replication-manager
-if [ $? -ne 0 ]
-then
-    wget -q https://github.com/tanji/replication-manager/releases/download/1.0.2/replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
-    sudo yum -y install ./replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
-fi
+function install_mrm() {
+    do_ssh <<EOF
+command -v wget > /dev/null || sudo yum -y install wget
+wget -q https://github.com/tanji/replication-manager/releases/download/1.0.2/replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
+sudo yum -y install ./replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
+rm ./replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
 EOF
 
-cat <<EOF > config.toml
+    cat <<EOF > config.toml
 # config.toml
 # Example replication-manager configuration file
 
@@ -88,10 +86,33 @@ gtidcheck = true
 
 EOF
 
-do_scp './config.toml' '~/config.toml'
+    do_scp './config.toml' '~/config.toml'
 
-do_ssh <<EOF
+    do_ssh <<EOF
 sudo mkdir -p /etc/replication-manager/
 sudo cp ./config.toml /etc/replication-manager/config.toml
 sudo systemctl restart replication-manager
 EOF
+}
+
+function remove_mrm() {
+    do_ssh <<EOF
+sudo systemctl stop replication-manager
+sudo yum -y remove replication-manager
+sudo rm /etc/replication-manager/config.toml
+EOF
+}
+
+case $1 in
+    install)
+        install_mrm
+        ;;
+
+    remove)
+        remove_mrm
+        ;;
+
+    *)
+        echo "Usage: `basename $0` { install | remove }"
+        ;;
+esac
