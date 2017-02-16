@@ -28,7 +28,7 @@ title = "Cluster01"
 connect-timeout = 1
 prefmaster = "$node_000_private_ip:$node_000_port"
 interactive = false
-log-level=3
+log-level=1
 # LOG
 # ---
 
@@ -51,7 +51,7 @@ failover-event-status = false
 
 # Timeout in seconds between consecutive monitoring
 # check type can be tcp or agent
-monitoring-ticker = 2
+monitoring-ticker = 1
 check-type = "tcp"
 check-replication-filters = true
 check-binlog-filters = true
@@ -59,7 +59,7 @@ check-replication-state = true
 
 # Failover after N failures detection
 # Reset number of failure if server auto recover after N seconds
-failcount = 1
+failcount = 2
 failcount-reset-time = 300
 
 # Cancel failover if already N failover
@@ -100,6 +100,7 @@ function remove_mrm() {
 sudo systemctl stop replication-manager
 sudo yum -y remove replication-manager
 sudo rm /etc/replication-manager/config.toml
+sudo rm /var/log/replication-manager.log
 EOF
 }
 

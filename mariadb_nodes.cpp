@@ -386,6 +386,16 @@ int Mariadb_nodes::start_replication()
     sprintf(str, "%s/master_backup.sql", test_dir);
     copy_from_node("/tmp/master_backup.sql", str, 0);
 
+    connect();
+    char master_gtid[1024];
+    find_field(nodes[0], "SELECT @@gtid_current_pos", "@@gtid_current_pos", master_gtid);
+    close_connections();
+
+    if (verbose)
+    {
+        printf("Master is at GTID: %s\n", master_gtid);
+    }
+
     for (int i = 1; i < N; i++)
     {
         // Reset all nodes by first loading the dump and then starting the replication
@@ -394,9 +404,11 @@ int Mariadb_nodes::start_replication()
         copy_to_node(str, "/tmp/master_backup.sql", i);
         ssh_node(i, "mysql -u root < /tmp/master_backup.sql", true);
         char query[512];
-        sprintf(query, "mysql -u root -e \"CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
+
+        sprintf(query, "mysql -u root -e \"SET GLOBAL GTID_SLAVE_POS=\\\"%s\\\";"
+                "CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
                 "MASTER_USER=\\\"repl\\\", MASTER_PASSWORD=\\\"repl\\\", MASTER_USE_GTID=SLAVE_POS;"
-                "START SLAVE;\"", IP_private[0], port[0]);
+                "START SLAVE;\"", master_gtid, IP_private[0], port[0]);
         ssh_node(i, query, true);
     }
 
