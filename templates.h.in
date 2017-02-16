@@ -12,6 +12,6 @@ static struct
 static const char * default_template = "replication";
 
 /** This is the working directory for all tests */
-static const char *test_dir = "/home/markusjm/system-test";
+static const char *test_dir = "@CMAKE_SOURCE_DIR@";
 
 #endif
