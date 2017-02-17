@@ -397,6 +397,7 @@ public:
 private:
 
     int check_node_ssh(int node);
+    bool check_master_node(MYSQL *conn);
 };
 
 class Galera_nodes : public Mariadb_nodes

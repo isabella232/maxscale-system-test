@@ -551,6 +551,67 @@ int Mariadb_nodes::check_nodes()
     return res;
 }
 
+bool Mariadb_nodes::check_master_node(MYSQL *conn)
+{
+    bool rval = true;
+
+    if (mysql_query(conn, "SHOW SLAVE HOSTS"))
+    {
+        printf("%s\n", mysql_error(conn));
+        rval = false;
+    }
+    else
+    {
+        MYSQL_RES *res = mysql_store_result(conn);
+
+        if (res)
+        {
+            int rows = mysql_num_rows(res);
+
+            if (rows != N - 1)
+            {
+                if (!v51)
+                {
+                    printf("Number of slave hosts is %d when it should be %d\n", rows, N - 1);
+                    rval = false;
+                }
+            }
+        }
+        mysql_free_result(res);
+    }
+
+    if (mysql_query(conn, "SHOW SLAVE STATUS"))
+    {
+        printf("%s\n", mysql_error(conn));
+        rval = false;
+    }
+    else
+    {
+        MYSQL_RES *res = mysql_store_result(conn);
+
+        if (res)
+        {
+            if (mysql_num_rows(res) > 0)
+            {
+                printf("The master is configured as a slave\n");
+                rval = false;
+            }
+            mysql_free_result(res);
+        }
+    }
+
+    char output[512];
+    find_field(conn, "SHOW VARIABLES LIKE 'read_only'", "Value", output);
+
+    if (strcmp(output, "OFF"))
+    {
+        printf("The master is in read-only mode\n");
+        rval = false;
+    }
+
+    return rval;
+}
+
 static bool bad_slave_thread_status(MYSQL *conn, const char *field, int node)
 {
     char str[1024] = "";
@@ -584,92 +645,39 @@ static bool bad_slave_thread_status(MYSQL *conn, const char *field, int node)
 int Mariadb_nodes::check_replication()
 {
     int master = 0;
-    int res1 = 0;
+    int res = 0;
     char str[1024];
-    MYSQL *conn;
-    MYSQL_RES *res;
-    //bool v51 = false;
+
     if (verbose)
     {
         printf("Checking Master/Slave setup\n");
         fflush(stdout);
     }
 
-    if (this->nodes[0] == NULL)
+    if (this->connect())
     {
-        this->connect();
+        return 1;
     }
 
-    res1 = get_versions();
+    res = get_versions();
 
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < N && res == 0; i++)
     {
-        conn = nodes[i];
-
-        if (mysql_errno(conn) != 0)
+        if (i == master)
         {
-            printf("Error connecting to node %d: %s\n", i, mysql_error(conn));
-            fflush(stdout);
-            res1 = 1;
+            if (!check_master_node(nodes[i]))
+            {
+                res = 1;
+            }
         }
-        else
+        else if (bad_slave_thread_status(nodes[i], "Slave_IO_Running", i) ||
+                 bad_slave_thread_status(nodes[i], "Slave_SQL_Running", i))
         {
-            if ( i == master )
-            {
-                // checking master
-                if (conn != NULL )
-                {
-                    if (mysql_query(conn, (char *) "SHOW SLAVE HOSTS;") != 0)
-                    {
-                        printf("%s\n", mysql_error(conn));
-                        res1 = 1;
-                    }
-                    else
-                    {
-                        res = mysql_store_result(conn);
-                        if (res == NULL)
-                        {
-                            printf("Error: can't get the result description\n");
-                            fflush(stdout);
-                            res1 = 1;
-                        }
-                        else
-                        {
-                            if (mysql_num_rows(res) != N - 1)
-                            {
-                                printf("Number of slave hosts is not %d\n", N - 1);
-                                fflush(stdout);
-                                if (v51)
-                                {
-                                    printf("But version is 5.1 is present in the setup, ignoring number of slaves\n");
-                                    fflush(stdout);
-                                }
-                                else
-                                {
-                                    res1 = 1;
-                                }
-                            }
-                        }
-                        mysql_free_result(res);
-                        do
-                        {
-                            res = mysql_store_result(conn);
-                            mysql_free_result(res);
-                        }
-                        while ( mysql_next_result(conn) == 0 );
-                    }
-                }
-
-            }
-            else if (bad_slave_thread_status(conn, "Slave_IO_Running", i) ||
-                     bad_slave_thread_status(conn, "Slave_SQL_Running", i))
-            {
-                res1 = 1;
-            }
+            res = 1;
         }
     }
 
-    return res1;
+    return res;
 }
 
 bool Mariadb_nodes::fix_replication()
