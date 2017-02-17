@@ -59,15 +59,15 @@ check-replication-state = true
 
 # Failover after N failures detection
 # Reset number of failure if server auto recover after N seconds
-failcount = 2
+failcount = 1
 failcount-reset-time = 300
 
 # Cancel failover if already N failover
 # Cancel failover if last failover was N seconds before
 # Cancel failover in semi-sync when one slave is not in sync
 # Cancel failover when replication delay is more than N seconds
-failover-limit = 0
-failover-time-limit = 0
+failover-limit = 100
+failover-time-limit = 1
 failover-at-sync = true
 switchover-at-sync = true
 maxdelay = 30
@@ -106,10 +106,12 @@ EOF
 
 case $1 in
     install)
+        echo "`date` Installing replication-manager"
         install_mrm
         ;;
 
     remove)
+        echo "`date` Removing replication-manager"
         remove_mrm
         ;;
 
