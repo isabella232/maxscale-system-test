@@ -381,20 +381,10 @@ int Mariadb_nodes::start_replication()
 
     // Create a database dump from the master and distribute it to the slaves
     ssh_node(0,
-             "mysqldump --all-databases --add-drop-database --flush-privileges --master-data=1 > /tmp/master_backup.sql",
+             "mysqldump --all-databases --add-drop-database --flush-privileges --master-data=1 --gtid > /tmp/master_backup.sql",
              true);
     sprintf(str, "%s/master_backup.sql", test_dir);
     copy_from_node("/tmp/master_backup.sql", str, 0);
-
-    connect();
-    char master_gtid[1024];
-    find_field(nodes[0], "SELECT @@gtid_current_pos", "@@gtid_current_pos", master_gtid);
-    close_connections();
-
-    if (verbose)
-    {
-        printf("Master is at GTID: %s\n", master_gtid);
-    }
 
     for (int i = 1; i < N; i++)
     {
@@ -405,10 +395,9 @@ int Mariadb_nodes::start_replication()
         ssh_node(i, "mysql -u root < /tmp/master_backup.sql", true);
         char query[512];
 
-        sprintf(query, "mysql -u root -e \"SET GLOBAL GTID_SLAVE_POS=\\\"%s\\\";"
-                "CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
-                "MASTER_USER=\\\"repl\\\", MASTER_PASSWORD=\\\"repl\\\", MASTER_USE_GTID=SLAVE_POS;"
-                "START SLAVE;\"", master_gtid, IP_private[0], port[0]);
+        sprintf(query, "mysql -u root -e \"CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
+                "MASTER_USER=\\\"repl\\\", MASTER_PASSWORD=\\\"repl\\\";"
+                "START SLAVE;\"", IP_private[0], port[0]);
         ssh_node(i, query, true);
     }
 
