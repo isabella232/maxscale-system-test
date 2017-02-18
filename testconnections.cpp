@@ -125,8 +125,6 @@ TestConnections::TestConnections(int argc, char *argv[]):
         test_name = basename(argv[0]);
     }
 
-    char short_path[1024];
-    printf("test_dir is %s\n", test_dir);
     sprintf(get_logs_command, "%s/get_logs.sh", test_dir);
 
     sprintf(ssl_options, "--ssl-cert=%s/ssl-cert/client-cert.pem --ssl-key=%s/ssl-cert/client-key.pem",

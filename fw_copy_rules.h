@@ -10,6 +10,6 @@
  * @param rules_name Name of file to be copied
  * @param rules_dir Directory where file is located
  */
-void copy_rules(TestConnections* Test, char * rules_name, char *rules_dir);
+void copy_rules(TestConnections* Test, const char* rules_name, const char* rules_dir);
 
 #endif // FW_COPY_RULES_H

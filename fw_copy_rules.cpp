@@ -1,7 +1,7 @@
 #include "fw_copy_rules.h"
 #include <string>
 
-void copy_rules(TestConnections* Test, char * rules_name, char * rules_dir)
+void copy_rules(TestConnections* Test, const char* rules_name, const char* rules_dir)
 {
     Test->set_timeout(30);
     Test->ssh_maxscale(true, "cd %s;"
