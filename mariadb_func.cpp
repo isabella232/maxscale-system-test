@@ -610,7 +610,7 @@ int get_int_version(const std::string& version)
     char dot;
 
     str >> major >> dot >> minor >> dot >> patch;
-    return major * 100000 + minor * 100 + patch;
+    return major * 10000 + minor * 100 + patch;
 }
 
 int get_int_version(const char* version)
