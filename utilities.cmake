@@ -88,3 +88,14 @@ add_test_executable_notest(non_native_setup.cpp non_native_setup replication)
 add_test_executable_notest(binlog_big_transaction.cpp binlog_big_transaction setup_binlog2)
 add_test_executable_notest(avro_long.cpp avro_long avro)
 add_test_executable_notest(sysbench_example.cpp sysbench_example replication)
+
+# Build the MariaDB Connector/C 3.0
+include(ExternalProject)
+ExternalProject_Add(connector-c
+  GIT_REPOSITORY "https://github.com/MariaDB/mariadb-connector-c.git"
+  GIT_TAG "3.0"
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
+  UPDATE_COMMAND "")
+
+include_directories(${CMAKE_BINARY_DIR}/include/mariadb)
+set(MYSQL_CLIENT ${CMAKE_BINARY_DIR}/lib/mariadb/libmariadbclient.a CACHE INTERNAL "")
