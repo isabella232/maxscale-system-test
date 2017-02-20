@@ -515,7 +515,7 @@ int find_field(MYSQL *conn, const char *sql, const char *field_name, char * valu
             {
                 num_fields = mysql_num_fields(res);
 
-                while ((field = mysql_fetch_field(res)))
+                while ((field = mysql_fetch_field(res)) && ret != 0)
                 {
                     if (strstr(field->name, field_name) != NULL)
                     {
