@@ -97,5 +97,5 @@ ExternalProject_Add(connector-c
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
   UPDATE_COMMAND "")
 
-include_directories(${CMAKE_BINARY_DIR}/include/mariadb)
+include_directories(${CMAKE_BINARY_DIR}/include)
 set(MYSQL_CLIENT ${CMAKE_BINARY_DIR}/lib/mariadb/libmariadbclient.a CACHE INTERNAL "")
