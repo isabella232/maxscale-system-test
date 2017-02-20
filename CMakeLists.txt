@@ -220,7 +220,7 @@ add_test_executable(bug729.cpp bug729 replication LABELS readwritesplit LIGHT RE
 add_test_executable(bug730.cpp bug730 bug730 LABELS regexfilter REPL_BACKEND)
 
 # Test MariaDB 10.2 bulk inserts
-add_test_executable(bulk_insert.cpp bulk_insert replication LABELS MySQLProtocol REPL_BACKEND 10.2)
+add_test_executable(bulk_insert.cpp bulk_insert bulk_insert LABELS MySQLProtocol REPL_BACKEND 10.2)
 
 # Tests for the CCRFilter module
 add_test_executable(ccrfilter.cpp ccrfilter ccrfilter LABELS ccrfilter LIGHT REPL_BACKEND)
