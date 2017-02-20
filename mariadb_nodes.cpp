@@ -12,6 +12,7 @@
 
 #include "mariadb_nodes.h"
 #include "sql_const.h"
+#include <climits>
 #include <string>
 
 Mariadb_nodes::Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose):
@@ -964,6 +965,27 @@ int Mariadb_nodes::get_versions()
     }
 
     return local_result;
+}
+
+std::string Mariadb_nodes::get_lowest_version()
+{
+    std::string rval;
+    get_versions();
+
+    int lowest = INT_MAX;
+
+    for (int i = 0; i < N; i++)
+    {
+        int int_version = get_int_version(version[i]);
+
+        if (lowest > int_version)
+        {
+            rval = version[i];
+            lowest = int_version;
+        }
+    }
+
+    return rval;
 }
 
 int Mariadb_nodes::truncate_mariadb_logs()

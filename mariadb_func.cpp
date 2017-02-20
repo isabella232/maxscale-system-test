@@ -13,6 +13,7 @@
 
 #include "mariadb_func.h"
 #include <ctype.h>
+#include <sstream>
 
 int set_ssl(MYSQL * conn)
 {
@@ -598,4 +599,21 @@ int read_log(char * name, char ** err_log_content_p)
         return 1;
     }
 
+}
+
+int get_int_version(const std::string& version)
+{
+    std::istringstream str(version);
+    int major = 0;
+    int minor = 0;
+    int patch = 0;
+    char dot;
+
+    str >> major >> dot >> minor >> dot >> patch;
+    return major * 100000 + minor * 100 + patch;
+}
+
+int get_int_version(const char* version)
+{
+    return get_int_version(std::string(version));
 }

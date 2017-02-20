@@ -220,4 +220,7 @@ unsigned int get_seconds_behind_master(MYSQL *conn);
  */
 int read_log(char * name, char **err_log_content_p);
 
+int get_int_version(const std::string& version);
+int get_int_version(const char* version);
+
 #endif // MARIADB_FUNC_H

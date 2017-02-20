@@ -283,6 +283,10 @@ public:
     /** Skip initial start of MaxScale */
     static void skip_maxscale_start(bool value);
 
+    /** Test requires a certain backend version  */
+    static void require_repl_version(const char *version);
+    static void require_galera_version(const char *version);
+
     /**
      * @brief add_result adds result to global_result and prints error message if result is not 0
      * @param result 0 if step PASSED

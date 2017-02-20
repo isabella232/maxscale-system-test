@@ -14,6 +14,8 @@ namespace maxscale
 {
 static bool start = true;
 static bool check_nodes = true;
+static std::string required_repl_version;
+static std::string required_galera_version;
 }
 
 void TestConnections::check_nodes(bool value)
@@ -24,6 +26,16 @@ void TestConnections::check_nodes(bool value)
 void TestConnections::skip_maxscale_start(bool value)
 {
     maxscale::start = !value;
+}
+
+void TestConnections::require_repl_version(const char *version)
+{
+    maxscale::required_repl_version = version;
+}
+
+void TestConnections::require_galera_version(const char *version)
+{
+    maxscale::required_galera_version = version;
 }
 
 TestConnections::TestConnections(int argc, char *argv[]):
@@ -133,6 +145,36 @@ TestConnections::TestConnections(int argc, char *argv[]):
 
     repl = new Mariadb_nodes("node", test_dir, verbose);
     galera = new Galera_nodes("galera", test_dir, verbose);
+
+    if (maxscale::required_repl_version.length())
+    {
+        int ver_repl_required = get_int_version(maxscale::required_repl_version);
+        std::string ver_repl = repl->get_lowest_version();
+        int int_ver_repl = get_int_version(ver_repl);
+
+        if (int_ver_repl < ver_repl_required)
+        {
+            tprintf("Test requires a higher version of backend servers, skipping test.");
+            tprintf("Required version: %s", maxscale::required_repl_version.c_str());
+            tprintf("Master-slave version: %s", ver_repl.c_str());
+            exit(0);
+        }
+    }
+
+    if (maxscale::required_galera_version.length())
+    {
+        int ver_galera_required = get_int_version(maxscale::required_galera_version);
+        std::string ver_galera = galera->get_lowest_version();
+        int int_ver_galera = get_int_version(ver_galera);
+
+        if (int_ver_galera < ver_galera_required)
+        {
+            tprintf("Test requires a higher version of backend servers, skipping test.");
+            tprintf("Required version: %s", maxscale::required_galera_version.c_str());
+            tprintf("Galera version: %s", ver_galera.c_str());
+            exit(0);
+        }
+    }
 
     if (restart_galera)
     {

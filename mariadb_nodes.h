@@ -333,10 +333,17 @@ public:
     int execute_query_all_nodes(const char* sql);
 
     /**
-     * @brief execute 'SELECT @@version' against all nodes and store result in 'vesion' fied
+     * @brief execute 'SELECT @@version' against all nodes and store result in 'version' fied
      * @return 0 in case of success
      */
     int get_versions();
+
+
+    /**
+     * @brief Return lowest server version in the cluster
+     * @return The version string of the server with the lowest version number
+     */
+    std::string get_lowest_version();
 
     /**
      * @brief truncate_mariadb_logs clean ups MariaDB logs on backend nodes
