@@ -31,6 +31,8 @@ void *query_thread_master(void *ptr);
 int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
+    Test->ssh_maxscale(true, "sysctl net.ipv4.tcp_tw_reuse=1 net.ipv4.tcp_tw_recycle=1 "
+                       "net.core.somaxconn=10000 net.ipv4.tcp_max_syn_backlog=10000");
     Test->set_timeout(20);
 
     int threads_num = 40;
@@ -164,6 +166,11 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "due to authentication failure", false);
     Test->check_log_err((char *) "fatal signal 11", false);
     Test->check_log_err((char *) "due to handshake failure", false);
+
+    // We need to wait for the TCP connections in TIME_WAIT state so that
+    // later tests don't fail due to a lack of file descriptors
+    Test->tprintf("Waiting for network connections to die");
+    sleep(30);
 
     Test->copy_all_logs();
     return Test->global_result;
