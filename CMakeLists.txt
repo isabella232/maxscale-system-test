@@ -45,9 +45,6 @@ else()
   message(WARNING "Java not found, Java based tests are not run.")
 endif()
 
-# Find the C connector
-find_library(MYSQL_CLIENT mariadbclient mysqlclient PATH_SUFFIXES mysql mariadb)
-
 # The core library
 add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp
   mariadb_func.cpp get_com_select_insert.cpp maxadmin_operations.cpp big_transaction.cpp
@@ -56,6 +53,7 @@ add_library(testcore SHARED testconnections.cpp mariadb_nodes.cpp
   blob_test.cpp cdc_connector.cpp)
 target_link_libraries(testcore ${MYSQL_CLIENT} z crypt nsl m pthread ssl crypto dl rt jansson)
 install(TARGETS testcore DESTINATION system-test)
+add_dependencies(testcore connector-c)
 
 # Tool used to check backend state
 add_test_executable_notest(check_backend.cpp check_backend check_backend LABELS CONFIG)
