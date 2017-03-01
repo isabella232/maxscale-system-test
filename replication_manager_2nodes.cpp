@@ -20,6 +20,7 @@ void prepare(TestConnections& test)
     test.copy_to_maxscale("./config.toml", "~");
     test.ssh_maxscale(false, "sudo cp ~/maxscale.cnf /etc/; sudo cp ~/config.toml /etc/replication-manager/");
 
+    system("sed -i 's/version_string=.*/version_string=10.1.19-maxscale-standby/' ./maxscale.cnf");
     test.galera->copy_to_node("./maxscale.cnf", "~", 0);
     test.galera->copy_to_node("./config.toml", "~", 0);
     test.galera->ssh_node(0, "sudo cp ~/config.toml /etc/replication-manager", false);
