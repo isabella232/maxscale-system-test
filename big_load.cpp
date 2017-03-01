@@ -47,14 +47,16 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
     {
         create_t1(Test->conn_rwsplit);
         create_insert_string(sql, sql_l, 1);
-        Test->tprintf("Waiting for the table to replicate\n");
-        sleep(30);
+
         if ((execute_query(Test->conn_rwsplit, sql) != 0) && (report_errors))
         {
             Test->add_result(1, "Query %s failed\n", sql);
         }
         // close connections
         Test->close_rwsplit();
+
+        Test->tprintf("Waiting for the table to replicate\n");
+        Test->repl->sync_slaves();
 
         pthread_t thread1[threads_num];
         pthread_t thread2[threads_num];
@@ -145,13 +147,17 @@ void *query_thread1( void *ptr )
     {
         while (data->exit_flag == 0)
         {
-            execute_query_silent(conn1, (char *) "SELECT * FROM t1;");
+            if (execute_query_silent(conn1, (char *) "SELECT * FROM t1;") == 0)
+            {
+                __sync_fetch_and_add(&data->i1, 1);
+            }
+
             if (data->rwsplit_only == 0)
             {
                 execute_query_silent(conn2, (char *) "SELECT * FROM t1;");
                 execute_query_silent(conn3, (char *) "SELECT * FROM t1;");
             }
-            data->i1++;
+
         }
         mysql_close(conn1);
         if (data->rwsplit_only == 0)
@@ -202,13 +208,15 @@ void *query_thread2(void *ptr )
     while (data->exit_flag == 0)
     {
         sleep(1);
-        execute_query_silent(conn1, (char *) "SELECT * FROM t1;");
+        if (execute_query_silent(conn1, (char *) "SELECT * FROM t1;") == 0)
+        {
+            __sync_fetch_and_add(&data->i2, 1);
+        }
         if (data->rwsplit_only == 0)
         {
             execute_query_silent(conn2, (char *) "SELECT * FROM t1;");
             execute_query_silent(conn3, (char *) "SELECT * FROM t1;");
         }
-        data->i2++;
     }
     mysql_close(conn1);
     if (data->rwsplit_only == 0)
