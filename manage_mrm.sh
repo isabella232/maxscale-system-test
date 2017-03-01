@@ -8,20 +8,24 @@ function do_scp() {
     scp -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet $1 $maxscale_access_user@$maxscale_IP:$2
 }
 
-function install_mrm() {
-    do_ssh <<EOF
-command -v wget > /dev/null || sudo yum -y install wget
-wget -q https://github.com/tanji/replication-manager/releases/download/1.0.2/replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
-sudo yum -y install ./replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
-rm ./replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
-EOF
+function create_config() {
+
+    if [ "$1" == "3" ]
+    then
+        nodelist=$node_000_private_ip:$node_000_port,$node_001_private_ip:$node_001_port,$node_002_private_ip:$node_002_port
+    elif [ "$1" == "2" ]
+    then
+        nodelist=$node_000_private_ip:$node_000_port,$node_001_private_ip:$node_001_port
+    else
+        nodelist=$node_000_private_ip:$node_000_port,$node_001_private_ip:$node_001_port,$node_002_private_ip:$node_002_port,$node_003_private_ip:$node_003_port
+    fi
 
     cat <<EOF > config.toml
 # config.toml
 # Example replication-manager configuration file
 
 #[Default]
-hosts = "$node_000_private_ip:$node_000_port,$node_001_private_ip:$node_001_port,$node_002_private_ip:$node_002_port,$node_003_private_ip:$node_003_port"
+hosts = "$nodelist"
 user = "skysql:skysql"
 rpluser = "skysql:skysql"
 title = "Cluster01"
@@ -86,6 +90,17 @@ gtidcheck = true
 
 EOF
 
+}
+
+function install_mrm() {
+    do_ssh <<EOF
+command -v wget > /dev/null || sudo yum -y install wget
+wget -q https://github.com/tanji/replication-manager/releases/download/1.0.2/replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
+sudo yum -y install ./replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
+rm ./replication-manager-1.0.2_1_g8faf64d-8faf64d.x86_64.rpm
+EOF
+
+    create_config $1
     do_scp './config.toml' '~/config.toml'
 
     do_ssh <<EOF
@@ -107,7 +122,12 @@ EOF
 case $1 in
     install)
         echo "`date` Installing replication-manager"
-        install_mrm
+        install_mrm $2
+        ;;
+
+    configure)
+        echo "`date` Creating replication-manager configuration"
+        create_config $2
         ;;
 
     remove)
