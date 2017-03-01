@@ -192,16 +192,16 @@ int main(int argc, char** argv)
 
     check(test);
 
-    test.tprintf("Restarting the original master");
+    test.tprintf("Restarting the first slave");
     get_input();
-    test.repl->start_node(0, (char*)"");
+    test.repl->start_node(1, (char*)"");
     do_sleep(15);
 
     check(test);
 
-    test.tprintf("Restarting the first slave");
+    test.tprintf("Restarting the original master");
     get_input();
-    test.repl->start_node(1, (char*)"");
+    test.repl->start_node(0, (char*)"");
     do_sleep(15);
 
     check(test);
