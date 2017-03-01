@@ -39,7 +39,7 @@ void check(TestConnections& test)
     test.try_query(conn, "BEGIN");
     test.tprintf(query1, inserts);
     test.try_query(conn, query1, inserts++);
-    test.try_query(conn, query2);
+    mysql_query(conn, query2);
 
     MYSQL_RES *res = mysql_store_result(conn);
     test.add_result(res == NULL, "Query shoud return a result set");
