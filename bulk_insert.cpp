@@ -187,7 +187,7 @@ int bind_by_row(MYSQL *mysql)
 
     if (res == NULL || mysql_num_rows(res) != 3)
     {
-        printf("Expected 3 rows but got %d (%s)\n", res ? mysql_num_rows(res) : 0, mysql_error(mysql));
+        printf("Expected 3 rows but got %d (%s)\n", res ? (int)mysql_num_rows(res) : 0, mysql_error(mysql));
         return 1;
     }
 
