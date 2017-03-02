@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     test->repl->block_node(0);
     test->repl->block_node(1);
     test->repl->block_node(2);
+    execute_query(test->repl->nodes[3], "STOP SLAVE;RESET SLAVE ALL;");
 
     test->tprintf(" Wait for the monitor to detect it ");
     sleep(15);
