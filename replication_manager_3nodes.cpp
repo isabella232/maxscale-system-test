@@ -15,6 +15,7 @@ void prepare(TestConnections& test)
 
     test.ssh_maxscale(true, "pcs resource disable maxscale-clone; pcs resource disable replication-manager");
 
+    test.repl->fix_replication();
     system("./manage_mrm.sh configure 3");
     test.copy_from_maxscale((char*)"/etc/maxscale.cnf", (char*)".");
     test.copy_to_maxscale("./config.toml", "~");
@@ -149,19 +150,21 @@ int main(int argc, char** argv)
     test.try_query(test.conn_rwsplit, "CREATE OR REPLACE TABLE test.t1(id INT)");
     test.close_maxscale_connections();
 
-    test.tprintf("Stopping master and waiting for it to fail over");
-    get_input();
-    test.repl->stop_node(0);
-    do_sleep(15);
-
     check(test);
 
-    test.tprintf("Restarting old master");
-    get_input();
-    test.repl->start_node(0, (char*)"");
-    do_sleep(15);
+    // test.tprintf("Stopping master and waiting for it to fail over");
+    // get_input();
+    // test.repl->stop_node(0);
+    // do_sleep(15);
 
-    check(test);
+    // check(test);
+
+    // test.tprintf("Restarting old master");
+    // get_input();
+    // test.repl->start_node(0, (char*)"");
+    // do_sleep(15);
+
+    // check(test);
 
     test.tprintf("Stopping the first slave");
     get_input();
@@ -170,9 +173,17 @@ int main(int argc, char** argv)
 
     check(test);
 
-    test.tprintf("Restarting the first slave");
+
+    test.tprintf("Stopping the second slave");
     get_input();
-    test.repl->start_node(1, (char*)"");
+    test.repl->stop_node(2);
+    do_sleep(15);
+
+    check(test);
+
+    test.tprintf("Restarting the second slave");
+    get_input();
+    test.repl->start_node(2, (char*)"");
     do_sleep(15);
 
     check(test);
@@ -184,26 +195,26 @@ int main(int argc, char** argv)
 
     check(test);
 
-    test.tprintf("Stopping first slave, the second slave is promoted as the master");
-    get_input();
-    test.repl->stop_node(1);
-    do_sleep(15);
+    // test.tprintf("Stopping first slave, the second slave is promoted as the master");
+    // get_input();
+    // test.repl->stop_node(1);
+    // do_sleep(15);
 
-    check(test);
+    // check(test);
 
-    test.tprintf("Restarting the first slave");
-    get_input();
+    // test.tprintf("Restarting the first slave");
+    // get_input();
     test.repl->start_node(1, (char*)"");
-    do_sleep(15);
+    // do_sleep(15);
 
-    check(test);
+    // check(test);
 
-    test.tprintf("Restarting the original master");
-    get_input();
+    // test.tprintf("Restarting the original master");
+    // get_input();
     test.repl->start_node(0, (char*)"");
-    do_sleep(15);
+    do_sleep(5);
 
-    check(test);
+    // check(test);
 
     test.connect_maxscale();
     test.try_query(test.conn_rwsplit, "DROP TABLE test.t1");

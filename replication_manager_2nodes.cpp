@@ -15,6 +15,7 @@ void prepare(TestConnections& test)
 
     test.ssh_maxscale(true, "pcs resource disable maxscale-clone; pcs resource disable replication-manager");
 
+    test.repl->fix_replication();
     system("./manage_mrm.sh configure 2");
     test.copy_from_maxscale((char*)"/etc/maxscale.cnf", (char*)".");
     test.copy_to_maxscale("./config.toml", "~");

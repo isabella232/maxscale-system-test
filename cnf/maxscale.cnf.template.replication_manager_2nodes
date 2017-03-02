@@ -13,18 +13,18 @@ failover=true
 failcount=2
 failover_recovery=true
 
-[RW Split Router]
+[Traffic Router]
 type=service
-router=readwritesplit
+router=readconnroute
+router_options=master
 servers=server1,server2
 user=maxskysql
 passwd=skysql
-master_failure_mode=fail_on_write
 version_string=10.1.19-maxscale-primary
 
-[RW Split Listener]
+[Traffic Listener]
 type=listener
-service=RW Split Router
+service=Traffic Router
 protocol=MySQLClient
 port=4006
 
