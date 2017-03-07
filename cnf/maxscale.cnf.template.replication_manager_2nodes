@@ -9,9 +9,9 @@ servers=server1,server2
 user=maxskysql
 passwd=skysql
 monitor_interval=1000
-failover=true
+detect_standalone_master=true
 failcount=2
-failover_recovery=true
+allow_cluster_recovery=true
 
 [Traffic Router]
 type=service
