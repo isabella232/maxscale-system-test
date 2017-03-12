@@ -83,6 +83,7 @@ static const char* binary_values[] =
 {
     "\"Hello world!\"",
     "\"The quick brown fox jumps over the lazy dog\"",
+    "NULL",
 //    "\"The Unicode should work: äöåǢ\"",
 //    "\"These should work for binary types: ⦿☏☃☢😤😂\"",
     NULL
