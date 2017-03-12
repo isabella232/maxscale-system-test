@@ -370,7 +370,7 @@ int Mariadb_nodes::start_replication()
     for (int i = 0; i < N; i++)
     {
         local_result += start_node(i, (char *) "");
-        ssh_node(i, "mysql -u root -e \"STOP SLAVE; RESET SLAVE; RESET SLAVE ALL; RESET MASTER;\"", true);
+        ssh_node(i, "mysql -u root -e \"STOP SLAVE; RESET SLAVE; RESET SLAVE ALL; RESET MASTER; SET GLOBAL read_only=OFF;\"", true);
     }
 
     sprintf(str, "%s/create_user.sh", test_dir);
