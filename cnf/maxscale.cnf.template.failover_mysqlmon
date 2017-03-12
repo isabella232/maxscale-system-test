@@ -8,8 +8,9 @@ servers= server1, server2, server3, server4
 user=maxskysql
 passwd= skysql
 monitor_interval=1000
-failover=true
+detect_standalone_master=true
 failcount=2
+allow_cluster_recovery=false
 
 [RW Split Router]
 type=service
