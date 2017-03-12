@@ -888,9 +888,9 @@ int Mariadb_nodes::ssh_node(int node, const char *ssh, bool sudo)
 int Mariadb_nodes::flush_hosts()
 {
 
-    if (this->nodes[0] == NULL)
+    if (this->nodes[0] == NULL && this->connect())
     {
-        this->connect();
+        return 1;
     }
 
     int local_result = 0;

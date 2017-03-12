@@ -252,6 +252,9 @@ add_test_executable(encrypted_passwords.cpp encrypted_passwords replication LABE
 # MySQL Monitor Failover Test
 add_test_executable(failover_mysqlmon.cpp failover_mysqlmon failover_mysqlmon LABELS mysqlmon REPL_BACKEND)
 
+# Test monitor state change events when manually clearing server bits
+add_test_executable(false_monitor_state_change.cpp false_monitor_state_change replication LABELS mysqlmon REPL_BACKEND)
+
 # A set of tests for Firewall filter
 add_test_executable(fwf.cpp fwf fwf LABELS dbfwfilter REPL_BACKEND)
 add_test_executable(fwf2.cpp fwf2 fwf LABELS dbfwfilter REPL_BACKEND)
