@@ -1,6 +1,5 @@
 [maxscale]
-threads=###threads###
-log_info=1
+threads=4
 
 [MySQL Monitor]
 type=monitor
@@ -20,7 +19,6 @@ router_options=master
 servers=server1,server2
 user=maxskysql
 passwd=skysql
-version_string=10.1.19-maxscale-primary
 
 [Traffic Listener]
 type=listener
@@ -48,11 +46,11 @@ port=6603
 [server1]
 type=server
 address=node-000
-port=###node_server_port_1###
+port=3306
 protocol=MySQLBackend
 
 [server2]
 type=server
 address=node-001
-port=###node_server_port_2###
+port=3306
 protocol=MySQLBackend

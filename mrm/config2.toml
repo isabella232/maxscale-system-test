@@ -17,8 +17,13 @@ log-level=1
 #
 monitoring-ticker = 1
 autorejoin-semisync = false
+autorejoin-mysqldump = true
 failover-at-sync = false
 switchover-at-sync = false
+failover-falsepositive-heartbeat = false
+
+# This needs to point to the 10.2.4 release candidate binaries
+mariadb-binary-path = "/usr/mariadb-10.2/bin/"
 
 # LOG
 # ---

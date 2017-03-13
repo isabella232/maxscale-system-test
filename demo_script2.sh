@@ -96,43 +96,7 @@ EOF
 
 do_test
 
-# Stop node-000
-
-echo "Press Enter to Stop node-000"
-read
-
-stop_node node_000
-echo "Waiting 15 seconds"
-sleep 15
-do_test
-
-echo "Press Enter to Start node-000"
-read
-
-start_node node_000
-echo "Waiting 15 seconds"
-sleep 15
-do_test
-
-# Stop node-001
-
-echo "Press Enter to Stop node-001"
-read
-
-stop_node node_001
-echo "Waiting 15 seconds"
-sleep 15
-do_test
-
-echo "Press Enter to Start node-001"
-read
-
-start_node node_001
-echo "Waiting 15 seconds"
-sleep 15
-do_test
-
-# Stop node-000
+# Stop node-000 and node-001
 
 echo "Press Enter to Stop node-000"
 read
@@ -153,6 +117,8 @@ do_test
 echo "Press Enter to Start node-001"
 read
 
+# Start node-000 and node-001
+
 start_node node_001
 echo "Waiting 15 seconds"
 sleep 15
@@ -162,6 +128,24 @@ echo "Press Enter to Start node-000"
 read
 
 start_node node_000
+echo "Waiting 15 seconds"
+sleep 15
+do_test
+
+# Stop node-002
+
+echo "Press Enter to Stop node-002"
+read
+
+stop_node node_002
+echo "Waiting 15 seconds"
+sleep 15
+do_test
+
+echo "Press Enter to Start node-002"
+read
+
+start_node node_002
 echo "Waiting 15 seconds"
 sleep 15
 do_test
