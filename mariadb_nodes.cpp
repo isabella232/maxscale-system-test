@@ -14,6 +14,7 @@
 #include "sql_const.h"
 #include <climits>
 #include <string>
+#include <vector>
 
 Mariadb_nodes::Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose):
 v51(false)
@@ -369,7 +370,7 @@ int Mariadb_nodes::start_replication()
     for (int i = 0; i < N; i++)
     {
         local_result += start_node(i, (char *) "");
-        ssh_node(i, "mysql -u root -e \"STOP SLAVE; RESET SLAVE; RESET SLAVE ALL; RESET MASTER;\"", true);
+        ssh_node(i, "mysql -u root -e \"STOP SLAVE; RESET SLAVE; RESET SLAVE ALL; RESET MASTER; SET GLOBAL read_only=OFF;\"", true);
     }
 
     sprintf(str, "%s/create_user.sh", test_dir);
@@ -887,9 +888,9 @@ int Mariadb_nodes::ssh_node(int node, const char *ssh, bool sudo)
 int Mariadb_nodes::flush_hosts()
 {
 
-    if (this->nodes[0] == NULL)
+    if (this->nodes[0] == NULL && this->connect())
     {
-        this->connect();
+        return 1;
     }
 
     int local_result = 0;
@@ -903,6 +904,41 @@ int Mariadb_nodes::flush_hosts()
 
         if (mysql_query(nodes[i], "SET GLOBAL max_connections=10000"))
         {
+            local_result++;
+        }
+
+        if (mysql_query(nodes[i], "SELECT CONCAT('\\'', user, '\\'' '@', '\\'', host, '\\'') FROM mysql.user WHERE user = ''") == 0)
+        {
+            MYSQL_RES *res = mysql_store_result(nodes[i]);
+
+            if (res)
+            {
+                std::vector<std::string> users;
+                MYSQL_ROW row;
+
+                while ((row = mysql_fetch_row(res)))
+                {
+                    users.push_back(row[0]);
+                }
+
+                mysql_free_result(res);
+
+                if (users.size() > 0)
+                {
+                    printf("Detected anonymous users, dropping them.\n");
+
+                    for (auto& s: users)
+                    {
+                        std::string query = "DROP USER ";
+                        query += s;
+                        mysql_query(nodes[i], query.c_str());
+                    }
+                }
+            }
+        }
+        else
+        {
+            printf("Failed to query for anonymous users: %s\n", mysql_error(nodes[i]));
             local_result++;
         }
     }

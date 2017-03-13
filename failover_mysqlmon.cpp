@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
     test->repl->block_node(0);
     test->repl->block_node(1);
     test->repl->block_node(2);
+    test->repl->connect();
+    execute_query(test->repl->nodes[3], "STOP SLAVE;RESET SLAVE ALL;");
 
     test->tprintf(" Wait for the monitor to detect it ");
     sleep(15);
@@ -47,7 +49,7 @@ int main(int argc, char *argv[])
     test->tprintf(" Wait for the monitor to detect it ");
     sleep(15);
 
-    test->tprintf("Check that we are still using the last node to which we failed over"
+    test->tprintf("Check that we are still using the last node to which we failed over "
                   "to and that the old nodes are in maintenance mode");
 
     test->connect_maxscale();
