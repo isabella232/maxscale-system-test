@@ -118,6 +118,7 @@ bool cdc_com(TestConnections *Test)
 
     while (inserted_val < max_inserted_val)
     {
+        Test->set_timeout(60);
         // wait for something to do...
         Test->tprintf("epoll_wait");
         int nfds = epoll_wait(epfd, &events[0], 1, -1);
