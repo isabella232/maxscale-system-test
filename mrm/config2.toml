@@ -16,8 +16,11 @@ log-level=1
 # values of the replication-manager.
 #
 monitoring-ticker = 1
-autorejoin-semisync = false
+autorejoin = true
 autorejoin-mysqldump = true
+autorejoin-backup-binlog = false
+autorejoin-semisync = false
+autorejoin-flashback = false
 failover-at-sync = false
 switchover-at-sync = false
 failover-falsepositive-heartbeat = false

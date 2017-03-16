@@ -64,24 +64,36 @@ do_test
 
 # Stop node-000 and node-001
 
-stop_node node_000
-echo "Waiting 15 seconds"
-sleep 15
-do_test
+echo "Press Enter to Stop node-001"
+read
 
 stop_node node_001
 echo "Waiting 15 seconds"
 sleep 15
 do_test
 
-# Start node-000 and node-001
+echo "Press Enter to Stop node-000"
+read
 
-start_node node_000
+stop_node node_000
 echo "Waiting 15 seconds"
 sleep 15
 do_test
 
+echo "Press Enter to Start node-001"
+read
+
+# Start node-000 and node-001
+
 start_node node_001
+echo "Waiting 15 seconds"
+sleep 15
+do_test
+
+echo "Press Enter to Start node-000"
+read
+
+start_node node_000
 echo "Waiting 15 seconds"
 sleep 15
 do_test

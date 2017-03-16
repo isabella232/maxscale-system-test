@@ -51,50 +51,9 @@ EOF
 # This is the port MaxScale is listening on
 maxscale_port=4006
 
-cat <<EOF
-
-+--------------------------------+
-| Preparing the test environment |
-+--------------------------------+
-
-EOF
-
-# Configure replication-manager
-do_ssh $mrm "sudo systemctl stop replication-manager"
-do_scp $mrm ~/system-test/mrm/config1.toml
-do_ssh $mrm "sudo cp config1.toml /etc/replication-manager/config.toml"
-
-# Start MariaDB on all nodes
-for i in 0 1 2 3
-do
-    do_ssh node_00$i "sudo systemctl start mysql" &
-done
-
-wait
-
-# This configures and starts Maxscale
-cd ~/system-test/
-./check_backend
-./non_native_setup replication_manager_2nodes
-cd -
-
-do_ssh $mrm "sudo replication-manager bootstrap --clean-all"
-do_ssh $mrm "sudo systemctl start replication-manager"
-
-cat <<EOF
-
-+--------------------------------+
-|   Test environment prepared    |
-+--------------------------------+
-
-EOF
-
 ###############################
 # The actual demo starts here #
 ###############################
-
-echo "Press Enter to Start"
-read
 
 # Create a table
 mysql -v -u skysql -pskysql -h $maxscale_IP -P $maxscale_port <<EOF
