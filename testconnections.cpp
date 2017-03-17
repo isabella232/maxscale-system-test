@@ -553,7 +553,7 @@ void TestConnections::process_template(const char *template_name, const char *de
                 IPcnf = mdn[j]->IP[i];
             }
             sprintf(str, "sed -i \"s/###%s_server_IP_%0d###/%s/\" maxscale.cnf",
-                    mdn[j]->prefix, i + 1, mdn[j]->IP[i]);
+                    mdn[j]->prefix, i + 1, IPcnf);
             system(str);
 
             sprintf(str, "sed -i \"s/###%s_server_port_%0d###/%d/\" maxscale.cnf",
