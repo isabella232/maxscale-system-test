@@ -326,6 +326,9 @@ add_test_executable(mm.cpp mm mm LABELS mmmon BREAKS_REPL)
 # MySQL Monitor with Multi-master configurations
 add_test_executable(mm_mysqlmon.cpp mm_mysqlmon mm_mysqlmon LABELS mysqlmon REPL_BACKEND BREAKS_REPL)
 
+# MySQL Monitor crash safety
+add_test_executable(mysqlmon_backup.cpp mysqlmon_backup mysqlmon_backup LABELS mysqlmon REPL_BACKEND)
+
 # Regression case for the bug "Two monitors loaded at the same time result into not working installation"
 add_test_executable(mxs118.cpp mxs118 mxs118 LABELS maxscale LIGHT REPL_BACKEND)
 

@@ -617,6 +617,7 @@ public:
      * @return node index if one master found, -1 if no master found or several masters found
      */
     int find_master_maxadmin(Mariadb_nodes * nodes);
+    int find_slave_maxadmin(Mariadb_nodes * nodes);
 
     int execute_maxadmin_command(char * cmd);
     int execute_maxadmin_command_print(char * cmd);
