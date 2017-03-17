@@ -37,6 +37,13 @@ void kill_maxscale(TestConnections& test)
     sleep(10);
 }
 
+void restart_maxscale(TestConnections& test)
+{
+    test.restart_maxscale();
+    test.tprintf("Waiting for MaxScale to start");
+    sleep(10);
+}
+
 int main(int argc, char** argv)
 {
     TestConnections test(argc, argv);
@@ -63,6 +70,11 @@ int main(int argc, char** argv)
     test.tprintf("Checking that master still has stale status");
     check_master(test);
 
+    restart_maxscale(test);
+
+    test.tprintf("Checking that master has stale status after restart");
+    check_master(test);
+
     test.repl->unblock_node(1);
     test.repl->unblock_node(2);
     test.repl->unblock_node(3);
@@ -81,7 +93,12 @@ int main(int argc, char** argv)
 
     kill_maxscale(test);
 
-    test.tprintf("Checking that slave still have stale status");
+    test.tprintf("Checking that slaves still have stale status");
+    check_slave(test);
+
+    restart_maxscale(test);
+
+    test.tprintf("Checking that slaves have stale status after restart");
     check_slave(test);
 
     test.repl->unblock_node(0);
