@@ -120,6 +120,17 @@ public:
     char maxscale_IP[1024];
 
     /**
+     * @brief Maxscale_IP6   Maxscale machine IP address (IPv6)
+     */
+    char maxscale_IP6[1024];
+
+    /**
+     * @brief use_ipv6 If true IPv6 addresses will be used to connect Maxscale and backed
+     * Also IPv6 addresses go to maxscale.cnf
+     */
+    bool use_ipv6;
+
+    /**
      * @brief maxscale_hostname  Maxscale machine 'hostname' value
      */
     char maxscale_hostname[1024];

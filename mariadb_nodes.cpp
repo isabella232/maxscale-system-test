@@ -17,7 +17,7 @@
 #include <vector>
 
 Mariadb_nodes::Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose):
-v51(false)
+v51(false), use_ipv6(false)
 {
     strcpy(prefix, pref);
     memset(this->nodes, 0, sizeof(this->nodes));
@@ -146,6 +146,18 @@ int Mariadb_nodes::read_env()
             else
             {
                 sprintf(IP_private[i], "%s", IP[i]);
+            }
+
+            //reading IPv6
+            sprintf(env_name, "%s_%03d_network6", prefix, i);
+            env = getenv(env_name);
+            if (env != NULL)
+            {
+                sprintf(IP6[i], "%s", env);
+            }
+            else
+            {
+                sprintf(IP6[i], "%s", IP[i]);
             }
 
             //reading ports
