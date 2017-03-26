@@ -1,7 +1,6 @@
 #ifndef FW_COPY_RULES_H
 #define FW_COPY_RULES_H
 
-#include <my_config.h>
 #include "testconnections.h"
 
 /**

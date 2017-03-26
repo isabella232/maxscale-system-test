@@ -1,7 +1,6 @@
 #ifndef DIFFERENT_SIZE_H
 #define DIFFERENT_SIZE_H
 
-#include <my_config.h>
 #include <iostream>
 #include <unistd.h>
 #include "testconnections.h"

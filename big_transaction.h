@@ -1,7 +1,7 @@
 #ifndef BIG_TRANSACTION_H
 #define BIG_TRANSACTION_H
 
-#include <mysql.h>
+#include <mariadb/mysql.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "sql_t1.h"
