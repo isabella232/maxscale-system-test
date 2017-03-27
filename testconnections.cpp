@@ -147,7 +147,8 @@ TestConnections::TestConnections(int argc, char *argv[]):
     galera = new Galera_nodes("galera", test_dir, verbose);
 
     repl->use_ipv6 = use_ipv6;
-    galera->use_ipv6 = use_ipv6;
+    //galera->use_ipv6 = use_ipv6;
+    galera->use_ipv6 = false;
 
     if (maxscale::required_repl_version.length())
     {
