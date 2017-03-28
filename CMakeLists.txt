@@ -557,6 +557,9 @@ add_test_executable(session_limits.cpp session_limits session_limits LABELS read
 # Test of schema router
 add_test_executable(sharding.cpp sharding sharding LABELS schemarouter BREAKS_REPL)
 
+# MXS-1160: LOAD DATA LOCAL INFILE with schemarouter
+add_test_executable(sharding_load_data.cpp sharding_load_data sharding LABELS schemarouter BREAKS_REPL)
+
 # Do short sessions (open conn, short query, close conn) in the loop
 add_test_executable(short_sessions.cpp short_sessions replication LABELS readwritesplit readconnroute REPL_BACKEND)
 

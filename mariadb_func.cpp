@@ -436,6 +436,26 @@ int execute_stmt_num_of_rows(MYSQL_STMT * stmt, my_ulonglong num_of_rows[], unsi
     return 1;
 }
 
+int execute_query_count_rows(MYSQL *conn, const char *sql)
+{
+    int rval = -1;
+
+    unsigned long long num_of_rows[1024];
+    unsigned long long total;
+
+    if (execute_query_num_of_rows(conn, sql, num_of_rows, &total) == 0)
+    {
+        rval = 0;
+
+        for (int i = 0; i < total && i < 1024; i++)
+        {
+            rval += num_of_rows[i];
+        }
+    }
+
+    return rval;
+}
+
 int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
 {
     MYSQL_RES *res;
