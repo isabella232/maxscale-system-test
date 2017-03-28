@@ -283,7 +283,7 @@ int TestConnections::read_env()
     {
         sprintf(maxscale_IP, "%s", env);
     }
-    env = getenv("maxscale_IP6");
+    env = getenv("maxscale_network6");
     if (env != NULL)
     {
         sprintf(maxscale_IP6, "%s", env);
