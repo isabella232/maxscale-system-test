@@ -1019,7 +1019,7 @@ int TestConnections::find_connected_slave(int * global_result)
     repl->connect();
     for (int i = 0; i < repl->N; i++)
     {
-        conn_num = get_conn_num(repl->nodes[i], maxscale_IP, maxscale_hostname, (char *) "test");
+        conn_num = get_conn_num(repl->nodes[i], maxscale_ip(), maxscale_hostname, (char *) "test");
         tprintf("connections to %d: %u\n", i, conn_num);
         if ((i == 0) && (conn_num != 1))
         {
@@ -1050,7 +1050,7 @@ int TestConnections::find_connected_slave1()
     repl->connect();
     for (int i = 0; i < repl->N; i++)
     {
-        conn_num = get_conn_num(repl->nodes[i], maxscale_IP, maxscale_hostname, (char *) "test");
+        conn_num = get_conn_num(repl->nodes[i], maxscale_ip(), maxscale_hostname, (char *) "test");
         tprintf("connections to %d: %u\n", i, conn_num);
         all_conn += conn_num;
         if ((i != 0) && (conn_num != 0))
@@ -1987,4 +1987,9 @@ int TestConnections::connect_readconn_slave()
     }
 
     return rc;
+}
+
+char* TestConnections::maxscale_ip() const
+{
+    return use_ipv6 ?  (char*)maxscale_IP6 : (char*)maxscale_IP;
 }

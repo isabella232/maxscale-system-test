@@ -115,6 +115,13 @@ public:
     Mariadb_nodes * repl;
 
     /**
+     * @brief Get MaxScale IP address
+     *
+     * @return The current IP address of MaxScale
+     */
+    char* maxscale_ip() const;
+
+    /**
      * @brief Maxscale_IP   Maxscale machine IP address
      */
     char maxscale_IP[1024];
