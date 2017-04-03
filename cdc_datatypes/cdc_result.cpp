@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
+#include <string>
+#include <string.h>
 
 using std::cout;
 using std::endl;
@@ -19,7 +21,7 @@ TestInput::TestInput(const std::string& value, const std::string& type, const st
 TestOutput::TestOutput(const std::string& input, const std::string& name)
 {
     json_error_t err;
-    json_t *js = json_loads(input.c_str(), 0, &err);
+    json_t *js = json_loads(input.c_str(), JSON_ALLOW_NUL, &err);
 
     if (js)
     {
@@ -31,7 +33,14 @@ TestOutput::TestOutput(const std::string& input, const std::string& name)
 
             if (json_is_string(value))
             {
-                ss << json_string_value(value);
+                if (strlen(json_string_value(value)) == 0)
+                {
+                    ss << "NULL";
+                }
+                else
+                {
+                    ss << json_string_value(value);
+                }
             }
             else if (json_is_integer(value))
             {

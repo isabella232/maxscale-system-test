@@ -155,7 +155,7 @@ void Config::create_listener(Config::Service service)
     int i = static_cast<int>(service);
 
     test_->set_timeout(120);
-    test_->ssh_maxscale(true, "maxadmin create listener %s %s 0.0.0.0 %d",
+    test_->ssh_maxscale(true, "maxadmin create listener %s %s default %d",
                         services[i].service,
                         services[i].listener,
                         services[i].port);
@@ -167,7 +167,7 @@ void Config::create_ssl_listener(Config::Service service)
     int i = static_cast<int>(service);
 
     test_->set_timeout(120);
-    test_->ssh_maxscale(true, "maxadmin create listener %s %s 0.0.0.0 %d default default default "
+    test_->ssh_maxscale(true, "maxadmin create listener %s %s default %d default default default "
                         "/home/vagrant/certs/server-key.pem "
                         "/home/vagrant/certs/server-cert.pem "
                         "/home/vagrant/certs/ca.pem ",

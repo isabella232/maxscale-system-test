@@ -11,3 +11,8 @@ echo "SET @TMASTER_ID=$master_id;" >> Hartmut_tests/maxscale-mysqltest/testconf.
 echo "--enable_query_log" >> Hartmut_tests/maxscale-mysqltest/testconf.inc
 
 ./mysqltest_driver.sh $1 Hartmut_tests/maxscale-mysqltest 4006
+
+ret=$?
+./copy_logs.sh $1
+
+exit $ret
