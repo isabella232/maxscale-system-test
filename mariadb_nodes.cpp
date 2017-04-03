@@ -17,7 +17,7 @@
 #include <vector>
 
 Mariadb_nodes::Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose):
-v51(false)
+v51(false), use_ipv6(false)
 {
     strcpy(prefix, pref);
     memset(this->nodes, 0, sizeof(this->nodes));
@@ -146,6 +146,18 @@ int Mariadb_nodes::read_env()
             else
             {
                 sprintf(IP_private[i], "%s", IP[i]);
+            }
+
+            //reading IPv6
+            sprintf(env_name, "%s_%03d_network6", prefix, i);
+            env = getenv(env_name);
+            if (env != NULL)
+            {
+                sprintf(IP6[i], "%s", env);
+            }
+            else
+            {
+                sprintf(IP6[i], "%s", IP[i]);
             }
 
             //reading ports
@@ -462,19 +474,17 @@ int Mariadb_nodes::clean_iptables(int node)
 {
     char sys1[1024];
     int local_result = 0;
-    /*
-    char * clean_command = (char *)
-            "echo '#!/bin/bash' > clean_iptables.sh \n \
-            echo 'while [ \"$(iptables -n -L INPUT 1|grep 'mysql\\|%d')\" != \"\" ]; do iptables -D INPUT 1; done' >>  clean_iptables.sh \n \
-            chmod a+x  clean_iptables.sh \n sudo  ./clean_iptables.sh \n";
-    sprintf(&sys1[0], clean_command, port[node]);
-    printf("%s\n", sys1);
-    ssh_node(node, sys1, false);*/
+
     local_result += ssh_node(node, (char *) "echo \"#!/bin/bash\" > clean_iptables.sh", false);
     sprintf(sys1,
             "echo \"while [ \\\"\\$(iptables -n -L INPUT 1|grep '%d')\\\" != \\\"\\\" ]; do iptables -D INPUT 1; done\" >>  clean_iptables.sh",
             port[node]);
     local_result += ssh_node(node, (char *) sys1, false);
+    sprintf(sys1,
+            "echo \"while [ \\\"\\$(ip6tables -n -L INPUT 1|grep '%d')\\\" != \\\"\\\" ]; do ip6tables -D INPUT 1; done\" >>  clean_iptables.sh",
+            port[node]);
+    local_result += ssh_node(node, (char *) sys1, false);
+
     local_result += ssh_node(node, (char *) "chmod a+x clean_iptables.sh", false);
     local_result += ssh_node(node, (char *) "./clean_iptables.sh", true);
     return local_result;
@@ -492,6 +502,15 @@ int Mariadb_nodes::block_node(int node)
         fflush(stdout);
     }
     local_result += ssh_node(node, sys1, true);
+
+    sprintf(&sys1[0], "ip6tables -I INPUT -p tcp --dport %d -j REJECT", port[node]);
+    if (this->verbose)
+    {
+        printf("%s\n", sys1);
+        fflush(stdout);
+    }
+    local_result += ssh_node(node, sys1, true);
+
     blocked[node] = true;
     return local_result;
 }
@@ -508,6 +527,14 @@ int Mariadb_nodes::unblock_node(int node)
         fflush(stdout);
     }
     local_result += ssh_node(node, sys1, true);
+    sprintf(&sys1[0], "ip6tables -I INPUT -p tcp --dport %d -j ACCEPT", port[node]);
+    if (this->verbose)
+    {
+        printf("%s\n", sys1);
+        fflush(stdout);
+    }
+    local_result += ssh_node(node, sys1, true);
+
     blocked[node] = false;
     return local_result;
 }

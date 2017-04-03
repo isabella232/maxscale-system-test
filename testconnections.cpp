@@ -41,7 +41,7 @@ void TestConnections::require_galera_version(const char *version)
 TestConnections::TestConnections(int argc, char *argv[]):
     copy_logs(true), no_backend_log_copy(false), use_snapshots(false), verbose(false), rwsplit_port(4006),
     readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
-    global_result(0), binlog_cmd_option(0), enable_timeouts(true)
+    global_result(0), binlog_cmd_option(0), enable_timeouts(true), use_ipv6(false)
 {
     chdir(test_dir);
     gettimeofday(&start_time, NULL);
@@ -145,6 +145,10 @@ TestConnections::TestConnections(int argc, char *argv[]):
 
     repl = new Mariadb_nodes("node", test_dir, verbose);
     galera = new Galera_nodes("galera", test_dir, verbose);
+
+    repl->use_ipv6 = use_ipv6;
+    //galera->use_ipv6 = use_ipv6;
+    galera->use_ipv6 = false;
 
     if (maxscale::required_repl_version.length())
     {
@@ -279,6 +283,11 @@ int TestConnections::read_env()
     {
         sprintf(maxscale_IP, "%s", env);
     }
+    env = getenv("maxscale_network6");
+    if (env != NULL)
+    {
+        sprintf(maxscale_IP6, "%s", env);
+    }
     env = getenv("maxscale_user");
     if (env != NULL)
     {
@@ -383,6 +392,11 @@ int TestConnections::read_env()
     if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) ))
     {
         no_backend_log_copy = true;
+    }
+    env = getenv("use_ipv6");
+    if ((env != NULL) && ((strcasecmp(env, "yes") == 0) || (strcasecmp(env, "true") == 0) ))
+    {
+        use_ipv6 = true;
     }
 
     env = getenv("maxscale_hostname");
@@ -522,6 +536,7 @@ void TestConnections::process_template(const char *template_name, const char *de
     system(str);
 
     Mariadb_nodes * mdn[2];
+    char * IPcnf;
     mdn[0] = repl;
     mdn[1] = galera;
     int i, j;
@@ -530,8 +545,16 @@ void TestConnections::process_template(const char *template_name, const char *de
     {
         for (i = 0; i < mdn[j]->N; i++)
         {
+            if (mdn[j]->use_ipv6)
+            {
+                IPcnf = mdn[j]->IP6[i];
+            }
+            else
+            {
+                IPcnf = mdn[j]->IP[i];
+            }
             sprintf(str, "sed -i \"s/###%s_server_IP_%0d###/%s/\" maxscale.cnf",
-                    mdn[j]->prefix, i + 1, mdn[j]->IP[i]);
+                    mdn[j]->prefix, i + 1, IPcnf);
             system(str);
 
             sprintf(str, "sed -i \"s/###%s_server_port_%0d###/%d/\" maxscale.cnf",
@@ -996,7 +1019,7 @@ int TestConnections::find_connected_slave(int * global_result)
     repl->connect();
     for (int i = 0; i < repl->N; i++)
     {
-        conn_num = get_conn_num(repl->nodes[i], maxscale_IP, maxscale_hostname, (char *) "test");
+        conn_num = get_conn_num(repl->nodes[i], maxscale_ip(), maxscale_hostname, (char *) "test");
         tprintf("connections to %d: %u\n", i, conn_num);
         if ((i == 0) && (conn_num != 1))
         {
@@ -1027,7 +1050,7 @@ int TestConnections::find_connected_slave1()
     repl->connect();
     for (int i = 0; i < repl->N; i++)
     {
-        conn_num = get_conn_num(repl->nodes[i], maxscale_IP, maxscale_hostname, (char *) "test");
+        conn_num = get_conn_num(repl->nodes[i], maxscale_ip(), maxscale_hostname, (char *) "test");
         tprintf("connections to %d: %u\n", i, conn_num);
         all_conn += conn_num;
         if ((i != 0) && (conn_num != 0))
@@ -1887,7 +1910,14 @@ bool TestConnections::test_bad_config(const char *config)
 
 int TestConnections::connect_rwsplit()
 {
-    conn_rwsplit = open_conn(rwsplit_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    if (use_ipv6)
+    {
+        conn_rwsplit = open_conn(rwsplit_port, maxscale_IP6, maxscale_user, maxscale_password, ssl);
+    }
+    else
+    {
+        conn_rwsplit = open_conn(rwsplit_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    }
     routers[0] = conn_rwsplit;
 
     int rc = 0;
@@ -1907,7 +1937,14 @@ int TestConnections::connect_rwsplit()
 
 int TestConnections::connect_readconn_master()
 {
-    conn_master = open_conn(readconn_master_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    if (use_ipv6)
+    {
+        conn_master = open_conn(readconn_master_port, maxscale_IP6, maxscale_user, maxscale_password, ssl);
+    }
+    else
+    {
+        conn_master = open_conn(readconn_master_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    }
     routers[1] = conn_master;
 
     int rc = 0;
@@ -1927,7 +1964,14 @@ int TestConnections::connect_readconn_master()
 
 int TestConnections::connect_readconn_slave()
 {
-    conn_slave = open_conn(readconn_slave_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    if (use_ipv6)
+    {
+        conn_slave = open_conn(readconn_slave_port, maxscale_IP6, maxscale_user, maxscale_password, ssl);
+    }
+    else
+    {
+        conn_slave = open_conn(readconn_slave_port, maxscale_IP, maxscale_user, maxscale_password, ssl);
+    }
     routers[2] = conn_slave;
 
     int rc = 0;
@@ -1943,4 +1987,9 @@ int TestConnections::connect_readconn_slave()
     }
 
     return rc;
+}
+
+char* TestConnections::maxscale_ip() const
+{
+    return use_ipv6 ?  (char*)maxscale_IP6 : (char*)maxscale_IP;
 }

@@ -51,6 +51,15 @@ public:
      */
     char IP_private[256][1024];
     /**
+     * @brief  IP address strings for every backend node (IPv6)
+     */
+    char IP6[256][1024];
+    /**
+     * @brief use_ipv6 If true IPv6 addresses will be used to connect Maxscale and backed
+     * Also IPv6 addresses go to maxscale.cnf
+     */
+    bool use_ipv6;
+    /**
      * @brief  MariaDB port for every backend node
      */
     int port[256];
