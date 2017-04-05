@@ -85,7 +85,7 @@ add_test_executable(bug143.cpp bug143 replication LABELS MySQLAuth REPL_BACKEND)
 add_test_executable(bug422.cpp bug422 replication LABELS readwritesplit readconnroute maxscale REPL_BACKEND)
 
 # Regression case for the bug "Wildcard in host column of mysql.user table don't work properly"
-add_test_executable(bug448.cpp bug448 bug448 LABELS MySQLAuth LIGHT REPL_BACKEND)
+add_test_executable(bug448.cpp bug448 replication LABELS MySQLAuth LIGHT REPL_BACKEND)
 
 # Regression case for the bug "rwsplit counts every connection twice in master - counnection counts leak"
 add_test_executable(bug469.cpp bug469 replication LABELS readwritesplit LIGHT REPL_BACKEND)
