@@ -15,6 +15,7 @@ router=readwritesplit
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
+master_failure_mode=fail_on_write
 
 [Read Connection Router Slave]
 type=service
