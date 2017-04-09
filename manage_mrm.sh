@@ -12,12 +12,12 @@ function create_config() {
 
     if [ "$1" == "3" ]
     then
-        nodelist=node-000:3306,node-001:3306,node-002:3306
+        nodelist=$node_000_network:3306,$node_001_network:3306,$node_002_network:3306
     elif [ "$1" == "2" ]
     then
-        nodelist=node-000:3306,node-001:3306
+        nodelist=$node_000_network:3306,$node_001_network:3306
     else
-        nodelist=node-000:3306,node-001:3306,node-002:3306,node-003:3306
+        nodelist=$node_000_network:3306,$node_001_network:3306,$node_002_network:3306,$node_003_network:3306
     fi
 
     if [ -n "$new_replication_manager" ]
