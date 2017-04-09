@@ -64,6 +64,8 @@ int main(int argc, char *argv[])
     pthread_t thr[THREADS];
     int iter = 5;
 
+    Test->tprintf("Starting %d query threads", THREADS);
+
     for (int i = 0; i < THREADS; i++)
     {
         pthread_create(&thr[i], NULL, test_thr, Test);
@@ -72,13 +74,16 @@ int main(int argc, char *argv[])
     for (int i = 0; i < iter; i++)
     {
         sleep(5);
+        Test->tprintf("Blocking master");
         Test->repl->block_node(0);
         sleep(5);
+        Test->tprintf("Unblocking master");
         Test->repl->unblock_node(0);
     }
 
     running = false;
 
+    Test->tprintf("Joining threads");
     for (int i = 0; i < THREADS; i++)
     {
         pthread_join(thr[i], NULL);
