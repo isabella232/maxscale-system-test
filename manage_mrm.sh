@@ -35,7 +35,7 @@ user = "skysql:skysql"
 rpluser = "skysql:skysql"
 title = "Cluster01"
 connect-timeout = 1
-prefmaster = "node-000:3306"
+prefmaster = "$node_000_network:3306"
 interactive = false
 log-level=1
 # LOG
