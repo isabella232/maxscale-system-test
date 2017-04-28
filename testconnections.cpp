@@ -239,6 +239,12 @@ TestConnections::~TestConnections()
         copy_all_logs();
     }
 
+    if (global_result != 0 )
+    {
+        tprintf("Reverting snapshot\n");
+        revert_snapshot("clean");
+    }
+
     delete repl;
     delete galera;
 }
