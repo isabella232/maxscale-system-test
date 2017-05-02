@@ -47,14 +47,14 @@ int main(int argc, char *argv[])
         {
             Test->add_result(1, "Error: %s\n", mysql_error(Test->conn_rwsplit));
             Test->add_result(1, "Failed at %d\n", i);
-//            int rval = Test->global_result; delete Test;
+//            delete Test;
 //            return 1;
         }
         if (mysql_stmt_reset(stmt))
         {
             Test->add_result(1, "Error: %s\n", mysql_error(Test->conn_rwsplit));
             Test->add_result(1, "Failed at %d\n", i);
-//            int rval = Test->global_result; delete Test;
+//            delete Test;
 //            return 1;
         }
         query += ",1";

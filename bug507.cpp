@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     if (Test->repl->N < 3)
     {
         Test->tprintf("There is not enoght nodes for test\n");
-        int rval = Test->global_result; delete Test;
+        delete Test;
         exit(1);
     }
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
              != 0 ))
     {
         Test->tprintf("@@server_id fied not found!!\n");
-        int rval = Test->global_result; delete Test;
+        delete Test;
         exit(1);
     }
     else

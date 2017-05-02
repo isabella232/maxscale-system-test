@@ -238,11 +238,11 @@ TestConnections::~TestConnections()
     {
         copy_all_logs();
     }
-tprintf("Destr!\n");
+
     if (global_result != 0 )
     {
         tprintf("Reverting snapshot\n");
-        revert_snapshot("clean");
+        revert_snapshot((char*) "clean");
     }
 
     delete repl;
@@ -726,7 +726,7 @@ int TestConnections::copy_all_logs()
     else
     {
         tprintf("copy_logs.sh OK!\n");
-        this->copy_logs = false;
+        //this->copy_logs = false;
         return 0;
     }
 }
@@ -1556,7 +1556,7 @@ void *timeout_thread( void *ptr )
         Test->timeout--;
     }
     Test->tprintf("\n **** Timeout! *** \n");
-    int rval = Test->global_result; delete Test;
+    delete Test;
     exit(250);
 }
 

@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
              != 0 ))
     {
         Test->add_result(1, "@@server_id field not found!!\n");
-        int rval = Test->global_result; delete Test;
+        delete Test;
         exit(1);
     }
     else
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
              != 0 ))
     {
         Test->add_result(1, "@@hostname field not found!!\n");
-        int rval = Test->global_result; delete Test;
+        delete Test;
         exit(1);
     }
     else

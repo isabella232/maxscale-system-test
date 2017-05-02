@@ -63,7 +63,5 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
 
     int rval = Test->global_result; delete Test;
-Test->add_result(1, "F!");
-delete Test;
-//    return rval;
+    return rval;
 }

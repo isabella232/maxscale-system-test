@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     if (Test->connect_maxscale() != 0 )
     {
         printf("Error connecting to MaxScale\n");
-        int rval = Test->global_result; delete Test;
+        delete Test;
         exit(1);
     }
 

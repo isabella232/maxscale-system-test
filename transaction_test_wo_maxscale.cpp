@@ -35,7 +35,7 @@ int check_sha1(TestConnections* Test)
     printf("Master");
     Test->repl->ssh_node(0, (char *) "ls -la /var/lib/mysql/mar-bin.0000*", false);
 
-    return rval;
+    return Test->global_result;
 }
 
 int start_transaction(TestConnections* Test)
@@ -54,7 +54,6 @@ int start_transaction(TestConnections* Test)
 int main(int argc, char *argv[])
 {
     TestConnections * Test = new TestConnections(argc, argv);
-    int global_result = 0;
 
     int i;
 
@@ -123,7 +122,6 @@ int main(int argc, char *argv[])
         Test->add_result( check_sha1(Test), "sha1 wrong\n");
         Test->repl->close_connections();
     }
-
 
     int rval = Test->global_result; delete Test;
     return rval;

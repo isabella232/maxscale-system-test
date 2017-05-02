@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     if (Test->conn_rwsplit == NULL)
     {
         Test->add_result(1, "Error connecting to MaxScale\n");
-        int rval = Test->global_result; delete Test;
+        delete Test;
         return 1;
     }
     Test->tprintf("Removing 'test' DB\n");
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     if (Test->conn_rwsplit == NULL)
     {
         printf("Error connecting to MaxScale\n");
-        int rval = Test->global_result; delete Test;
+        delete Test;
         return 1;
     }
 
