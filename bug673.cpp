@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < 2; i++)
     {
-        Test->tprintf("Trying show dbusers \"RW Split Router\"\n");
-        Test->add_result(Test->get_maxadmin_param((char *) "show dbusers \"RW Split Router\"", (char *) "User names:",
+        Test->tprintf("Trying show dbusers RW-Split-Router\n");
+        Test->add_result(Test->get_maxadmin_param((char *) "show dbusers RW-Split-Router", (char *) "User names:",
                                                   result), "Maxadmin failed\n");
         Test->tprintf("result %s\n", result);
     }
