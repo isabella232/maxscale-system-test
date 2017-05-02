@@ -35,7 +35,7 @@ int check_sha1(TestConnections* Test)
     printf("Master");
     Test->repl->ssh_node(0, (char *) "ls -la /var/lib/mysql/mar-bin.0000*", false);
 
-    return Test->global_result;
+    return rval;
 }
 
 int start_transaction(TestConnections* Test)
@@ -125,6 +125,6 @@ int main(int argc, char *argv[])
     }
 
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

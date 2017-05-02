@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     if (Test->repl->N < 3)
     {
         Test->tprintf("There is not enoght nodes for test\n");
-        Test->copy_all_logs();
+        int rval = Test->global_result; delete Test;
         exit(1);
     }
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
              != 0 ))
     {
         Test->tprintf("@@server_id fied not found!!\n");
-        Test->copy_all_logs();
+        int rval = Test->global_result; delete Test;
         exit(1);
     }
     else
@@ -120,6 +120,6 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

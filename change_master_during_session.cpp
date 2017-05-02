@@ -60,6 +60,6 @@ int main(int argc, char *argv[])
     Test->set_timeout(60);
     Test->repl->close_connections();
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

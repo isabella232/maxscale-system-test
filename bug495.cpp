@@ -37,6 +37,6 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Unable to find server", true);
     Test->check_log_err((char *) "errors were encountered while processing the configuration", true);
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

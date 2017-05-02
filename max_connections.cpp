@@ -66,7 +66,7 @@ int main(int argc, char** argv)
     Test->stop_timeout();
     Test->check_maxscale_alive();
     Test->repl->execute_query_all_nodes((char *) "set global max_connections = 100;");
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 
 }

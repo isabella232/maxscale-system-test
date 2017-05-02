@@ -206,6 +206,6 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Galera: \n");
     check_pers_conn(Test, galera_pers_conn_expected, (char *) "gserver");
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

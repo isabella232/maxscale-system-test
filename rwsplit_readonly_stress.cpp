@@ -89,6 +89,6 @@ int main(int argc, char *argv[])
 
     /** Clean up test environment */
     Test->repl->flush_hosts();
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

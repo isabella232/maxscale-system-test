@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Failed to create filter 'DuplicaFilter' for service 'RW_Router'", true);
     Test->check_log_err((char *) "Setting up filters failed. Terminating session RW_Router", true);
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }
 

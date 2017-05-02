@@ -151,8 +151,8 @@ int main(int argc, char **argv)
 {
     TestConnections *test = new TestConnections(argc, argv);
     test->galera->verbose = false;
-    int rval = 0;
-    rval += simple_failover(test);
-    test->copy_all_logs();
+    int rval1 = 0;
+    rval1 += simple_failover(test);
+    int rval = test->global_result; delete test;
     return rval;
 }

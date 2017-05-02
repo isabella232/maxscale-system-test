@@ -107,6 +107,6 @@ int main(int argc, char *argv[])
     do_query(test, true);
 
     test->check_maxscale_processes(1);
-    test->copy_all_logs();
-    return test->global_result;
+    int rval = test->global_result; delete test;
+    return rval;
 }

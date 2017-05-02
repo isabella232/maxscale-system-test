@@ -50,6 +50,6 @@ int main(int argc, char *argv[])
         Test->set_timeout(30);
         Test->try_query(Test->conn_rwsplit, queries[i]);
     }
-
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

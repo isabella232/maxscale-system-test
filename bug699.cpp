@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
              != 0 ))
     {
         Test->add_result(1, "@@server_id field not found!!\n");
-        Test->copy_all_logs();
+        int rval = Test->global_result; delete Test;
         exit(1);
     }
     else
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
              != 0 ))
     {
         Test->add_result(1, "@@hostname field not found!!\n");
-        Test->copy_all_logs();
+        int rval = Test->global_result; delete Test;
         exit(1);
     }
     else
@@ -241,6 +241,6 @@ int main(int argc, char *argv[])
 
     Test->close_maxscale_connections();
     Test->check_maxscale_alive();
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

@@ -80,6 +80,6 @@ int main(int argc, char *argv[])
     execute_query(Test->conn_rwsplit, "DROP DATABASE db4");
     execute_query(Test->conn_rwsplit, "DROP USER 'table_privilege'@'%%'");
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

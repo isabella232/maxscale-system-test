@@ -40,7 +40,7 @@ void load(long int *new_inserts, long int *new_selects, long int *selects, long 
         {
             Test->add_result(1, "Can't connect to MaxScale\n");
         }
-        Test->copy_all_logs();
+        int rval = Test->global_result; delete Test;
         exit(1);
     }
     else

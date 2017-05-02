@@ -63,6 +63,6 @@ int main(int argc, char *argv[])
     Test->check_log_err("set autocommit=1", false);
     Test->check_log_err("select USER()", false);
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

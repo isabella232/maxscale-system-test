@@ -229,8 +229,8 @@ int main(int argc, char *argv[])
 
     pthread_join(thread, NULL);
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }
 
 void *query_thread(void *ptr)

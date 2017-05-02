@@ -172,8 +172,8 @@ int main(int argc, char *argv[])
     Test->tprintf("Waiting for network connections to die");
     sleep(30);
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }
 
 void *query_thread1(void *ptr)

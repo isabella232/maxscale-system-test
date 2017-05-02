@@ -238,7 +238,7 @@ TestConnections::~TestConnections()
     {
         copy_all_logs();
     }
-
+tprintf("Destr!\n");
     if (global_result != 0 )
     {
         tprintf("Reverting snapshot\n");
@@ -1556,7 +1556,7 @@ void *timeout_thread( void *ptr )
         Test->timeout--;
     }
     Test->tprintf("\n **** Timeout! *** \n");
-    Test->copy_all_logs();
+    int rval = Test->global_result; delete Test;
     exit(250);
 }
 

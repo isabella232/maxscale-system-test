@@ -84,6 +84,6 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *)
                         "Failed to open, read or process the MaxScale configuration file /etc/maxscale.cnf. Exiting", true);
     //Test->check_maxscale_alive();
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }

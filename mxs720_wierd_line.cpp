@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Unexpected parameter 'hren'", true);
 
     Test->check_maxscale_processes(0);
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }
 

@@ -106,8 +106,8 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, (char *) "DROP USER user@'%%';");
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }
 
 void *parall_traffic( void *ptr )

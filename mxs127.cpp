@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     Test->tprintf("done!\n");
 
     Test->close_maxscale_connections();
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }
 

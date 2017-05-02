@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     test->close_maxscale_connections();
     test->tprintf("Cecking if Maxscale alive\n");
     test->check_maxscale_alive();
-    test->copy_all_logs();
+    int rval = test->global_result; delete test;
     unlink(filename);
-    return test->global_result;
+    return rval;
 }

@@ -50,6 +50,6 @@ int main(int argc, char** argv)
     test->check_log_err("matched by", true);
     test->check_log_err("was not matched", true);
 
-    test->copy_all_logs();
-    return test->global_result;
+    int rval = test->global_result; delete test;
+    return rval;
 }

@@ -33,13 +33,12 @@ int main(int argc, char **argv)
 {
     TestConnections *test = new TestConnections(argc, argv);
     test->repl->connect();
-    int rval = 0;
     char server_id[1024];
 
     sprintf(server_id, "%d", test->repl->get_server_id(1));
     test->tprintf("Server ID of server2 is: %s\n", server_id);
     test->add_result(test->connect_rwsplit(), "Test failed to connect to MaxScale.\n");
     test->add_result(compare_server_id(test, server_id), "Test failed, server ID was not correct.\n");
-    test->copy_all_logs();
-    return test->global_result;
+    int rval = test->global_result; delete test;
+    return rval;
 }

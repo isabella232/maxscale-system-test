@@ -94,7 +94,7 @@ int main(int argc, char** argv)
                              queries[i].query, server_id[queries[i].reply], str);
         }
     }
-    test->copy_all_logs();
-    return test->global_result;
+    int rval = test->global_result; delete test;
+    return rval;
 }
 

@@ -104,8 +104,8 @@ int main(int argc, char *argv[])
     Test->add_result(strcasestr(output, "Failed") == NULL, "Reloading rules should fail with syntax errors");
 
     Test->check_maxscale_processes(1);
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }
 
 

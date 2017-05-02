@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     Test->check_maxscale_alive();
     Test->check_current_operations(0);
 
-    Test->copy_all_logs();
+    int rval = Test->global_result; delete Test;
 
-    return Test->global_result;
+    return rval;
 }

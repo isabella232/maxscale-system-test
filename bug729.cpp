@@ -66,6 +66,6 @@ int main(int argc, char *argv[])
 
     Test->check_log_err((char *) "Can't route MYSQL_COM_STMT_PREPARE", false);
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result; delete Test;
+    return rval;
 }
