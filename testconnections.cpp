@@ -1722,15 +1722,17 @@ int TestConnections::try_query_all(const char *sql)
 
 int TestConnections::find_master_maxadmin(Mariadb_nodes * nodes)
 {
-    char show_server[32];
-    char res[256];
     bool found = false;
     int master = -1;
+
     for (int i = 0; i < nodes->N; i++)
     {
+        char show_server[256];
+        char res[256];
         sprintf(show_server, "show server server%d", i + 1);
         get_maxadmin_param(show_server, (char *) "Status", res);
-        if (strstr(res, "Master") != NULL)
+
+        if (strstr(res, "Master"))
         {
             if (found)
             {
@@ -1743,7 +1745,28 @@ int TestConnections::find_master_maxadmin(Mariadb_nodes * nodes)
             }
         }
     }
+
     return master;
+}
+
+int TestConnections::find_slave_maxadmin(Mariadb_nodes * nodes)
+{
+    int slave = -1;
+
+    for (int i = 0; i < nodes->N; i++)
+    {
+        char show_server[256];
+        char res[256];
+        sprintf(show_server, "show server server%d", i + 1);
+        get_maxadmin_param(show_server, (char *) "Status", res);
+
+        if (strstr(res, "Slave"))
+        {
+            slave = i;
+        }
+    }
+
+    return slave;
 }
 
 int TestConnections::execute_maxadmin_command(char * cmd)

@@ -16,6 +16,12 @@
 #include <jansson.h>
 #include "maxinfo_func.h"
 
+#include <sstream>
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
 int main(int argc, char *argv[])
 {
 
@@ -24,10 +30,8 @@ int main(int argc, char *argv[])
     Test->stop_maxscale();
     Test->ssh_maxscale(true, (char *) "rm -rf /var/lib/maxscale/avro");
 
-    //Test->ssh_maxscale(true, (char *) "mkdir /var/lib/maxscale/avro; chown -R maxscale:maxscale /var/lib/maxscale/avro");
-
     Test->repl->connect();
-    execute_query(Test->repl->nodes[0], (char *) "DROP TABLE IF EXISTS t1;");
+    execute_query(Test->repl->nodes[0], "DROP TABLE IF EXISTS t1");
     Test->repl->close_connections();
     sleep(5);
 
@@ -38,7 +42,7 @@ int main(int argc, char *argv[])
 
     Test->stop_maxscale();
 
-    Test->ssh_maxscale(true, (char *) "rm -rf /var/lib/maxscale/avro");
+    Test->ssh_maxscale(true, "rm -rf /var/lib/maxscale/avro");
 
     Test->set_timeout(120);
 
@@ -49,53 +53,45 @@ int main(int argc, char *argv[])
     Test->repl->connect();
     create_t1(Test->repl->nodes[0]);
     insert_into_t1(Test->repl->nodes[0], 3);
+    execute_query(Test->repl->nodes[0], "FLUSH LOGS");
+
     Test->repl->close_connections();
 
     Test->set_timeout(120);
 
     sleep(10);
 
+
     char * avro_check = Test->ssh_maxscale_output(true,
-                        " maxavrocheck -vv /var/lib/maxscale/avro/test.t1.000001.avro | grep \"{\"");
+                        "maxavrocheck -vv /var/lib/maxscale/avro/test.t1.000001.avro | grep \"{\"");
+    char * output = Test->ssh_maxscale_output(true, "maxavrocheck -d /var/lib/maxscale/avro/test.t1.000001.avro");
 
-    //printf("%s\n", avro_check);
-
-    Test->set_timeout(20);
-
-    char * str ;
-    char * str_end;
-    char line[1024];
-    long long int x1;
-    long long int fl;
+    std::istringstream iss;
+    iss.str(output);
     int x1_exp = 0;
     int fl_exp = 0;
     int x = 16;
 
-    str = avro_check;
-
-    str_end = strstr(str, "\n");
-    Test->tprintf("fl = %d\n", fl_exp);
-    while (str_end != NULL )
+    for (std::string line; std::getline(iss, line);)
     {
-        memcpy(line, str, str_end - str);
-        line[str_end - str] = '\0';
-        //Test->tprintf("%s\n", line);
-        get_x_fl_from_json(line, &x1, &fl);
-        if ((x1 != x1_exp) || (fl != fl_exp))
+        long long int x1, fl;
+        Test->set_timeout(20);
+        get_x_fl_from_json((char*)line.c_str(), &x1, &fl);
+
+        if (x1 != x1_exp || fl != fl_exp)
         {
-            Test->add_result(1, "Wrong data in avro file: x1 = %lld, fl = %lld, but expected x1 = %d, fl = %d", x1, fl,
-                             x1_exp, fl_exp);
+            Test->add_result(1, "Output:x1 %lld, fl %lld, Expected: x1 %d, fl %d",
+                             x1, fl, x1_exp, fl_exp);
+            break;
         }
-        x1_exp++;
-        if (x1_exp >= x)
+
+        if ((++x1_exp) >= x)
         {
             x1_exp = 0;
             x = x * 16;
             fl_exp++;
-            Test->tprintf("fl = %d\n", fl_exp);
+            Test->tprintf("fl = %d", fl_exp);
         }
-        str = str_end + 1 ;
-        str_end = strstr(str, "\n");
     }
 
     if (fl_exp != 3)

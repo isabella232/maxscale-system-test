@@ -30,6 +30,8 @@ void *disconnect_thread(void *ptr);
 int main(int argc, char *argv[])
 {
     TestConnections test(argc, argv);
+    test.ssh_maxscale(true, "sysctl net.ipv4.tcp_tw_reuse=1 net.ipv4.tcp_tw_recycle=1 "
+                       "net.core.somaxconn=10000 net.ipv4.tcp_max_syn_backlog=10000");
 
     test.set_timeout(60);
     test.connect_maxscale();
@@ -90,12 +92,23 @@ int main(int argc, char *argv[])
         test.tprintf("Replication is broken!");
     }
 
-    sleep(5);
-    test.set_timeout(60);
+    // Try to connect over a period of 60 seconds. It is possible that
+    // there are no available network sockets which means we'll have to
+    // wait until some of them become available. This is caused by how the
+    // TCP stack works.
+    for (int i = 0; i < 60; i++)
+    {
+        test.set_timeout(60);
+        test.verbose = true;
+        int rc = test.connect_maxscale();
+        test.verbose = false;
 
-    test.verbose = true;
-    test.connect_maxscale();
-    test.verbose = false;
+        if (rc == 0)
+        {
+            break;
+        }
+        sleep(1);
+    }
 
     test.try_query(test.conn_rwsplit, "DROP TABLE IF EXISTS t1");
     test.close_maxscale_connections();
