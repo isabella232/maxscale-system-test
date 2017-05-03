@@ -39,7 +39,7 @@ void TestConnections::require_galera_version(const char *version)
 }
 
 TestConnections::TestConnections(int argc, char *argv[]):
-    copy_logs(true), no_backend_log_copy(false), use_snapshots(false), verbose(false), rwsplit_port(4006),
+    no_backend_log_copy(false), use_snapshots(false), verbose(false), rwsplit_port(4006),
     readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
     global_result(0), binlog_cmd_option(0), enable_timeouts(true), use_ipv6(false)
 {
@@ -234,10 +234,7 @@ TestConnections::~TestConnections()
         //galera->disable_ssl();
     }
 
-    if (this->copy_logs)
-    {
-        copy_all_logs();
-    }
+    copy_all_logs();
 
     if (global_result != 0 )
     {
@@ -726,7 +723,6 @@ int TestConnections::copy_all_logs()
     else
     {
         tprintf("copy_logs.sh OK!\n");
-        //this->copy_logs = false;
         return 0;
     }
 }
