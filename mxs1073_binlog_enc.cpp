@@ -130,8 +130,8 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Running 'maxbinlogcheck' against Maxscale binlog file\n");
     char * maxscale_binlogcheck_output = Test->ssh_maxscale_output(true,
-                                                                   "maxbinlogcheck -M -K /etc/mariadb_binlog_keys.txt -H /var/lib/maxscale/Binlog_Service/mar-bin.000001 --aes_algo=%s 2> 1",
-                                                                   alg);
+                                         "maxbinlogcheck -M -K /etc/mariadb_binlog_keys.txt -H /var/lib/maxscale/Binlog_Service/mar-bin.000001 --aes_algo=%s 2> 1",
+                                         alg);
     //puts(maxscale_binlogcheck_output);
     if (strstr(maxscale_binlogcheck_output, "error") != NULL)
     {
@@ -241,6 +241,7 @@ int main(int argc, char *argv[])
 
 
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }

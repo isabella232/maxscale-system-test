@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Checking if Maxscale alive\n");
     Test->check_maxscale_alive();
-    Test->copy_all_logs();
+    int rval = Test->global_result;
+    delete Test;
 
-    return Test->global_result;
+    return rval;
 }

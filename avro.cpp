@@ -61,7 +61,10 @@ int main(int argc, char *argv[])
 
     sleep(10);
 
-    char* output = Test->ssh_maxscale_output(true, "maxavrocheck -d /var/lib/maxscale/avro/test.t1.000001.avro");
+
+    char * avro_check = Test->ssh_maxscale_output(true,
+                        "maxavrocheck -vv /var/lib/maxscale/avro/test.t1.000001.avro | grep \"{\"");
+    char * output = Test->ssh_maxscale_output(true, "maxavrocheck -d /var/lib/maxscale/avro/test.t1.000001.avro");
 
     std::istringstream iss;
     iss.str(output);
@@ -98,7 +101,8 @@ int main(int argc, char *argv[])
 
     Test->set_timeout(120);
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }
 

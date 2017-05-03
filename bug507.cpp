@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     if (Test->repl->N < 3)
     {
         Test->tprintf("There is not enoght nodes for test\n");
-        Test->copy_all_logs();
+        delete Test;
         exit(1);
     }
 
@@ -94,17 +94,17 @@ int main(int argc, char *argv[])
     char last_insert_id1[1024];
     char last_insert_id2[1024];
     if ( (
-             find_field(
-                 Test->conn_rwsplit, sel1,
-                 "@@server_id", &last_insert_id1[0])
-             != 0 ) || (
-             find_field(
-                 Test->repl->nodes[0], sel1,
-                 "@@server_id", &last_insert_id2[0])
-             != 0 ))
+                find_field(
+                    Test->conn_rwsplit, sel1,
+                    "@@server_id", &last_insert_id1[0])
+                != 0 ) || (
+                find_field(
+                    Test->repl->nodes[0], sel1,
+                    "@@server_id", &last_insert_id2[0])
+                != 0 ))
     {
         Test->tprintf("@@server_id fied not found!!\n");
-        Test->copy_all_logs();
+        delete Test;
         exit(1);
     }
     else
@@ -120,6 +120,7 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }

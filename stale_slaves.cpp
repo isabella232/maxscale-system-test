@@ -14,7 +14,6 @@
 int main(int argc, char **argv)
 {
     TestConnections *test = new TestConnections(argc, argv);
-    int rval = 0;
 
     char server_id[test->repl->N][1024];
 
@@ -101,6 +100,7 @@ int main(int argc, char **argv)
                      "Server IDs don't match when they should: %s - %s",
                      first_slave, second_slave);
 
-    test->copy_all_logs();
+    int rval = test->global_result;
+    delete test;
     return rval;
 }

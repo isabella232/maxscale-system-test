@@ -82,8 +82,9 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
     Test->check_log_err((char *) "received fatal signal", false);
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }
 
 void *query_thread1( void *ptr )

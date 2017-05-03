@@ -124,8 +124,9 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, (char *) "show processlist;");
     Test->close_rwsplit();
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }
 
 

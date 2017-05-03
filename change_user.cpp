@@ -83,7 +83,8 @@ int main(int argc, char *argv[])
     execute_query_silent(Test->conn_rwsplit, "DROP TABLE test.t1");
 
     Test->close_maxscale_connections();
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }
 

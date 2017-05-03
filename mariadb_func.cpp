@@ -567,9 +567,9 @@ unsigned int get_seconds_behind_master(MYSQL *conn)
     char SBM_str[16];
     unsigned int SBM = 0;
     if (find_field(
-            conn, (char *) "show slave status;",
-            (char *) "Seconds_Behind_Master", &SBM_str[0]
-        ) != 1)
+                conn, (char *) "show slave status;",
+                (char *) "Seconds_Behind_Master", &SBM_str[0]
+            ) != 1)
     {
         sscanf(SBM_str, "%u", &SBM);
     }

@@ -35,9 +35,6 @@
 class TestConnections
 {
 private:
-    /** If false, logs are copied in the destructor */
-    bool copy_logs;
-
     /** Whether timeouts are enabled or not */
     bool enable_timeouts;
 public:

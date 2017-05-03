@@ -79,6 +79,7 @@ int main(int argc, char** argv)
         truncate_maxscale_logs(test);
     }
 
-    test->copy_all_logs();
-    return test->global_result;
+    int rval = test->global_result;
+    delete test;
+    return rval;
 }

@@ -62,10 +62,8 @@ int main(int argc, char *argv[])
     fflush(stdout);
     Test->check_maxscale_alive();
 
-    Test->copy_all_logs();
-    fflush(stdout);
-    Test->tprintf("Logs copied!\n");
-    fflush(stdout);
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }
 

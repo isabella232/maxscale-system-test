@@ -173,8 +173,9 @@ int main(int argc, char *argv[])
     //Test->check_log_err((char *) "due to handshake failure", false);
     //Test->check_log_err((char *) "Refresh rate limit exceeded for load of users' table", false);
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }
 
 void *query_thread1( void *ptr )

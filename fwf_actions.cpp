@@ -69,6 +69,7 @@ int main(int argc, char** argv)
     sleep(10);
     test->tprintf("Checking if MaxScale was succesfully terminated\n");
     test->check_maxscale_processes(0);
-    test->copy_all_logs();
-    return test->global_result;
+    int rval = test->global_result;
+    delete test;
+    return rval;
 }

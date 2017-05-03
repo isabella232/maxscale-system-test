@@ -74,8 +74,9 @@ int main(int argc, char *argv[])
     execute_query_silent(Test->conn_rwsplit, "DROP TABLE test.t1");
 
     Test->check_maxscale_alive();
-    Test->copy_all_logs();
+    int rval = Test->global_result;
+    delete Test;
 
-    return Test->global_result;
+    return rval;
 }
 

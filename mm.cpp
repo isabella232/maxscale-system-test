@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
         Test->add_result(1, "Node0 is not master, status is %s\n", maxadmin_result);
     }
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }

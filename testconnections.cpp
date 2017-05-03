@@ -39,7 +39,7 @@ void TestConnections::require_galera_version(const char *version)
 }
 
 TestConnections::TestConnections(int argc, char *argv[]):
-    copy_logs(true), no_backend_log_copy(false), use_snapshots(false), verbose(false), rwsplit_port(4006),
+    no_backend_log_copy(false), use_snapshots(false), verbose(false), rwsplit_port(4006),
     readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
     global_result(0), binlog_cmd_option(0), enable_timeouts(true), use_ipv6(false)
 {
@@ -118,9 +118,9 @@ TestConnections::TestConnections(int argc, char *argv[]):
             restart_galera = true;
             break;
 
-            case 'z':
-                enable_timeouts = false;
-                break;
+        case 'z':
+            enable_timeouts = false;
+            break;
 
         default:
             printf("UNKNOWN OPTION: %c\n", c);
@@ -234,9 +234,12 @@ TestConnections::~TestConnections()
         //galera->disable_ssl();
     }
 
-    if (this->copy_logs)
+    copy_all_logs();
+
+    if (global_result != 0 )
     {
-        copy_all_logs();
+        tprintf("Reverting snapshot\n");
+        revert_snapshot((char*) "clean");
     }
 
     delete repl;
@@ -633,8 +636,8 @@ int TestConnections::init_maxscale()
 int TestConnections::connect_maxscale()
 {
     return connect_rwsplit() +
-        connect_readconn_master() +
-        connect_readconn_slave();
+           connect_readconn_master() +
+           connect_readconn_slave();
 }
 
 int TestConnections::close_maxscale_connections()
@@ -720,7 +723,6 @@ int TestConnections::copy_all_logs()
     else
     {
         tprintf("copy_logs.sh OK!\n");
-        this->copy_logs = false;
         return 0;
     }
 }
@@ -756,8 +758,8 @@ int TestConnections::prepare_binlog()
     tprintf("Master server version %s\n", version_str);
 
     if ((strstr(version_str, "10.0") != NULL) ||
-        (strstr(version_str, "10.1") != NULL) ||
-        (strstr(version_str, "10.2") != NULL))
+            (strstr(version_str, "10.1") != NULL) ||
+            (strstr(version_str, "10.2") != NULL))
     {
         tprintf("10.0!\n");
     }
@@ -1550,7 +1552,7 @@ void *timeout_thread( void *ptr )
         Test->timeout--;
     }
     Test->tprintf("\n **** Timeout! *** \n");
-    Test->copy_all_logs();
+    delete Test;
     exit(250);
 }
 

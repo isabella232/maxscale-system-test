@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
     Test->close_maxscale_connections();
     Test->check_log_err((char *) "RW Split Router: Recursive use of tee filter in service", true);
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }

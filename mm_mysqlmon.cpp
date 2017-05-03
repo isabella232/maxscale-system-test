@@ -214,6 +214,7 @@ int main(int argc, char *argv[])
     change_master(Test, 3, 0);
     Test->repl->fix_replication();
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }

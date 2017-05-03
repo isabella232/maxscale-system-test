@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     Test->tprintf("Trying SELECT to check if Maxscale hangs\n");
     Test->try_query(Test->conn_rwsplit, (char *) "select * from mysql.user");
 
-    Test->copy_all_logs();
-    return Test->global_result;
+    int rval = Test->global_result;
+    delete Test;
+    return rval;
 }

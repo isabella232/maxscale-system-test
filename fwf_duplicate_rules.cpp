@@ -7,8 +7,8 @@
 #include "testconnections.h"
 
 const char *rules = "rule test1 deny no_where_clause\n"
-    "rule test1 deny columns a b c\n"
-    "users %@% match any rules test1\n";
+                    "rule test1 deny columns a b c\n"
+                    "users %@% match any rules test1\n";
 
 int main(int argc, char** argv)
 {
