@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
     test->tprintf(" Check that MaxScale is running ");
     test->check_maxscale_alive();
 
-    int rval = test->global_result; delete test;
+    int rval = test->global_result;
+    delete test;
     return rval;
 }

@@ -65,7 +65,8 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Failed to create new router session for service 'Read Connection Router Slave'",
                         true);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

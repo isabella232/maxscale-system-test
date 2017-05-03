@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
     Test->tprintf("MaxScale is running as '%s'", user);
     Test->add_result(strcmp(user, "maxscale"), "MaxScale process running as '%s' instead of 'maxscale'\n", user);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

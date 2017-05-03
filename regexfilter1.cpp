@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
     test->add_result(execute_query_check_one(test->conn_master, "SELECT 123", "123"),
                      "Query to third service should not have replaced the query.\n");
     test->close_maxscale_connections();
-    int rval = test->global_result; delete test;
+    int rval = test->global_result;
+    delete test;
     return rval;
 }

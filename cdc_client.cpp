@@ -229,7 +229,8 @@ int main(int argc, char *argv[])
 
     pthread_join(thread, NULL);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

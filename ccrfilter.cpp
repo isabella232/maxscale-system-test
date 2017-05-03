@@ -138,6 +138,7 @@ int main(int argc, char *argv[])
     execute_query(test->repl->nodes[0], "DROP TABLE test.t1");
     execute_query(test->repl->nodes[0], "DROP TABLE test.t2");
 
-    int rval = test->global_result; delete test;
+    int rval = test->global_result;
+    delete test;
     return rval;
 }

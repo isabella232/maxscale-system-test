@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     sleep(10);
 
     char * avro_check = Test->ssh_maxscale_output(true,
-                                                  " maxavrocheck -vv /var/lib/maxscale/avro/test.t1.000001.avro | grep \"{\"");
+                        " maxavrocheck -vv /var/lib/maxscale/avro/test.t1.000001.avro | grep \"{\"");
 
     //printf("%s\n", avro_check);
 
@@ -105,7 +105,8 @@ int main(int argc, char *argv[])
 
     Test->set_timeout(120);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

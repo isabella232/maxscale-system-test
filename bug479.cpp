@@ -28,7 +28,8 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Unable to find filter 'non existing filter", true);
     //global_result =Test->check_log_err((char *) "не существуюший фильтер", true);
     //global_result +=Test->check_maxscale_alive();
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

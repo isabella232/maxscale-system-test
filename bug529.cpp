@@ -286,7 +286,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

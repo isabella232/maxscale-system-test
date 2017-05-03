@@ -143,6 +143,7 @@ int main(int argc, char *argv[])
     Test->ssh_maxscale(true, "rm -rf /var/lib/maxscale/passwd");
     Test->ssh_maxscale(true, "rm -rf /var/lib/maxscale/maxadmin-users");
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

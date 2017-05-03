@@ -309,7 +309,8 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Creating client session for Tee filter failed. Terminating session.", true);
     Test->check_log_err((char *) "Failed to create filter 'DuplicaFilter' for service 'RW_Router'", true);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

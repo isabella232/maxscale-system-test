@@ -89,7 +89,8 @@ int main(int argc, char *argv[])
 
     Test->check_log_err((char *) "Unable to find filter 'tests' for service 'RW Split2'", true);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

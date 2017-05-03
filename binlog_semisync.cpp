@@ -84,7 +84,8 @@ int main(int argc, char *argv[])
         Test->add_result(1, "Can't connect to backend\n");
     }
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

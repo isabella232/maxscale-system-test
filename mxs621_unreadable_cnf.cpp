@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     Test->set_timeout(30);
     Test->ssh_maxscale(true, "chmod 777 /etc/maxscale.cnf");
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

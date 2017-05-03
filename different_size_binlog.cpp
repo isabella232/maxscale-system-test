@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     different_packet_size(Test, true);
 
     Test->check_maxscale_processes(1);
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Router session exceeded session command history limit", true);
     Test->close_maxscale_connections();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

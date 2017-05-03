@@ -92,7 +92,8 @@ int main(int argc, char *argv[])
     //execute_query_silent(conn, (char *) "DROP TABLE t2;");
 
     Test->check_maxscale_alive();
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

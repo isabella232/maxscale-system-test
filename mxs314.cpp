@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
     Test->set_timeout(20);
     mysql_stmt_close(stmt);
     Test->close_maxscale_connections();
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

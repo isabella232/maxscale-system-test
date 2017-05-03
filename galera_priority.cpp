@@ -22,8 +22,8 @@ int check_server_id(TestConnections* test, char *node_id)
     char str[1024];
     int rval = 0;
     if (execute_query(test->conn_rwsplit, "BEGIN") ||
-        find_field(test->conn_rwsplit, "SELECT @@server_id", "@@server_id", str) ||
-        execute_query(test->conn_rwsplit, "COMMIT"))
+            find_field(test->conn_rwsplit, "SELECT @@server_id", "@@server_id", str) ||
+            execute_query(test->conn_rwsplit, "COMMIT"))
     {
         test->tprintf("Failed to compare @@server_id.\n");
         rval = 1;
@@ -153,6 +153,7 @@ int main(int argc, char **argv)
     test->galera->verbose = false;
     int rval1 = 0;
     rval1 += simple_failover(test);
-    int rval = test->global_result; delete test;
+    int rval = test->global_result;
+    delete test;
     return rval;
 }

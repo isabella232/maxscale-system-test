@@ -65,7 +65,8 @@ int main(int argc, char *argv[])
     Test->add_result(Test->try_query_all("SHOW DATABASES"), "Second query with user cache should work\n");
     Test->stop_timeout();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
 
     return rval;
 }

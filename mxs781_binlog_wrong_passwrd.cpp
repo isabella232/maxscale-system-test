@@ -67,7 +67,8 @@ int main(int argc, char *argv[])
     Test->add_result(strcasecmp(str, "#28000 Authentication with master server failed"),
                      "Wrong slave state: %s\n", str);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

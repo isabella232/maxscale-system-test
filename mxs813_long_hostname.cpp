@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
     mysql_close(binlog);
 
     Test->check_maxscale_processes(1);
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

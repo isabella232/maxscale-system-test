@@ -151,6 +151,7 @@ int main(int argc, char *argv[])
     Test->stop_timeout();
     cluster->delete_rds_cluster();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

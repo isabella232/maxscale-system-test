@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     Test->close_rwsplit();
     Test->repl->close_connections();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

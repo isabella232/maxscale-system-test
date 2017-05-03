@@ -17,7 +17,7 @@
 #include <vector>
 
 Mariadb_nodes::Mariadb_nodes(const char *pref, const char *test_cwd, bool verbose):
-v51(false), use_ipv6(false)
+    v51(false), use_ipv6(false)
 {
     strcpy(prefix, pref);
     memset(this->nodes, 0, sizeof(this->nodes));
@@ -264,9 +264,9 @@ int Mariadb_nodes::find_master()
     while ((found == 0) && (i < N))
     {
         if (find_field(
-                nodes[i], (char *) "show slave status;",
-                (char *) "Master_Host", &str[0]
-            ) == 0 )
+                    nodes[i], (char *) "show slave status;",
+                    (char *) "Master_Host", &str[0]
+                ) == 0 )
         {
             found = 1;
             strcpy(master_IP, str);

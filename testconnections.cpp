@@ -118,9 +118,9 @@ TestConnections::TestConnections(int argc, char *argv[]):
             restart_galera = true;
             break;
 
-            case 'z':
-                enable_timeouts = false;
-                break;
+        case 'z':
+            enable_timeouts = false;
+            break;
 
         default:
             printf("UNKNOWN OPTION: %c\n", c);
@@ -636,8 +636,8 @@ int TestConnections::init_maxscale()
 int TestConnections::connect_maxscale()
 {
     return connect_rwsplit() +
-        connect_readconn_master() +
-        connect_readconn_slave();
+           connect_readconn_master() +
+           connect_readconn_slave();
 }
 
 int TestConnections::close_maxscale_connections()
@@ -758,8 +758,8 @@ int TestConnections::prepare_binlog()
     tprintf("Master server version %s\n", version_str);
 
     if ((strstr(version_str, "10.0") != NULL) ||
-        (strstr(version_str, "10.1") != NULL) ||
-        (strstr(version_str, "10.2") != NULL))
+            (strstr(version_str, "10.1") != NULL) ||
+            (strstr(version_str, "10.2") != NULL))
     {
         tprintf("10.0!\n");
     }

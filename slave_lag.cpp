@@ -91,7 +91,8 @@ int main(int argc, char *argv[])
     if (Test->conn_rwsplit == NULL )
     {
         printf("Can't connect to MaxScale\n");
-        int rval = Test->global_result; delete Test;
+        int rval = Test->global_result;
+        delete Test;
         exit(1);
     }
     else
@@ -154,7 +155,8 @@ int main(int argc, char *argv[])
     Test->repl->close_connections();
     Test->repl->start_replication();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

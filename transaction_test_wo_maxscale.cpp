@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 
         Test->tprintf("SELECT * FROM t1 WHERE fl=10, checking inserted values\n");
         Test->add_result( execute_query_check_one(Test->repl->nodes[0], (char *) "SELECT * FROM t1 WHERE fl=10",
-                                                  "111"), "failed\n");
+                          "111"), "failed\n");
 
         //printf("SELECT, checking inserted values from slave\n");
         //global_result += execute_query_check_one(Test->repl->nodes[2], (char *) "SELECT * FROM t1 WHERE fl=10", "111");
@@ -93,11 +93,11 @@ int main(int argc, char *argv[])
 
         Test->tprintf("SELECT * FROM t1 WHERE fl=10, checking inserted values\n");
         Test->add_result( execute_query_check_one(Test->repl->nodes[0], (char *) "SELECT * FROM t1 WHERE fl=10",
-                                                  "112"), "failed\n");
+                          "112"), "failed\n");
 
         Test->tprintf("SELECT * FROM t1 WHERE fl=10, checking inserted values from slave\n");
         Test->add_result( execute_query_check_one(Test->repl->nodes[2], (char *) "SELECT * FROM t1 WHERE fl=10",
-                                                  "112"), "failed\n");
+                          "112"), "failed\n");
         Test->tprintf("DELETE FROM t1 WHERE fl=10\n");
         Test->try_query(Test->repl->nodes[0], (char *) "DELETE FROM t1 WHERE fl=10");
         Test->tprintf("Checking t1\n");
@@ -111,11 +111,11 @@ int main(int argc, char *argv[])
 
         printf("SELECT, checking inserted values\n");
         Test->add_result( execute_query_check_one(Test->repl->nodes[0], (char *) "SELECT * FROM t1 WHERE fl=10",
-                                                  "111"), "failed\n");
+                          "111"), "failed\n");
 
         Test->tprintf("SELECT, checking inserted values from slave\n");
         Test->add_result( execute_query_check_one(Test->repl->nodes[2], (char *) "SELECT * FROM t1 WHERE fl=10",
-                                                  "111"), "failed\n");
+                          "111"), "failed\n");
         Test->tprintf("DELETE FROM t1 WHERE fl=10\n");
         Test->try_query(Test->repl->nodes[0], (char *) "DELETE FROM t1 WHERE fl=10");
 
@@ -123,6 +123,7 @@ int main(int argc, char *argv[])
         Test->repl->close_connections();
     }
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

@@ -47,7 +47,8 @@ int main(int argc, char *argv[])
                                     Test->maxscale_password, Test->ssl);
     mysql_close(conn_galera);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

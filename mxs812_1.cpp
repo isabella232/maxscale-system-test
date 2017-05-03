@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
         run_test(Test, 500000, 10);
     }
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

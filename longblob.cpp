@@ -80,6 +80,7 @@ int main(int argc, char *argv[])
     Test->repl->close_connections();
     Test->close_maxscale_connections();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

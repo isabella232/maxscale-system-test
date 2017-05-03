@@ -152,6 +152,7 @@ int main(int argc, char *argv[])
     //Test->check_log_err((char *) "Server 'server4' has no value for weighting parameter 'serversize', no queries will be routed to this server", true);
 
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

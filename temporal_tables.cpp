@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
 
     mysql_close(conn);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

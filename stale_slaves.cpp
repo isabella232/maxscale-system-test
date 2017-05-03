@@ -100,6 +100,7 @@ int main(int argc, char **argv)
                      "Server IDs don't match when they should: %s - %s",
                      first_slave, second_slave);
 
-    int rval = test->global_result; delete test;
+    int rval = test->global_result;
+    delete test;
     return rval;
 }

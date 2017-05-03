@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Couldn't find suitable Master", false);
     //Test->check_maxscale_alive();
     Test->check_maxscale_processes(0);
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

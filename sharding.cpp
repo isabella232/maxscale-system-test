@@ -146,6 +146,7 @@ int main(int argc, char *argv[])
         execute_query(Test->repl->nodes[i], "DROP DATABASE IF EXISTS shard_db%d", i);
     }
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

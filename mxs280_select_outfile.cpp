@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Failed to execute session command in", true);
     Test->check_log_err((char *) "File '/tmp/t1.csv' already exists", true);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

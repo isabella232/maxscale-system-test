@@ -547,7 +547,8 @@ int main(int argc, char *argv[])
     compare_expected(Test, "SELECT * FROM long_blob_table limit 1;", 1, exp_rows);
 
     Test->check_maxscale_alive();
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
 
     return rval;
 

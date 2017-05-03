@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
     test->add_result(baseline == test->ssh_maxscale(true, "maxscale -c --user=maxscale"),
                      "Missing configuration file should be detected.\n");
 
-    int rval = test->global_result; delete test;
+    int rval = test->global_result;
+    delete test;
     return rval;
 }
 

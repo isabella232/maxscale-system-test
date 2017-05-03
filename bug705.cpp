@@ -254,7 +254,8 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *) "Loading database names", false);
     Test->check_log_err((char *) "Unknown column", false);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
     //  }
 }

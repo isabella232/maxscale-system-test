@@ -132,7 +132,8 @@ int main(int argc, char *argv[])
                              "echo select User,Host from mysql.user | mysql -uusr1 -h maxscale.maxscale.test -P 4009", false),
         "Error executing query against Read Connection Slave\n");
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

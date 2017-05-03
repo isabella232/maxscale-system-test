@@ -7,7 +7,7 @@
 #include "testconnections.h"
 
 const char *rules = "rule test1 deny regex '.*'\n"
-    "users %@% match any rules test1\n";
+                    "users %@% match any rules test1\n";
 
 int main(int argc, char** argv)
 {

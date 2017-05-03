@@ -77,7 +77,8 @@ int main(int argc, char *argv[])
 
     Test->check_log_err((char *) "The service 'CLI' is missing a definition of the servers", false);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

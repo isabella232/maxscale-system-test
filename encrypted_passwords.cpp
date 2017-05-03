@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
     test->global_result += create_key(test);
     test->global_result += hash_password(test);
 
-    int rval = test->global_result; delete test;
+    int rval = test->global_result;
+    delete test;
     return rval;
 }

@@ -34,7 +34,7 @@ int read_and_execute_queries(TestConnections *Test, const char* filename, int ex
             {
                 Test->tprintf("%s", sql);
                 if (execute_query(Test->conn_rwsplit, sql) != expected &&
-                    (expected == 1 || mysql_errno(Test->conn_rwsplit) == 1141))
+                        (expected == 1 || mysql_errno(Test->conn_rwsplit) == 1141))
                 {
                     Test->tprintf("Query %s, but %s expected, MySQL error: %d, %s\n",
                                   expected ? "succeeded" : "failed",
@@ -96,7 +96,8 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_processes(1);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

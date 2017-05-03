@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     Test->check_log_err((char *)
                         "Unable to start RW Split Router service. There are too few backend servers configured in", true);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

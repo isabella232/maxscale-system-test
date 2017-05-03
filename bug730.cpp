@@ -61,7 +61,8 @@ int main(int argc, char *argv[])
 
     Test->check_maxscale_alive();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

@@ -86,6 +86,7 @@ int main(int argc, char *argv[])
     }
 
     Test->ssh_maxscale(true, "rm -f /var/lib/maxscale/gatekeeper.data");
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

@@ -59,7 +59,8 @@ int main(int argc, char *argv[])
     }
     Test->repl->start_replication();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

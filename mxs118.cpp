@@ -20,7 +20,8 @@ int main(int argc, char *argv[])
 
     Test->check_log_err((char *) "Multiple monitors are monitoring server", true);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

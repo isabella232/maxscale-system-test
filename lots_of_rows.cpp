@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_rwsplit, (char *) "SELECT * FROM t1");
 
     Test->check_maxscale_alive();
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
 

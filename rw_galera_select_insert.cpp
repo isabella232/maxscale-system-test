@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
     if (Test->conn_rwsplit == NULL )
     {
         Test->add_result(1, "Can't connect to MaxScale\n");
-        int rval = Test->global_result; delete Test;
+        int rval = Test->global_result;
+        delete Test;
         exit(1);
     }
     else
@@ -55,6 +56,7 @@ int main(int argc, char *argv[])
     }
     Test->galera->close_connections();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

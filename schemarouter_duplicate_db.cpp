@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     sleep(10);
     Test->check_log_err((char *) "Duplicate databases found", true);
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }

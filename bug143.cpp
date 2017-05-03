@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
     execute_query(Test->conn_rwsplit, "DROP USER 'user'@'non_existing_host2'");
     Test->close_maxscale_connections();
 
-    int rval = Test->global_result; delete Test;
+    int rval = Test->global_result;
+    delete Test;
     return rval;
 }
