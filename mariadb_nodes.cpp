@@ -171,6 +171,17 @@ int Mariadb_nodes::read_env()
             {
                 port[i] = 3306;
             }
+            //reading sockets
+            sprintf(env_name, "%s_%03d_socket", prefix, i);
+            env = getenv(env_name);
+            if (env != NULL)
+            {
+                sprintf(socket[i], "%s", env);
+            }
+            else
+            {
+                sprintf(socket[i], "/var/run/mysqld/mysqld.sock");
+            }
             //reading sshkey
             sprintf(env_name, "%s_%03d_keyfile", prefix, i);
             env = getenv(env_name);
@@ -374,29 +385,31 @@ int Mariadb_nodes::stop_slaves()
 int Mariadb_nodes::start_replication()
 {
     char str[1024];
-    char log_file[256];
-    char log_pos[256];
     int local_result = 0;
 
     // Start all nodes
     for (int i = 0; i < N; i++)
     {
         local_result += start_node(i, (char *) "");
-        ssh_node(i, "mysql -u root -e \"STOP SLAVE; RESET SLAVE; RESET SLAVE ALL; RESET MASTER; SET GLOBAL read_only=OFF;\"", true);
+        sprintf(str,
+                "mysql -u root --socket=%s -e \"STOP SLAVE; RESET SLAVE; RESET SLAVE ALL; RESET MASTER; SET GLOBAL read_only=OFF;\"",
+                socket[i]);
+        ssh_node(i, str, true);
     }
 
     sprintf(str, "%s/create_user.sh", test_dir);
     copy_to_node(str, "~/", 0);
 
-    sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh", user_name, password);
+    sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh %s",
+            user_name, password, socket[0]);
     printf("cmd: %s\n", str);
     ssh_node(0, str, false);
 
-
     // Create a database dump from the master and distribute it to the slaves
-    ssh_node(0,
-             "mysqldump --all-databases --add-drop-database --flush-privileges --master-data=1 --gtid > /tmp/master_backup.sql",
-             true);
+    sprintf(str,
+            "mysqldump --all-databases --add-drop-database --flush-privileges --master-data=1 --gtid --socket=%s > /tmp/master_backup.sql",
+            socket[0]);
+    ssh_node(0, str, true);
     sprintf(str, "%s/master_backup.sql", test_dir);
     copy_from_node("/tmp/master_backup.sql", str, 0);
 
@@ -406,12 +419,15 @@ int Mariadb_nodes::start_replication()
         printf("Starting node %d\n", i);
         fflush(stdout);
         copy_to_node(str, "/tmp/master_backup.sql", i);
-        ssh_node(i, "mysql -u root < /tmp/master_backup.sql", true);
+        sprintf(str,
+                "mysql -u root --socket=%s < /tmp/master_backup.sql",
+                socket[i]);
+        ssh_node(i, str, true);
         char query[512];
 
-        sprintf(query, "mysql -u root -e \"CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
+        sprintf(query, "mysql -u root --socket=%s -e \"CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
                 "MASTER_USER=\\\"repl\\\", MASTER_PASSWORD=\\\"repl\\\";"
-                "START SLAVE;\"", IP_private[0], port[0]);
+                "START SLAVE;\"", socket[i], IP_private[0], port[0]);
         ssh_node(i, query, true);
     }
 
@@ -851,17 +867,35 @@ int Mariadb_nodes::get_server_id(int index)
 
 void Mariadb_nodes::generate_ssh_cmd(char *cmd, int node, const char *ssh, bool sudo)
 {
-    if (sudo)
+    if (strcmp(IP[node], "127.0.0.1") == 0)
     {
-        sprintf(cmd,
-                "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s '%s %s\'",
-                sshkey[node], access_user[node], IP[node], access_sudo[node], ssh);
+        if (sudo)
+        {
+            sprintf(cmd, "%s %s",
+                    access_sudo[node], ssh);
+        }
+        else
+        {
+            sprintf(cmd, "%s",
+                    ssh);
+
+        }
     }
     else
     {
-        sprintf(cmd,
-                "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s '%s'",
-                sshkey[node], access_user[node], IP[node], ssh);
+
+        if (sudo)
+        {
+            sprintf(cmd,
+                    "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s '%s %s\'",
+                    sshkey[node], access_user[node], IP[node], access_sudo[node], ssh);
+        }
+        else
+        {
+            sprintf(cmd,
+                    "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s '%s'",
+                    sshkey[node], access_user[node], IP[node], ssh);
+        }
     }
 }
 
@@ -1057,10 +1091,13 @@ int Mariadb_nodes::truncate_mariadb_logs()
     for (int node = 0; node < N; node++)
     {
         char sys[1024];
-        sprintf(sys,
-                "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s 'sudo truncate  /var/lib/mysql/*.err --size 0;sudo rm -f /etc/my.cnf.d/binlog_enc*\' &",
-                sshkey[node], access_user[node], IP[node]);
-        local_result += system(sys);
+        if (strcmp(IP[node], "127.0.0.1") !=0)
+        {
+            sprintf(sys,
+                    "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s 'sudo truncate  /var/lib/mysql/*.err --size 0;sudo rm -f /etc/my.cnf.d/binlog_enc*\' &",
+                    sshkey[node], access_user[node], IP[node]);
+            local_result += system(sys);
+        }
     }
     return local_result;
 }
@@ -1131,10 +1168,17 @@ int Mariadb_nodes::copy_to_node(const char* src, const char* dest, int i)
     }
     char sys[strlen(src) + strlen(dest) + 1024];
 
-    sprintf(sys, "scp -q -r -i %s -o UserKnownHostsFile=/dev/null "
-            "-o StrictHostKeyChecking=no -o LogLevel=quiet %s %s@%s:%s",
-            sshkey[i], src, access_user[i], IP[i], dest);
-
+    if (strcmp(IP[i], "127.0.0.1") == 0)
+    {
+        sprintf(sys, "cp %s %s",
+                src, dest);
+    }
+    else
+    {
+        sprintf(sys, "scp -q -r -i %s -o UserKnownHostsFile=/dev/null "
+                     "-o StrictHostKeyChecking=no -o LogLevel=quiet %s %s@%s:%s",
+                sshkey[i], src, access_user[i], IP[i], dest);
+    }
     if (verbose)
     {
         printf("%s\n", sys);
@@ -1151,11 +1195,17 @@ int Mariadb_nodes::copy_from_node(const char* src, const char* dest, int i)
         return 1;
     }
     char sys[strlen(src) + strlen(dest) + 1024];
-
-    sprintf(sys, "scp -q -r -i %s -o UserKnownHostsFile=/dev/null "
-            "-o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s:%s %s",
-            sshkey[i], access_user[i], IP[i], src, dest);
-
+    if (strcmp(IP[i], "127.0.0.1") == 0)
+    {
+        sprintf(sys, "cp %s %s",
+                src, dest);
+    }
+    else
+    {
+        sprintf(sys, "scp -q -r -i %s -o UserKnownHostsFile=/dev/null "
+                     "-o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s:%s %s",
+                sshkey[i], access_user[i], IP[i], src, dest);
+    }
     if (verbose)
     {
         printf("%s\n", sys);

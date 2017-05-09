@@ -253,6 +253,11 @@ public:
     bool backend_ssl;
 
     /**
+     * @brief no_galera Do not check, restart and use Galera setup; all Galera tests will fail
+     */
+    bool no_galera;
+
+    /**
     * @brief ssl_options string with ssl configuration for command line client
     */
     char ssl_options[1024];

@@ -23,7 +23,7 @@ if [ $? -ne 0 ]; then
         echo "Error creating log dir"
 fi
 
-
+export maxscale_sshkey=$maxscale_keyfile
 echo "log_dir:         $logs_dir"
 echo "maxscale_sshkey: $maxscale_sshkey"
 echo "maxscale_IP:     $maxscale_IP"

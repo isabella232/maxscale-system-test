@@ -64,6 +64,10 @@ public:
      */
     int port[256];
     /**
+     * @brief Unix socket to connecto to MariaDB
+     */
+    char socket[256][1024];
+    /**
      * @brief  Path to ssh key for every backend node
      */
     char sshkey[256][4096];

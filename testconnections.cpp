@@ -41,7 +41,8 @@ void TestConnections::require_galera_version(const char *version)
 TestConnections::TestConnections(int argc, char *argv[]):
     no_backend_log_copy(false), use_snapshots(false), verbose(false), rwsplit_port(4006),
     readconn_master_port(4008), readconn_slave_port(4009), binlog_port(5306),
-    global_result(0), binlog_cmd_option(0), enable_timeouts(true), use_ipv6(false)
+    global_result(0), binlog_cmd_option(0), enable_timeouts(true), use_ipv6(false),
+    no_galera(false)
 {
     chdir(test_dir);
     gettimeofday(&start_time, NULL);
@@ -64,6 +65,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
         {"quiet", no_argument, 0, 'q'},
         {"restart-galera", no_argument, 0, 'g'},
         {"no-timeouts", no_argument, 0, 'z'},
+        {"no-galera", no_argument, 0, 'y'},
         {0, 0, 0, 0}
     };
 
@@ -71,7 +73,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
     int option_index = 0;
     bool restart_galera = false;
 
-    while ((c = getopt_long(argc, argv, "vnqhsirgz", long_options, &option_index)) != -1)
+    while ((c = getopt_long(argc, argv, "vnqhsirgzy", long_options, &option_index)) != -1)
     {
         switch (c)
         {
@@ -95,6 +97,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
                    "-s, --no-maxscale-start\n"
                    "-i, --no-maxscale-init\n"
                    "-g, --restart-galera\n"
+                   "-y, --no-galera\n"
                    "-z, --no-timeouts\n");
             exit(0);
             break;
@@ -122,6 +125,11 @@ TestConnections::TestConnections(int argc, char *argv[]):
             enable_timeouts = false;
             break;
 
+        case 'y':
+            printf("Do not use Galera setup\n");
+            no_galera = true;
+            break;
+
         default:
             printf("UNKNOWN OPTION: %c\n", c);
             break;
@@ -144,11 +152,19 @@ TestConnections::TestConnections(int argc, char *argv[]):
     setenv("ssl_options", ssl_options, 1);
 
     repl = new Mariadb_nodes("node", test_dir, verbose);
-    galera = new Galera_nodes("galera", test_dir, verbose);
+    if (!no_galera)
+    {
+        galera = new Galera_nodes("galera", test_dir, verbose);
+        //galera->use_ipv6 = use_ipv6;
+        galera->use_ipv6 = false;
+    }
+    else
+    {
+        galera = repl;
+    }
 
     repl->use_ipv6 = use_ipv6;
-    //galera->use_ipv6 = use_ipv6;
-    galera->use_ipv6 = false;
+
 
     if (maxscale::required_repl_version.length())
     {
@@ -180,7 +196,7 @@ TestConnections::TestConnections(int argc, char *argv[]):
         }
     }
 
-    if (restart_galera)
+    if ((restart_galera) && (!no_galera))
     {
         galera->stop_nodes();
         galera->start_replication();
@@ -195,9 +211,16 @@ TestConnections::TestConnections(int argc, char *argv[]):
 
     if (!snapshot_reverted && maxscale::check_nodes)
     {
-        if (!repl->fix_replication() || !galera->fix_replication())
+        if (!repl->fix_replication() )
         {
             exit(200);
+        }
+        if (!no_galera)
+        {
+            if (!galera->fix_replication())
+            {
+                exit(200);
+            }
         }
     }
 
@@ -210,8 +233,11 @@ TestConnections::TestConnections(int argc, char *argv[]):
     {
         tprintf("Configuring backends for ssl \n");
         repl->configure_ssl(true);
-        galera->configure_ssl(false);
-        galera->start_replication();
+        if (!no_galera)
+        {
+            galera->configure_ssl(false);
+            galera->start_replication();
+        }
     }
 
     char str[1024];
@@ -580,7 +606,6 @@ void TestConnections::process_template(const char *template_name, const char *de
     {
         system("sed -i \"s/###repl51###/mysql51_replication=true/g\" maxscale.cnf");
     }
-
     copy_to_maxscale((char *) "maxscale.cnf", (char *) dest);
 }
 
@@ -589,14 +614,16 @@ int TestConnections::init_maxscale()
     const char * template_name = get_template_name(test_name);
     tprintf("Template is %s\n", template_name);
 
-    process_template(template_name, "./");
+    process_template(template_name, maxscale_access_homedir);
 
     ssh_maxscale(true, "cp maxscale.cnf %s;rm -rf %s/certs;mkdir -m a+wrx %s/certs;", maxscale_cnf,
                  maxscale_access_homedir, maxscale_access_homedir);
 
     char str[4096];
+    char dtr[4096];
     sprintf(str, "%s/ssl-cert/*", test_dir);
-    copy_to_maxscale(str, (char *) "./certs/");
+    sprintf(dtr, "%s/certs/", maxscale_access_homedir);
+    copy_to_maxscale(str, dtr);
     sprintf(str, "cp %s/ssl-cert/* .", test_dir);
     system(str);
 
@@ -1151,17 +1178,36 @@ int TestConnections::test_maxscale_connections(bool rw_split, bool rc_master, bo
 
 void TestConnections::generate_ssh_cmd(char * cmd, char * ssh, bool sudo)
 {
-    if (sudo)
+    if (strcmp(maxscale_IP, "127.0.0.1") == 0)
     {
-        sprintf(cmd,
-                "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s '%s %s'",
-                maxscale_keyfile, maxscale_access_user, maxscale_IP, maxscale_access_sudo, ssh);
+        if (sudo)
+        {
+            sprintf(cmd,
+                    "%s %s",
+                    maxscale_access_sudo, ssh);
+        }
+        else
+        {
+            sprintf(cmd,
+                    "%s",
+                    ssh);
+        }
+
     }
     else
     {
-        sprintf(cmd,
-                "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s '%s\'",
-                maxscale_keyfile, maxscale_access_user, maxscale_IP, ssh);
+        if (sudo)
+        {
+            sprintf(cmd,
+                    "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s '%s %s'",
+                    maxscale_keyfile, maxscale_access_user, maxscale_IP, maxscale_access_sudo, ssh);
+        }
+        else
+        {
+            sprintf(cmd,
+                    "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s '%s\'",
+                    maxscale_keyfile, maxscale_access_user, maxscale_IP, ssh);
+        }
     }
 }
 
@@ -1233,10 +1279,17 @@ int  TestConnections::ssh_maxscale(bool sudo, const char* format, ...)
 
     char *cmd = (char*)malloc(message_len + 1024);
 
-    sprintf(cmd,
-            "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s%s",
-            maxscale_keyfile, maxscale_access_user, maxscale_IP, verbose ? "" :  " > /dev/null");
-
+    if (strcmp(maxscale_IP, "127.0.0.1") == 0)
+    {
+        tprintf("starting bash\n");
+        sprintf(cmd, "bash");
+    }
+    else
+    {
+        sprintf(cmd,
+                "ssh -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s%s",
+                maxscale_keyfile, maxscale_access_user, maxscale_IP, verbose ? "" :  " > /dev/null");
+    }
     int rc = 1;
     FILE *in = popen(cmd, "w");
 
@@ -1260,11 +1313,18 @@ int  TestConnections::ssh_maxscale(bool sudo, const char* format, ...)
 int TestConnections::copy_to_maxscale(const char* src, const char* dest)
 {
     char sys[strlen(src) + strlen(dest) + 1024];
+    if (strcmp(maxscale_IP, "127.0.0.1") == 0)
+    {
+        sprintf(sys, "cp %s %s",
+                src, dest);
+    }
+    else
+    {
 
-    sprintf(sys, "scp -q -i %s -o UserKnownHostsFile=/dev/null "
-            "-o StrictHostKeyChecking=no -o LogLevel=quiet %s %s@%s:%s",
-            maxscale_keyfile, src, maxscale_access_user, maxscale_IP, dest);
-
+        sprintf(sys, "scp -q -i %s -o UserKnownHostsFile=/dev/null "
+                     "-o StrictHostKeyChecking=no -o LogLevel=quiet %s %s@%s:%s",
+                maxscale_keyfile, src, maxscale_access_user, maxscale_IP, dest);
+    }
     return system(sys);
 }
 
@@ -1272,11 +1332,17 @@ int TestConnections::copy_to_maxscale(const char* src, const char* dest)
 int TestConnections::copy_from_maxscale(char* src, char* dest)
 {
     char sys[strlen(src) + strlen(dest) + 1024];
-
-    sprintf(sys, "scp -i %s -o UserKnownHostsFile=/dev/null "
-            "-o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s:%s %s",
-            maxscale_keyfile, maxscale_access_user, maxscale_IP, src, dest);
-
+    if (strcmp(maxscale_IP, "127.0.0.1") == 0)
+    {
+        sprintf(sys, "cp %s %s",
+                src, dest);
+    }
+    else
+    {
+        sprintf(sys, "scp -i %s -o UserKnownHostsFile=/dev/null "
+                     "-o StrictHostKeyChecking=no -o LogLevel=quiet %s@%s:%s %s",
+                maxscale_keyfile, maxscale_access_user, maxscale_IP, src, dest);
+    }
     return system(sys);
 }
 
