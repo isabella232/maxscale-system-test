@@ -52,6 +52,13 @@ TestConnections::TestConnections(int argc, char *argv[]):
 
     read_env();
 
+    char * gal_env = getenv("galera_000_network");
+    if ((gal_env == NULL) || (strcmp(gal_env, "") == 0 ))
+    {
+        no_galera = true;
+        tprintf("Galera backend variables are not defined, Galera won't be used\n");
+    }
+
     bool maxscale_init = true;
 
     static struct option long_options[] =
@@ -269,7 +276,10 @@ TestConnections::~TestConnections()
     }
 
     delete repl;
-    delete galera;
+    if (!no_galera)
+    {
+        delete galera;
+    }
 }
 
 void TestConnections::add_result(int result, const char *format, ...)
@@ -711,20 +721,23 @@ int TestConnections::copy_mariadb_logs(Mariadb_nodes * repl, char * prefix)
     system(str);
     for (i = 0; i < repl->N; i++)
     {
-        mariadb_log = repl->ssh_node_output(i, (char *) "cat /var/lib/mysql/*.err", true, &exit_code);
-        sprintf(str, "LOGS/%s/%s%d_mariadb_log", test_name, prefix, i);
-        f = fopen(str, "w");
-        if (f != NULL)
+        if (strcmp(repl->IP[i], "127.0.0.1") != 0) // Do not copy MariaDB logs in case of local backend
         {
-            fwrite(mariadb_log, sizeof(char), strlen(mariadb_log), f);
-            fclose(f);
+            mariadb_log = repl->ssh_node_output(i, (char *) "cat /var/lib/mysql/*.err", true, &exit_code);
+            sprintf(str, "LOGS/%s/%s%d_mariadb_log", test_name, prefix, i);
+            f = fopen(str, "w");
+            if (f != NULL)
+            {
+                fwrite(mariadb_log, sizeof(char), strlen(mariadb_log), f);
+                fclose(f);
+            }
+            else
+            {
+                printf("Error writing MariaDB log");
+                local_result = 1;
+            }
+            free(mariadb_log);
         }
-        else
-        {
-            printf("Error writing MariaDB log");
-            local_result = 1;
-        }
-        free(mariadb_log);
     }
     return local_result;
 }
