@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
         test.tprintf("Replication is broken!");
     }
 
-    sleep(5);
+    sleep(10);
     test.set_timeout(60);
 
     test.verbose = true;
