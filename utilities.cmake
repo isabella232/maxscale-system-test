@@ -90,10 +90,13 @@ add_test_executable_notest(avro_long.cpp avro_long avro)
 add_test_executable_notest(sysbench_example.cpp sysbench_example replication)
 
 # Build the MariaDB Connector/C 3.0
+
+set(CONNECTOR_C_VERSION "3.0" CACHE STRING "The Connector-C version to use")
+
 include(ExternalProject)
 ExternalProject_Add(connector-c
   GIT_REPOSITORY "https://github.com/MariaDB/mariadb-connector-c.git"
-  GIT_TAG "3.0"
+  GIT_TAG ${CONNECTOR_C_VERSION}
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
   UPDATE_COMMAND "")
 
