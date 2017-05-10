@@ -111,4 +111,4 @@ make
 sudo make install
 popd
 
-sudi yum install -y mariadb mariadb-server
+sudo yum install -y mariadb mariadb-server
