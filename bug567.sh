@@ -16,10 +16,14 @@ if [ $? -ne 0 ] ; then
 fi
 export ssl_options="--ssl-cert=$test_dir/ssl-cert/client-cert.pem --ssl-key=$test_dir/ssl-cert/client-key.pem"
 
-pid=`ssh -i $maxscale_sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $maxscale_access_user@$maxscale_IP "pgrep maxscale"`
-echo "Maxscale pid is $pid"
+#pid=`ssh -i $maxscale_sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $maxscale_access_user@$maxscale_IP "pgrep maxscale"`
+#echo "Maxscale pid is $pid"
 echo "removing log directory from /dev/shm/"
-ssh -i $maxscale_sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $maxscale_access_user@$maxscale_IP "rm -rf /dev/shm/maxscale/*"
+if [ $maxscale_IP != "127.0.0.1" ] ; then
+	ssh -i $maxscale_sshkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $maxscale_access_user@$maxscale_IP "sudo rm -rf /dev/shm/maxscale/*"
+else
+	sudo rm -rf /dev/shm/maxscale/*
+fi
 sleep 1
 echo "checking if Maxscale is alive"
 echo "show databases;" | mysql -u$node_user -p$node_password -h $maxscale_IP -P 4006 $ssl_options

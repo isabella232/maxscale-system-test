@@ -347,6 +347,7 @@ int Mariadb_nodes::start_node(int node, char * param)
     {
         sprintf(cmd, "%s %s", start_db_command[node], param);
     }
+printf("\nSSS: %s\n", cmd);
     return ssh_node(node, cmd, true);
 }
 
@@ -385,6 +386,7 @@ int Mariadb_nodes::stop_slaves()
 int Mariadb_nodes::start_replication()
 {
     char str[1024];
+    char dtr[1024];
     int local_result = 0;
 
     // Start all nodes
@@ -398,10 +400,10 @@ int Mariadb_nodes::start_replication()
     }
 
     sprintf(str, "%s/create_user.sh", test_dir);
-    copy_to_node(str, "~/", 0);
-
-    sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user.sh %s",
-            user_name, password, socket[0]);
+    sprintf(dtr, "%s", access_homedir);
+    copy_to_node(str, dtr , 0);
+    sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; %s/create_user.sh %s",
+            user_name, password, access_homedir, socket[0]);
     printf("cmd: %s\n", str);
     ssh_node(0, str, false);
 
@@ -419,10 +421,10 @@ int Mariadb_nodes::start_replication()
         printf("Starting node %d\n", i);
         fflush(stdout);
         copy_to_node(str, "/tmp/master_backup.sql", i);
-        sprintf(str,
+        sprintf(dtr,
                 "mysql -u root --socket=%s < /tmp/master_backup.sql",
                 socket[i]);
-        ssh_node(i, str, true);
+        ssh_node(i, dtr, true);
         char query[512];
 
         sprintf(query, "mysql -u root --socket=%s -e \"CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "

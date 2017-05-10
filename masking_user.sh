@@ -18,9 +18,13 @@ then
 fi
 
 source=masking/$1/masking_rules.json
-target=vagrant@$maxscale_IP:/home/vagrant/masking_rules.json
+target=vagrant@$maxscale_IP:/home/$maxscale_access_user/masking_rules.json
 
-scp -i $maxscale_keyfile -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $source $target
+if [ $maxscale_IP != "127.0.0.1" ] ; then
+        scp -i $maxscale_keyfile -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $source $target
+else
+        cp $source /home/$maxscale_access_user/masking_rules.json
+fi
 
 if [ $? -ne 0 ]
 then

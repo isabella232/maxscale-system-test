@@ -136,7 +136,7 @@ add_test_script(bug564.sh bug564.sh replication LABELS MySQLProtocol REPL_BACKEN
 add_test_executable(bug565.cpp bug565 replication LABELS MySQLProtocol REPL_BACKEND)
 
 # Regression case for the bug "Crash if files from /dev/shm/ removed"
-add_test_script(bug567.sh bug567.sh replication LABELS maxscale REPL_BACKEND)
+add_test_script(bug567.sh bug567.sh bug567 LABELS maxscale REPL_BACKEND)
 
 # Regression case for the bug "Using regex filter hangs MaxScale"
 add_test_executable(bug571.cpp bug571 bug571 LABELS regexfilter REPL_BACKEND)

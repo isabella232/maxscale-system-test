@@ -106,11 +106,12 @@ int main(int argc, char *argv[])
     Test->try_query(Test->conn_slave, (char *) "SELECT * INTO OUTFILE '/tmp/t3.csv' FROM t1;");
 
     Test->tprintf("Copying t1.cvs from Maxscale machine:\n");
-    sprintf(str,
+    Test->copy_from_maxscale((char *) "/tmp/t1.csv", (char *) "./");
+    /*sprintf(str,
             "scp -i %s -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -o LogLevel=quiet %s@%s:/tmp/t1.csv ./",
             Test->repl->sshkey[0], Test->repl->access_user[0], Test->repl->IP[0]);
     Test->tprintf("%s\n", str);
-    system(str);
+    system(str);*/
 
     MYSQL *srv[2];
 

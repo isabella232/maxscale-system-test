@@ -1,6 +1,8 @@
 [maxscale]
 threads=###threads###
 log_warning=1
+log_to_shm=1
+log_debug=1
 
 [MySQL Monitor]
 type=monitor
@@ -10,6 +12,7 @@ servers= server1, server2,server3  ,server4
 user=maxskysql
 passwd= skysql
 monitor_interval=1000
+detect_stale_master=false
 
 [RW Split Router]
 type=service
@@ -17,6 +20,8 @@ router= readwritesplit
 servers=server1,     server2,              server3,server4
 user=maxskysql
 passwd=skysql
+router_options=slave_selection_criteria=LEAST_GLOBAL_CONNECTIONS
+max_slave_connections=1
 
 [Read Connection Router Slave]
 type=service
@@ -25,7 +30,6 @@ router_options= slave
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
-filters=TEE
 
 [Read Connection Router Master]
 type=service
@@ -34,12 +38,6 @@ router_options=master
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
-filters=TEE
-
-[TEE]
-type=filter
-module=tee
-service=RW Split Router
 
 [RW Split Listener]
 type=listener
@@ -68,7 +66,7 @@ router=cli
 type=listener
 service=CLI
 protocol=maxscaled
-
+#address=localhost
 socket=default
 
 [server1]

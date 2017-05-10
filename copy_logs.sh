@@ -37,13 +37,13 @@ if [ $maxscale_IP != "127.0.0.1" ] ; then
     #scp -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet $maxscale_access_user@$maxscale_IP:/tmp/core* $logs_dir
     #scp  -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet $maxscale_access_user@$maxscale_IP:/root/core* $logs_dir
     scp -i $maxscale_sshkey -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet $maxscale_access_user@$maxscale_IP:$maxscale_cnf $logs_dir
+    chmod a+r $logs_dir/*
 else
     sudo cp $maxscale_log_dir/*.log $logs_dir
     sudo cp /tmp/core* $logs_dir
     sudo cp $maxscale_cnf $logs_dir
     sudo chmod a+r $logs_dir/*
 fi
-chmod a+r $logs_dir/*
 
 if [ -z $logs_publish_dir ] ; then
 	echo "logs are in workspace only"
