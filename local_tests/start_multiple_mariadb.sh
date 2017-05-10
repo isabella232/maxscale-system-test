@@ -18,7 +18,7 @@ do
     sudo mysql_install_db --defaults-file=$dir/multiple_servers.cnf --user=mysql --datadir=/data/mysql/mysql$i 
 done
 
-sudo mysqld_multi  --defaults-file=$dir/multiple_servers.cnf  start --no-log --verbose &
+sudo mysqld_multi  --defaults-file=$dir/multiple_servers.cnf  start  &
 
 running_servers=0
 while [ $running_servers != $servers ] ; do
