@@ -3,7 +3,7 @@ set -x
 servers=4;
 dir=`pwd`
 
-cp ~/build-scripts/test/multiple_servers.cnf $dir
+#cp ~/build-scripts/test/multiple_servers.cnf $dir
 sudo rm -rf /data/mysql/*
 sudo rm -rf /var/log/mysql/*
 sudo mkdir -p /data/mysql
@@ -28,6 +28,6 @@ done
 
 for i in `seq 1 $servers`;
 do
-    sudo mysql --socket=/var/run/mysqld/mysqld$i.sock < ~/build-scripts/test-setup-scripts/create_repl_user.sql
-    sudo mysql --socket=/var/run/mysqld/mysqld$i.sock < ~/build-scripts/test-setup-scripts/create_skysql_user.sql
+    sudo mysql --socket=/var/run/mysqld/mysqld$i.sock < $dir/create_repl_user.sql
+    sudo mysql --socket=/var/run/mysqld/mysqld$i.sock < $dir/create_skysql_user.sql
 done
