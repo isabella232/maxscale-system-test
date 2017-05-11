@@ -83,5 +83,6 @@ export ssl=true
 export take_snapshot_command="echo Snapshots are not supported in the local config"
 export revert_snapshot_command="echo Snapshots are not supported in the local config"
 
+export smoke=yes
 cd $curr_dir
 set +x
