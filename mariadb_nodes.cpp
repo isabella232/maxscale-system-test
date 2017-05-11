@@ -687,6 +687,7 @@ static bool bad_slave_thread_status(MYSQL *conn, const char *field, int node)
         fflush(stdout);
         rval = true;
     }
+    return rval;
 }
 
 int Mariadb_nodes::check_replication()
