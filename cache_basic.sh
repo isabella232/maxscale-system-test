@@ -58,9 +58,13 @@ then
 fi
 
 source=cache/$1/cache_rules.json
-target=vagrant@$maxscale_IP:/home/vagrant/cache_rules.json
+target=vagrant@$maxscale_IP:/home/$maxscale_access_user/cache_rules.json
 
-scp -i $maxscale_keyfile -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $source $target
+if [ $maxscale_IP != "127.0.0.1" ] ; then
+   scp -i $maxscale_keyfile -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $source $target
+else
+   cp $source /home/$maxscale_access_user/cache_rules.json
+fi
 
 if [ $? -ne 0 ]
 then
