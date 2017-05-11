@@ -400,10 +400,10 @@ int Mariadb_nodes::start_replication()
     }
 
     sprintf(str, "%s/create_user.sh", test_dir);
-    sprintf(dtr, "%s", access_homedir);
+    sprintf(dtr, "%s", access_homedir[0]);
     copy_to_node(str, dtr , 0);
     sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; %s/create_user.sh %s",
-            user_name, password, access_homedir, socket[0]);
+            user_name, password, access_homedir[0], socket[0]);
     printf("cmd: %s\n", str);
     ssh_node(0, str, false);
 

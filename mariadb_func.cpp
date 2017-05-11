@@ -445,6 +445,16 @@ int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
     unsigned long long int rows;
     unsigned long long int i;
     unsigned int conn_num = 0;
+    char * hostname_internal;
+    if (strcmp(ip, "127.0.0.1") == 0)
+    {
+        hostname_internal = "localhost";
+    }
+    else
+    {
+        hostname_internal = hostname;
+    }
+
     if (conn != NULL)
     {
         if (mysql_query(conn, "show processlist;") != 0)
@@ -474,7 +484,7 @@ int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
                         {
                             conn_num++;
                         }
-                        if ((strstr(row[2], hostname) != NULL) && (strstr(row[3], db) != NULL))
+                        if ((strstr(row[2], hostname_internal) != NULL) && (strstr(row[3], db) != NULL))
                         {
                             conn_num++;
                         }
