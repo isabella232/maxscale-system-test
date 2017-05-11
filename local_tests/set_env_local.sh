@@ -63,8 +63,8 @@ do
 		start_cmd_var="$prefix"_"$num"_start_db_command
 		stop_cmd_var="$prefix"_"$num"_stop_db_command
                 GRN=`expr $i + 1`
-                eval 'export $start_cmd_var="mysqld_multi --defaults-file=$HOME/build-scripts/test/multiple_servers.cnf start $GRN"'
-                eval 'export $stop_cmd_var="mysqld_multi --defaults-file=$HOME/build-scripts/test/multiple_servers.cnf  stop  $GRN"'
+                eval 'export $start_cmd_var="mysqld_multi --defaults-file=$HOME/maxscale-system-test/local_tests/multiple_servers.cnf start $GRN"'
+                eval 'export $stop_cmd_var="mysqld_multi --defaults-file=$HOME/maxscale-system-test/local_tests/multiple_servers.cnf  stop  $GRN"'
 #		cd ..
 	done
 done
