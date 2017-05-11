@@ -20,5 +20,5 @@ int main(int argc, char** argv)
     test.tprintf("MySQL error: %s", mysql_error(mysql));
     mysql_close(mysql);
     
-    return test->global_result;
+    return test.global_result;
 }
