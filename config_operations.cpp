@@ -79,8 +79,8 @@ void Config::destroy_server(int num)
 void Config::create_server(int num)
 {
     test_->set_timeout(120);
-    test_->ssh_maxscale(true, "maxadmin create server server%d %s",
-                        num, test_->repl->IP[num]);
+    test_->ssh_maxscale(true, "maxadmin create server server%d %s %d",
+                        num, test_->repl->IP[num], test_->repl->port[num]);
     created_servers_.insert(num);
     test_->stop_timeout();
 }
