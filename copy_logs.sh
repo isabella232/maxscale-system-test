@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # $1 - test name
-# $2 - time mark (iun case of periodic logs copying)
-#set -x
+# $2 - time mark (in case of periodic logs copying)
+set -x
 
 if [ -z $1 ]; then
 	echo "Test name missing"
