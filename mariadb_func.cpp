@@ -494,6 +494,13 @@ int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
             mysql_free_result(res);
         }
     }
+    if (strcmp(ip, "127.0.0.1") == 0)
+    {
+        // one extra connection i svisible in the processlist
+        // output in case of local test
+        // (when maxscale is on the same machine as backends)
+        conn_num--;
+    }
     return conn_num;
 }
 
