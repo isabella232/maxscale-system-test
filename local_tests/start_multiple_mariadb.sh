@@ -12,6 +12,7 @@ sudo mkdir -p /var/run/mysqld
 sudo chown mysql:mysql -R /var/run/mysqld
 sudo killall mysqld
 sudo killall mysql_install_db
+sleep 20
 
 for i in `seq 1 $servers`;
 do

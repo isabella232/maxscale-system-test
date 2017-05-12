@@ -244,6 +244,8 @@ int main(int argc, char *argv[])
     {
         Test->tprintf("Simple query...\n");
         Test->try_query(conn, (char *) "SELECT * from mysql.user");
+        Test->try_query(conn,
+                        (char *) "set password for 'root'@'localhost' = PASSWORD('');");
     }
     if (conn != NULL)
     {
@@ -252,9 +254,6 @@ int main(int argc, char *argv[])
 
     Test->tprintf("Dropping 'root'@'%%'\n");
     Test->try_query(Test->conn_rwsplit, (char *) "DROP USER 'root'@'%%';");
-    //Test->try_query(Test->conn_rwsplit, (char *) "DROP USER 'root'@'localhost';");
-    Test->try_query(Test->conn_rwsplit,
-                    (char *) "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY '';");
 
     Test->close_maxscale_connections();
 
