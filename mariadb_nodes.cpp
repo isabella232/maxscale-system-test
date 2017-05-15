@@ -934,7 +934,7 @@ int Mariadb_nodes::flush_hosts()
             local_result++;
         }
 
-        if (mysql_query(nodes[i], "SELECT CONCAT('\\'', user, '\\'' '@', '\\'', host, '\\'') FROM mysql.user WHERE user = ''") == 0)
+        if (mysql_query(nodes[i], "SELECT CONCAT('\\'', user, '\\'@\\'', host, '\\'') FROM mysql.user WHERE user = ''") == 0)
         {
             MYSQL_RES *res = mysql_store_result(nodes[i]);
 
@@ -958,6 +958,7 @@ int Mariadb_nodes::flush_hosts()
                     {
                         std::string query = "DROP USER ";
                         query += s;
+                        printf("%s\n", query.c_str());
                         mysql_query(nodes[i], query.c_str());
                     }
                 }
