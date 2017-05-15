@@ -180,7 +180,7 @@ int Mariadb_nodes::read_env()
             }
             else
             {
-                sprintf(socket[i], "/var/run/mysqld/mysqld.sock");
+                sprintf(socket[i], "/var/lib/mysql/mysql.sock");
             }
             //reading sshkey
             sprintf(env_name, "%s_%03d_keyfile", prefix, i);
