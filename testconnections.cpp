@@ -609,7 +609,7 @@ int TestConnections::init_maxscale()
                  "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/ /var/lib/maxscale/*;"
                  "%s",
                  maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
-                 maxscale::start ? "killall -9 maxscale" : ""
+                 maxscale::start ? "killall -9 maxscale" : "",
                  maxscale_log_dir, maxscale_log_dir, maxscale::start ? "service maxscale restart" : "");
 
     fflush(stdout);
