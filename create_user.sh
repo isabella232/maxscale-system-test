@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mysql -u root --force --socket=$1 <<EOF >& /dev/null
+mysql -u root --force $1 <<EOF >& /dev/null
 
 DROP USER '$node_user'@'%';
 CREATE USER '$node_user'@'%' IDENTIFIED BY '$node_password';

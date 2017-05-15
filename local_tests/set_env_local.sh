@@ -65,6 +65,11 @@ do
                 GRN=`expr $i + 1`
                 eval 'export $start_cmd_var="mysqld_multi --defaults-file=$HOME/maxscale-system-test/local_tests/multiple_servers.cnf start $GRN"'
                 eval 'export $stop_cmd_var="mysqld_multi --defaults-file=$HOME/maxscale-system-test/local_tests/multiple_servers.cnf  stop  $GRN"'
+
+                start_cmd_var="$prefix"_"$num"_cleanup_db_command
+                GRN=`expr $i + 1`
+                eval 'export $start_cmd_var="$HOME/maxscale-system-test/local_tests/cleanup_db.sh $GRN"'
+
 #		cd ..
 	done
 done

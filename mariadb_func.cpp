@@ -448,7 +448,7 @@ int get_conn_num(MYSQL *conn, char * ip, char *hostname, char * db)
     char * hostname_internal;
     if (strcmp(ip, "127.0.0.1") == 0)
     {
-        hostname_internal = "localhost";
+        hostname_internal = (char*) "localhost";
     }
     else
     {

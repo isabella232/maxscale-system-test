@@ -68,6 +68,10 @@ public:
      */
     char socket[256][1024];
     /**
+     * @brief 'socket=$socket' line
+     */
+    char socket_cmd[256][1024];
+    /**
      * @brief  Path to ssh key for every backend node
      */
     char sshkey[256][4096];
@@ -100,6 +104,12 @@ public:
      * @brief stop_db_command Command to start DB server
      */
     char stop_db_command[256][4096];
+
+    /**
+     * @brief cleanup_db_command Command to remove all
+     * data files and re-install DB with mysql_install_db
+     */
+    char cleanup_db_command[256][4096];
 
     /**
      * @brief ssl if true ssl will be used
@@ -216,6 +226,22 @@ public:
      * @return  0 in case of success
      */
     int stop_slaves();
+
+    /**
+     * @brief cleanup_db_node Removes all data files and reinstall DB
+     * with mysql_install_db
+     * @param node
+     * @return 0 in case of success
+     */
+    int cleanup_db_node(int node);
+
+    /**
+     * @brief cleanup_db_node Removes all data files and reinstall DB
+     * with mysql_install_db for all nodes
+     * @param node
+     * @return 0 in case of success
+     */
+    int cleanup_db_nodes();
 
     /**
      * @brief configures nodes and starts Master/Slave replication

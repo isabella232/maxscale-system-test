@@ -177,10 +177,12 @@ int Mariadb_nodes::read_env()
             if (env != NULL)
             {
                 sprintf(socket[i], "%s", env);
+                sprintf(socket_cmd[i], "--socket=%s", env);
             }
             else
             {
-                sprintf(socket[i], "/var/lib/mysql/mysql.sock");
+                sprintf(socket[i], " ");
+                sprintf(socket_cmd[i], " ");
             }
             //reading sshkey
             sprintf(env_name, "%s_%03d_keyfile", prefix, i);
@@ -216,6 +218,18 @@ int Mariadb_nodes::read_env()
             else
             {
                 sprintf(start_db_command[i], "%s", "service mysql stop");
+            }
+
+            //reading cleanup_db_command
+            sprintf(env_name, "%s_%03d_cleanup_db_command", prefix, i);
+            env = getenv(env_name);
+            if (env != NULL)
+            {
+                sprintf(cleanup_db_command[i], "%s", env);
+            }
+            else
+            {
+                sprintf(cleanup_db_command[i], " ");
             }
 
             sprintf(env_name, "%s_%03d_whoami", prefix, i);
@@ -347,7 +361,6 @@ int Mariadb_nodes::start_node(int node, char * param)
     {
         sprintf(cmd, "%s %s", start_db_command[node], param);
     }
-printf("\nSSS: %s\n", cmd);
     return ssh_node(node, cmd, true);
 }
 
@@ -383,6 +396,28 @@ int Mariadb_nodes::stop_slaves()
     return global_result;
 }
 
+int Mariadb_nodes::cleanup_db_node(int node)
+{
+    return ssh_node(node, cleanup_db_command[node], true);
+}
+
+int Mariadb_nodes::cleanup_db_nodes()
+{
+    int i;
+    int local_result = 0;
+
+    for (i = 0; i < N; i++)
+    {
+        printf("Cleaning node %d\n", i);
+        fflush(stdout);
+        local_result += cleanup_db_node(i);
+        fflush(stdout);
+    }
+    return local_result;
+}
+
+
+
 int Mariadb_nodes::start_replication()
 {
     char str[1024];
@@ -394,8 +429,8 @@ int Mariadb_nodes::start_replication()
     {
         local_result += start_node(i, (char *) "");
         sprintf(str,
-                "mysql -u root --socket=%s -e \"STOP SLAVE; RESET SLAVE; RESET SLAVE ALL; RESET MASTER; SET GLOBAL read_only=OFF;\"",
-                socket[i]);
+                "mysql -u root %s -e \"STOP SLAVE; RESET SLAVE; RESET SLAVE ALL; RESET MASTER; SET GLOBAL read_only=OFF;\"",
+                socket_cmd[i]);
         ssh_node(i, str, true);
     }
 
@@ -403,14 +438,14 @@ int Mariadb_nodes::start_replication()
     sprintf(dtr, "%s", access_homedir[0]);
     copy_to_node(str, dtr , 0);
     sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; %s/create_user.sh %s",
-            user_name, password, access_homedir[0], socket[0]);
+            user_name, password, access_homedir[0], socket_cmd[0]);
     printf("cmd: %s\n", str);
     ssh_node(0, str, false);
 
     // Create a database dump from the master and distribute it to the slaves
     sprintf(str,
-            "mysqldump --all-databases --add-drop-database --flush-privileges --master-data=1 --gtid --socket=%s > /tmp/master_backup.sql",
-            socket[0]);
+            "mysqldump --all-databases --add-drop-database --flush-privileges --master-data=1 --gtid %s > /tmp/master_backup.sql",
+            socket_cmd[0]);
     ssh_node(0, str, true);
     sprintf(str, "%s/master_backup.sql", test_dir);
     copy_from_node("/tmp/master_backup.sql", str, 0);
@@ -422,14 +457,14 @@ int Mariadb_nodes::start_replication()
         fflush(stdout);
         copy_to_node(str, "/tmp/master_backup.sql", i);
         sprintf(dtr,
-                "mysql -u root --socket=%s < /tmp/master_backup.sql",
-                socket[i]);
+                "mysql -u root %s < /tmp/master_backup.sql",
+                socket_cmd[i]);
         ssh_node(i, dtr, true);
         char query[512];
 
-        sprintf(query, "mysql -u root --socket=%s -e \"CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
+        sprintf(query, "mysql -u root %s -e \"CHANGE MASTER TO MASTER_HOST=\\\"%s\\\", MASTER_PORT=%d, "
                 "MASTER_USER=\\\"repl\\\", MASTER_PASSWORD=\\\"repl\\\";"
-                "START SLAVE;\"", socket[i], IP_private[0], port[0]);
+                "START SLAVE;\"", socket_cmd[i], IP_private[0], port[0]);
         ssh_node(i, query, true);
     }
 
@@ -457,8 +492,8 @@ int Galera_nodes::start_galera()
     sprintf(str, "%s/create_user_galera.sh", test_dir);
     copy_to_node(str, "~/", 0);
 
-    sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh", user_name,
-            password);
+    sprintf(str, "export galera_user=\"%s\"; export galera_password=\"%s\"; ./create_user_galera.sh %s", user_name,
+            password, socket_cmd[0]);
     ssh_node(0, str, false);
 
     for (i = 1; i < N; i++)
@@ -741,6 +776,7 @@ bool Mariadb_nodes::fix_replication()
         }
 
         int attempts = 2;
+        int attempts_with_cleanup = 2;
 
         while (check_replication() && attempts > 0)
         {
@@ -757,8 +793,20 @@ bool Mariadb_nodes::fix_replication()
 
         if (attempts == 0 && check_replication())
         {
-            printf("****** BACKEND IS STILL BROKEN! Exiting *****\n");
-            return false;
+            if (attempts_with_cleanup > 0)
+            {
+                printf("****** BACKEND IS STILL BROKEN! Trying to cleanup all nodes *****\n");
+                stop_nodes();
+                cleanup_db_nodes();
+                attempts_with_cleanup--;
+                attempts = 2;
+                sleep(30);
+            }
+            else
+            {
+                printf("****** BACKEND IS STILL BROKEN! Exiting *****\n");
+                return false;
+            }
         }
 
         flush_hosts();
@@ -1133,8 +1181,10 @@ int Mariadb_nodes::configure_ssl(bool require)
         sprintf(str, "%s/create_user_ssl.sh", test_dir);
         copy_to_node(str, (char *) "~/", 0);
 
-        sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user_ssl.sh", user_name,
-                password);
+        sprintf(str, "export node_user=\"%s\"; export node_password=\"%s\"; ./create_user_ssl.sh %s",
+                user_name,
+                password,
+                socket_cmd[0]);
         printf("cmd: %s\n", str);
         ssh_node(0, str, false);
     }

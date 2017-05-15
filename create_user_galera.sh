@@ -4,7 +4,7 @@
 
 for ((i=0;i<100;i++))
 do
-    mysql -ss -u root -e 'show status like "wsrep_ready"' | grep 'ON' && break || sleep 1
+    mysql -ss -u root $1 -e 'show status like "wsrep_ready"' | grep 'ON' && break || sleep 1
 done
 
 # The removal of the anonymous ''@'localhost' user is done in a somewhat crude
