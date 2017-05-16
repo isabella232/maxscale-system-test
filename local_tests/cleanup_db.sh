@@ -9,4 +9,4 @@ mkdir -p /data/mysql/mysql$1
 chown mysql:mysql -R /data
 chown mysql:mysql -R /var/run/mysqld
 
-mysql_install_db --defaults-file=$dir/multiple_servers.cnf --user=mysql --datadir=/data/mysql/mysql$1
+mysql_install_db --defaults-file=$dir/local_tests/multiple_servers.cnf --user=mysql --datadir=/data/mysql/mysql$1
