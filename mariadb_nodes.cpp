@@ -789,26 +789,25 @@ bool Mariadb_nodes::fix_replication()
             close_connections();
 
             attempts--;
-        }
 
-        if (attempts == 0 && check_replication())
-        {
-            if (attempts_with_cleanup > 0)
+            if (attempts == 0 && check_replication())
             {
-                printf("****** BACKEND IS STILL BROKEN! Trying to cleanup all nodes *****\n");
-                stop_nodes();
-                cleanup_db_nodes();
-                attempts_with_cleanup--;
-                attempts = 2;
-                sleep(30);
-            }
-            else
-            {
-                printf("****** BACKEND IS STILL BROKEN! Exiting *****\n");
-                return false;
+                if (attempts_with_cleanup > 0)
+                {
+                    printf("****** BACKEND IS STILL BROKEN! Trying to cleanup all nodes *****\n");
+                    stop_nodes();
+                    cleanup_db_nodes();
+                    attempts_with_cleanup--;
+                    attempts = 2;
+                    sleep(30);
+                }
+                else
+                {
+                    printf("****** BACKEND IS STILL BROKEN! Exiting *****\n");
+                    return false;
+                }
             }
         }
-
         flush_hosts();
     }
 
