@@ -800,6 +800,7 @@ bool Mariadb_nodes::fix_replication()
                     attempts_with_cleanup--;
                     attempts = 2;
                     sleep(30);
+                    start_replication();
                 }
                 else
                 {
