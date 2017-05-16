@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     test->tprintf("Create the servers with correct parameters");
     for (int i = 0; i < 4; i++)
     {
-        test->ssh_maxscale(true, "maxadmin create server server%d %s", i + 1, test->repl->IP[i]);
+        test->ssh_maxscale(true, "maxadmin create server server%d %s %d", i + 1, test->repl->IP[i], test->repl->port[i]);
     }
 
     /**  Add the servers again */
