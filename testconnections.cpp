@@ -640,12 +640,13 @@ int TestConnections::init_maxscale()
     ssh_maxscale(true, "chown maxscale:maxscale -R %s/certs;"
                  "chmod 664 %s/certs/*.pem;"
                  " chmod a+x %s;"
-                 "killall -9 maxscale;"
+                 "%s"
                  "iptables -I INPUT -p tcp --dport 4001 -j ACCEPT;"
                  "rm -f %s/maxscale.log %s/maxscale1.log;"
                  "rm -rf /tmp/core* /dev/shm/* /var/lib/maxscale/maxscale.cnf.d/ /var/lib/maxscale/*;"
                  "%s",
                  maxscale_access_homedir, maxscale_access_homedir, maxscale_access_homedir,
+                 maxscale::start ? "killall -9 maxscale;" : "",
                  maxscale_log_dir, maxscale_log_dir, maxscale::start ? "service maxscale restart" : "");
 
     fflush(stdout);
@@ -1803,15 +1804,17 @@ int TestConnections::try_query_all(const char *sql)
 
 int TestConnections::find_master_maxadmin(Mariadb_nodes * nodes)
 {
-    char show_server[32];
-    char res[256];
     bool found = false;
     int master = -1;
+
     for (int i = 0; i < nodes->N; i++)
     {
+        char show_server[256];
+        char res[256];
         sprintf(show_server, "show server server%d", i + 1);
         get_maxadmin_param(show_server, (char *) "Status", res);
-        if (strstr(res, "Master") != NULL)
+
+        if (strstr(res, "Master"))
         {
             if (found)
             {
@@ -1824,7 +1827,28 @@ int TestConnections::find_master_maxadmin(Mariadb_nodes * nodes)
             }
         }
     }
+
     return master;
+}
+
+int TestConnections::find_slave_maxadmin(Mariadb_nodes * nodes)
+{
+    int slave = -1;
+
+    for (int i = 0; i < nodes->N; i++)
+    {
+        char show_server[256];
+        char res[256];
+        sprintf(show_server, "show server server%d", i + 1);
+        get_maxadmin_param(show_server, (char *) "Status", res);
+
+        if (strstr(res, "Slave"))
+        {
+            slave = i;
+        }
+    }
+
+    return slave;
 }
 
 int TestConnections::execute_maxadmin_command(char * cmd)

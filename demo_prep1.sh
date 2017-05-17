@@ -9,6 +9,8 @@
 #
 # The Vagrant setup is located in ~/mdbci/my-test-build/. Vagrant is used
 # for SSH access to the machines.
+#
+# The backend server also must have log-slave-updates enabled.
 
 # This is the VM name where the replication-manager is installed
 mrm=galera_000

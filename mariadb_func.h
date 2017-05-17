@@ -152,6 +152,15 @@ int execute_query1(MYSQL *conn, const char *sql, bool silent);
 int execute_query_affected_rows(MYSQL *conn, const char *sql, my_ulonglong * affected_rows);
 
 /**
+* @brief A more convenient form of execute_query_affected_rows()
+*
+* @param conn Connection to use for the query
+* @param sql  The SQL statement to execute
+* @return Number of rows or -1 on error
+*/
+int execute_query_count_rows(MYSQL *conn, const char *sql);
+
+/**
  * @brief Executes SQL query and get number of rows in the result
  * This function does not check boudaries of 'num_of_rows' array. This
  * array have to be big enough to store all results

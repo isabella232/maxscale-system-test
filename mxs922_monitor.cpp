@@ -67,8 +67,8 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < test->repl->N; i++)
     {
-        config.alter_server(i, "monuser", "skysql");
-        config.alter_server(i, "monpw", "skysql");
+        config.alter_server(i, "monitoruser", "skysql");
+        config.alter_server(i, "monitorpw", "skysql");
     }
 
     config.restart_monitors();

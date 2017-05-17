@@ -326,6 +326,9 @@ add_test_executable(mm.cpp mm mm LABELS mmmon BREAKS_REPL)
 # MySQL Monitor with Multi-master configurations
 add_test_executable(mm_mysqlmon.cpp mm_mysqlmon mm_mysqlmon LABELS mysqlmon REPL_BACKEND BREAKS_REPL)
 
+# MySQL Monitor crash safety
+add_test_executable(mysqlmon_backup.cpp mysqlmon_backup mysqlmon_backup LABELS mysqlmon REPL_BACKEND)
+
 # Regression case for the bug "Two monitors loaded at the same time result into not working installation"
 add_test_executable(mxs118.cpp mxs118 mxs118 LABELS maxscale LIGHT REPL_BACKEND)
 
@@ -419,8 +422,7 @@ add_test_executable(mxs822_maxpasswd.cpp mxs822_maxpasswd maxpasswd LABELS maxsc
 
 # Do only SELECTS during time > wait_timeout and then do INSERT
 # This test will fail because the functionality hasn't been implemented
-add_test_executable(mxs827_write_timeout.cpp mxs827_write_timeout replication LABELS readwritesplit REPL_BACKEND)
-set_tests_properties(mxs827_write_timeout PROPERTIES WILL_FAIL TRUE)
+add_test_executable(mxs827_write_timeout.cpp mxs827_write_timeout mxs827_write_timeout LABELS readwritesplit REPL_BACKEND)
 
 # Block and unblock first and second slaves and check that they are recovered
 add_test_executable(mxs874_slave_recovery.cpp mxs874_slave_recovery mxs874 LABELS readwritesplit REPL_BACKEND)
@@ -555,6 +557,9 @@ add_test_executable(session_limits.cpp session_limits session_limits LABELS read
 # Test of schema router
 add_test_executable(sharding.cpp sharding sharding LABELS schemarouter BREAKS_REPL)
 
+# MXS-1160: LOAD DATA LOCAL INFILE with schemarouter
+add_test_executable(sharding_load_data.cpp sharding_load_data sharding LABELS schemarouter BREAKS_REPL)
+
 # Do short sessions (open conn, short query, close conn) in the loop
 add_test_executable(short_sessions.cpp short_sessions replication LABELS readwritesplit readconnroute REPL_BACKEND)
 
@@ -601,7 +606,7 @@ add_test_executable(test_hints.cpp test_hints hints2 LABELS hintfilter LIGHT REP
 add_test_executable(avro.cpp avro avro LABELS avrorouter binlogrouter LIGHT BREAKS_REPL)
 
 # Test avrorouter file compression
-#add_test_script(avro_compression avro avro_compression LABELS avrorouter binlogrouter LIGHT BREAKS_REPL)
+add_test_script(avro_compression avro avro_compression LABELS avrorouter binlogrouter LIGHT BREAKS_REPL)
 
 # In the binlog router setup stop Master and promote one of the Slaves to be new Master
 add_test_executable(binlog_change_master.cpp binlog_change_master setup_binlog_tx_safe LABELS binlogrouter BREAKS_REPL)

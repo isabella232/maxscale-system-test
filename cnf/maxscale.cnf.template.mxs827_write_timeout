@@ -1,6 +1,5 @@
 [maxscale]
 threads=###threads###
-log_warning=1
 
 [MySQL Monitor]
 type=monitor
@@ -9,21 +8,52 @@ module=mysqlmon
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
+monitor_interval=1000
+detect_stale_master=false
 
-[Sharding router]
+[RW Split Router]
 type=service
-router=schemarouter
+router=readwritesplit
 servers=server1,server2,server3,server4
 user=maxskysql
 passwd=skysql
-auth_all_servers=1
-ignore_databases_regex=.*
+router_options=slave_selection_criteria=LEAST_GLOBAL_CONNECTIONS
+max_slave_connections=1
+connection_keepalive=5
 
-[Sharding Listener]
+[Read Connection Router Slave]
+type=service
+router=readconnroute
+router_options=slave
+servers=server1,server2,server3,server4
+user=maxskysql
+passwd=skysql
+
+[Read Connection Router Master]
+type=service
+router=readconnroute
+router_options=master
+servers=server1,server2,server3,server4
+user=maxskysql
+passwd=skysql
+
+[RW Split Listener]
 type=listener
-service=Sharding router
+service=RW Split Router
 protocol=MySQLClient
 port=4006
+
+[Read Connection Listener Slave]
+type=listener
+service=Read Connection Router Slave
+protocol=MySQLClient
+port=4009
+
+[Read Connection Listener Master]
+type=listener
+service=Read Connection Router Master
+protocol=MySQLClient
+port=4008
 
 [CLI]
 type=service
@@ -33,7 +63,6 @@ router=cli
 type=listener
 service=CLI
 protocol=maxscaled
-#address=localhost
 socket=default
 
 [server1]
