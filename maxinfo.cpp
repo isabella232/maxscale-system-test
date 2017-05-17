@@ -44,12 +44,11 @@ int main(int argc, char *argv[])
     sleep(sleep_time);
 
     exit_flag = true;
-
+    Test->set_timeout(120);
     for (i = 0; i < threads_num; i++)
     {
         pthread_join(thread1[i], NULL);
     }
-
 
     Test->check_maxscale_alive();
 
