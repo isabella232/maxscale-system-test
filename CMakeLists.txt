@@ -312,7 +312,7 @@ add_test_script(mariadb_tests_hartmut_galera mariadb_tests_hartmut.sh galera LAB
 add_test_executable(max_connections.cpp max_connections replication LABELS MySQLAuth MySQLProtocol UNSTABLE HEAVY REPL_BACKEND)
 
 # Test of Maxinfo interface (http)
-add_test_executable(maxinfo.cpp maxinfocpp maxinfo LABELS maxinfo UNSTABLE HEAVY REPL_BACKEND)
+#add_test_executable(maxinfo.cpp maxinfocpp maxinfo LABELS maxinfo UNSTABLE HEAVY REPL_BACKEND)
 
 # Test of Maxinfo interface (http), python impelemntation
 add_test_script(maxinfo.py maxinfo.py maxinfo LABELS maxinfo LIGHT REPL_BACKEND)

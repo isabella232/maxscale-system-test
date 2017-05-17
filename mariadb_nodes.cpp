@@ -801,6 +801,7 @@ bool Mariadb_nodes::fix_replication()
                     attempts = 2;
                     sleep(30);
                     start_replication();
+                    sleep(30);
                 }
                 else
                 {
